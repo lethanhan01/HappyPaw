@@ -186,14 +186,17 @@ export function PlaceRow({
   )
   const cls = 'flex min-h-[72px] w-full items-center gap-3 rounded-2xl border-2 p-3 text-left'
   return onClick ? (
-    <button
+    <Btn
       type="button"
+      variant="ghost"
+      size="md"
+      full
       onClick={onClick}
       aria-pressed={selected}
-      className={cx(cls, selected ? 'border-brown bg-butter/60' : 'border-line bg-white')}
+      className={cx(cls, selected ? 'border-brown !bg-butter/60' : 'border-line !bg-white')}
     >
       {body}
-    </button>
+    </Btn>
   ) : (
     <div className={cx(cls, 'border-line bg-white')}>{body}</div>
   )

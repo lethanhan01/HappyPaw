@@ -38,7 +38,7 @@ import {
 } from 'lucide-react'
 import { parsePath, cx } from '@/lib'
 import { useApp } from '@/store'
-import { Logo } from '@ui'
+import { Logo, Btn, IconBtn, Input } from '@ui'
 import { USERS } from '@/constants'
 import { useAdmin } from './store/adminStore'
 import { useCases } from './components/AdminCommon'
@@ -150,23 +150,23 @@ function Sidebar({ collapsed, onNav, onToggle, drawer }: { collapsed: boolean; o
               const act = isActive(it, path)
               const bd = badges[it.to.split('?')[0]] && !it.to.includes('?') ? badges[it.to] : 0
               return (
-                <button key={it.to + it.label} title={it.label} aria-current={act ? 'page' : undefined}
+                <Btn key={it.to + it.label} variant="ghost" title={it.label} aria-current={act ? 'page' : undefined}
                   onClick={() => { go(it.to); onNav() }}
-                  className={cx('mb-0.5 flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-1.5 text-left text-[13.5px] font-semibold transition lg:min-h-9', slim && 'justify-center px-0',
+                  className={cx('mb-0.5 flex h-auto min-h-11 w-full items-center justify-start gap-2.5 rounded-lg px-3 py-1.5 text-left text-[13.5px] font-semibold transition lg:min-h-9', slim && 'justify-center px-0',
                     act ? 'bg-butter text-brown font-bold' : 'text-cream/80 hover:bg-white/10 hover:text-white')}>
                   {it.icon}
                   {!slim && <span className="flex-1 truncate">{it.label}</span>}
                   {!slim && bd > 0 && <span className={cx('rounded-full px-1.5 text-[11px] font-extrabold', act ? 'bg-brown text-butter' : 'bg-coral text-white')}>{bd}</span>}
-                </button>
+                </Btn>
               )
             })}
           </div>
         ))}
       </nav>
       {onToggle && !drawer && (
-        <button onClick={onToggle} className="hidden h-10 shrink-0 items-center justify-center gap-2 border-t border-white/10 text-xs font-bold text-cream/70 hover:text-white lg:flex" aria-label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}>
+        <Btn variant="ghost" onClick={onToggle} className="hidden h-10 shrink-0 items-center justify-center gap-2 border-t border-white/10 text-xs font-bold text-cream/70 hover:text-white lg:flex" aria-label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}>
           {collapsed ? <ChevronRight className="size-4" /> : <><ChevronLeft className="size-4" />Thu gọn</>}
-        </button>
+        </Btn>
       )}
     </div>
   )
@@ -191,14 +191,14 @@ function GlobalSearch() {
   return (
     <div ref={ref} className="relative min-w-0 flex-1 md:max-w-md">
       <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brown-soft" />
-      <input value={q} onChange={(e) => { setQ(e.target.value); setOpen(true) }} onFocus={() => setOpen(true)}
+      <Input size="sm" value={q} onChange={(e) => { setQ(e.target.value); setOpen(true) }} onFocus={() => setOpen(true)}
         placeholder="Tìm case, user, mã báo cáo…" aria-label="Tìm kiếm toàn hệ thống"
-        className="h-11 w-full rounded-xl border border-line bg-white pl-9 md:h-9 pr-3 text-sm font-semibold placeholder:font-medium placeholder:text-brown/45 focus:border-brown focus:outline-none focus:ring-2 focus:ring-butter" />
+        className="h-11 pl-9 md:h-9" />
       {open && t && (
         <div className="absolute left-0 right-0 top-11 z-50 max-h-80 overflow-y-auto rounded-xl border border-brown/40 bg-paper p-2 shadow-lg">
           {rc.length === 0 && ru.length === 0 && <p className="px-3 py-4 text-center text-sm text-brown-soft">Không tìm thấy kết quả.</p>}
-          {rc.map((c) => <button key={c.id} onClick={() => pick('/admin/cases/' + c.id)} className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-butter/40"><PawPrint className="size-4" /><b>{c.id}</b> {c.name} <span className="text-brown-soft">· {c.district}</span></button>)}
-          {ru.map((u) => <button key={u.id} onClick={() => pick('/admin/users/' + u.id)} className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-butter/40"><UserCog className="size-4" /><b>{u.name}</b> <span className="text-brown-soft">· {u.area}</span></button>)}
+          {rc.map((c) => <Btn variant="ghost" size="sm" key={c.id} onClick={() => pick('/admin/cases/' + c.id)} className="flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-butter/40"><PawPrint className="size-4" /><b>{c.id}</b> {c.name} <span className="text-brown-soft">· {c.district}</span></Btn>)}
+          {ru.map((u) => <Btn variant="ghost" size="sm" key={u.id} onClick={() => pick('/admin/users/' + u.id)} className="flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-butter/40"><UserCog className="size-4" /><b>{u.name}</b> <span className="text-brown-soft">· {u.area}</span></Btn>)}
         </div>
       )}
     </div>
@@ -223,40 +223,39 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   const cr = crumbs(path)
   return (
     <header className="sticky top-0 z-40 flex min-h-12 items-center gap-x-2 md:gap-x-3 border-b border-line bg-cream/95 px-2.5 py-1.5 backdrop-blur-sm md:px-5">
-      <button onClick={onMenu} aria-label="Mở menu" className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:size-9 lg:hidden"><Menu className="size-5" /></button>
+      <IconBtn variant="ghost" onClick={onMenu} aria-label="Mở menu" className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:size-9 lg:hidden"><Menu className="size-5" /></IconBtn>
       <nav aria-label="Breadcrumb" className="hidden min-w-0 items-center gap-1 text-[13px] font-bold text-brown-soft md:flex">
         {cr.map((c, i) => (
           <span key={i} className="flex items-center gap-1 whitespace-nowrap">
             {i > 0 && <ChevronRight className="size-3.5" />}
-            {c.to ? <button onClick={() => go(c.to!)} className="hover:text-brown hover:underline">{c.label}</button> : <span className={i === cr.length - 1 ? 'text-brown' : ''}>{c.label}</span>}
+            {c.to ? <Btn variant="ghost" size="sm" onClick={() => go(c.to!)} className="inline h-auto p-0 hover:text-brown hover:underline font-bold text-[13px]">{c.label}</Btn> : <span className={i === cr.length - 1 ? 'text-brown' : ''}>{c.label}</span>}
           </span>
         ))}
       </nav>
       <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 md:flex-none">
         <GlobalSearch />
         <div className="relative">
-          <button onClick={() => { setBell(!bell); setMenu(false) }} aria-label={`Thông báo (${total})`} className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper hover:border-brown md:size-9">
+          <IconBtn variant="ghost" onClick={() => { setBell(!bell); setMenu(false) }} aria-label={`Thông báo (${total})`} className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper hover:border-brown md:size-9">
             <Bell className="size-[18px]" />
             {total > 0 && <span className="absolute -right-1 -top-1 grid min-w-[18px] place-items-center rounded-full bg-coral px-1 text-[10px] font-extrabold text-white">{total}</span>}
-          </button>
+          </IconBtn>
           {bell && (
             <div className="absolute right-0 top-11 z-50 w-72 rounded-xl border border-brown/40 bg-paper p-2 shadow-lg">
               <p className="px-2 py-1 text-xs font-extrabold uppercase tracking-wide text-brown-soft">Cần xử lý</p>
-              {notes.map((n) => <button key={n.to} onClick={() => { go(n.to); setBell(false) }} className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold hover:bg-butter/40">{n.icon}{n.text}</button>)}
+              {notes.map((n) => <Btn variant="ghost" size="sm" key={n.to} onClick={() => { go(n.to); setBell(false) }} className="flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold hover:bg-butter/40">{n.icon}{n.text}</Btn>)}
             </div>
           )}
         </div>
-        <button onClick={() => go('/admin/dashboard')} className="hidden" aria-hidden />
-        <button onClick={() => login('user')} className="hidden h-9 shrink-0 items-center gap-1.5 rounded-xl border border-line bg-paper px-3 text-[13px] font-bold hover:border-brown sm:inline-flex">
+        <Btn variant="secondary" size="sm" onClick={() => login('user')} className="hidden h-9 shrink-0 items-center gap-1.5 rounded-xl border border-line bg-paper px-3 text-[13px] font-bold hover:border-brown sm:inline-flex">
           Về giao diện User
-        </button>
+        </Btn>
         <div className="relative">
-          <button onClick={() => { setMenu(!menu); setBell(false) }} aria-label="Menu quản trị viên" className="grid size-11 shrink-0 place-items-center rounded-full border border-brown bg-ink font-display text-sm font-bold text-butter md:size-9">AD</button>
+          <IconBtn variant="ghost" onClick={() => { setMenu(!menu); setBell(false) }} aria-label="Menu quản trị viên" className="grid size-11 shrink-0 place-items-center rounded-full border border-brown bg-ink font-display text-sm font-bold text-butter md:size-9">AD</IconBtn>
           {menu && (
             <div className="absolute right-0 top-11 z-50 w-56 rounded-xl border border-brown/40 bg-paper p-2 shadow-lg">
               <div className="border-b border-line px-2 pb-2"><p className="text-sm font-extrabold">Quản trị viên</p><p className="text-xs text-brown-soft">admin@happypaw.vn</p></div>
-              <button onClick={() => { login('user'); setMenu(false) }} className="mt-1 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold hover:bg-butter/40 sm:hidden"><PawPrint className="size-4" />Về giao diện User</button>
-              <button onClick={() => { logout(); setMenu(false) }} className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold text-coral hover:bg-coral-soft"><LogOut className="size-4" />Đăng xuất</button>
+              <Btn variant="ghost" size="sm" onClick={() => { login('user'); setMenu(false) }} className="mt-1 flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold hover:bg-butter/40 sm:hidden"><PawPrint className="size-4" />Về giao diện User</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => { logout(); setMenu(false) }} className="flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold text-coral hover:bg-coral-soft"><LogOut className="size-4" />Đăng xuất</Btn>
             </div>
           )}
         </div>
@@ -301,7 +300,7 @@ export default function AdminApp({ path }: { path: string }) {
           <div className="absolute inset-0 bg-brown/50" onClick={() => setDrawer(false)} />
           <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] animate-[rise_.2s_ease-out]">
             <Sidebar collapsed={false} drawer onNav={() => setDrawer(false)} />
-            <button onClick={() => setDrawer(false)} aria-label="Đóng menu" className="absolute right-2 top-1.5 grid size-11 place-items-center rounded-lg text-cream hover:bg-white/10"><X className="size-5" /></button>
+            <IconBtn variant="ghost" onClick={() => setDrawer(false)} aria-label="Đóng menu" className="absolute right-2 top-1.5 grid size-11 place-items-center rounded-lg text-cream hover:bg-white/10"><X className="size-5" /></IconBtn>
           </div>
         </div>
       )}

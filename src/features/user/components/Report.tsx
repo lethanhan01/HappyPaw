@@ -7,6 +7,7 @@ import { DISTRICTS, DISTRICT_XY, USERS } from '@/constants'
 import type { Case } from '@/types'
 import {
   Btn,
+  IconBtn,
   Card,
   Check2,
   Chip,
@@ -39,13 +40,13 @@ export function ReportChooser() {
         <p className="mb-8 mt-2 text-center text-brown-soft">Chọn một lựa chọn, chúng mình sẽ hướng dẫn từng bước.</p>
         <div className="grid gap-5 md:grid-cols-3">
           {opts.map((o) => (
-            <button key={o.to} onClick={() => go(o.to)} className={cx('group flex flex-col items-center rounded-[32px] border-2 border-brown p-6 text-center shadow-soft transition hover:-translate-y-1.5 hover:shadow-pop', o.tone)}>
+            <Card key={o.to} hover onClick={() => go(o.to)} className={cx('group flex flex-col items-center !rounded-[32px] border-2 border-brown p-6 text-center shadow-soft transition hover:-translate-y-1.5 hover:shadow-pop cursor-pointer', o.tone)}>
               <div className="transition group-hover:scale-105">{o.ill}</div>
               <span className="mt-3 text-2xl">{o.dot}</span>
               <h2 className="font-display text-2xl font-extrabold leading-tight">{o.title}</h2>
               <p className="mt-2 text-sm font-semibold text-brown-soft">{o.sub}</p>
               <span className={cx('mt-5 inline-flex items-center gap-2 rounded-full border-2 border-brown px-5 py-2 font-extrabold', o.urgent ? 'bg-coral text-white' : 'bg-paper')}>Bắt đầu <ArrowRight className="size-4" /></span>
-            </button>
+            </Card>
           ))}
         </div>
       </div>
@@ -84,7 +85,7 @@ function Wizard({ steps, step, setStep, title, children, canNext, onSubmit, subm
   return (
     <UserShell>
       <div className="mx-auto max-w-4xl">
-        <button onClick={back} className="mb-2 inline-flex items-center gap-1 text-sm font-extrabold text-brown-soft hover:text-brown"><ArrowLeft className="size-4" />Quay lại</button>
+        <Btn variant="ghost" size="sm" onClick={back} icon={<ArrowLeft className="size-4" />} className="!p-0 !h-auto !border-0 mb-2 inline-flex items-center gap-1 text-sm font-extrabold text-brown-soft hover:text-brown">Quay lại</Btn>
         <h1 className={cx('mb-4 font-display text-3xl font-extrabold md:text-4xl', !danger && 'bubble')}>{title}</h1>
         <div className="md:hidden" aria-label={`Bước ${step + 1}/${steps.length}`}>
           <div className="mb-1.5 flex items-center justify-between text-sm font-extrabold"><span>Bước {step + 1}/{steps.length}</span><span className="text-brown-soft">{steps[step]}</span></div>
@@ -113,9 +114,9 @@ function Species({ v, set }: { v: string; set: (s: any) => void }) {
   return (
     <div className="grid grid-cols-3 gap-3">
       {(['Chó', 'Mèo', 'Khác'] as const).map((s) => (
-        <button key={s} type="button" onClick={() => set(s)} aria-pressed={v === s} className={cx('flex flex-col items-center gap-1 rounded-3xl border-2 p-3 font-extrabold transition', v === s ? 'border-brown bg-butter shadow-[0_4px_0_var(--color-brown)]' : 'border-line bg-white hover:border-brown')}>
+        <Btn key={s} type="button" variant="ghost" size="md" full onClick={() => set(s)} aria-pressed={v === s} className={cx('!flex !h-auto !flex-col !items-center !gap-1 !rounded-3xl !border-2 !p-3 font-extrabold transition', v === s ? '!border-brown !bg-butter shadow-[0_4px_0_var(--color-brown)]' : '!border-line !bg-white hover:!border-brown')}>
           {s === 'Chó' ? <DogIllo className="size-16" /> : s === 'Mèo' ? <CatIllo className="size-16" /> : <PawPrint className="size-12" />}{s}
-        </button>
+        </Btn>
       ))}
     </div>
   )
@@ -140,7 +141,7 @@ function Done({ c, kind }: { c: Case; kind: 'lost' | 'found' | 'rescue' }) {
           {kind === 'lost' && <Btn className="flex-1" variant="secondary" onClick={() => go(`/case/${c.id}/flyer`)} icon={<FileImage className="size-5" />}>Tạo tờ rơi</Btn>}
           <Btn className="flex-1" variant="secondary" onClick={() => { toggleFollow(c.id); toast(following.includes(c.id) ? 'Đã bỏ theo dõi' : 'Đang theo dõi case này') }} icon={<Bell className="size-5" />}>{following.includes(c.id) ? 'Đang theo dõi' : 'Theo dõi case'}</Btn>
         </div>
-        <button className="text-sm font-extrabold underline underline-offset-4" onClick={() => go(`/case/${c.id}`)}>Xem trang case</button>
+        <Btn variant="ghost" size="sm" className="!p-0 !h-auto !border-0 text-sm font-extrabold underline underline-offset-4" onClick={() => go(`/case/${c.id}`)}>Xem trang case</Btn>
         {kind === 'lost' && (
           <div className="w-full rounded-3xl border-2 border-plum bg-plum-soft p-4 text-left">
             <p className="font-display text-lg font-extrabold">Smart Match đang quét…</p>
@@ -183,7 +184,7 @@ export function LostWizard() {
         <div className="space-y-5">
           <Field label="Loại thú cưng"><Species v={d.species} set={p('species')} /></Field>
           <Field label="Ảnh của bé" helper="Tải lên 1–5 ảnh. Bấm vào ảnh để chọn làm ảnh đại diện tờ rơi."><UploadBox label="Kéo thả ảnh vào đây" max={5} files={d.photos} onChange={p('photos')} /></Field>
-          {d.photos.length > 1 && <div className="flex gap-2">{d.photos.map((f, i) => <button key={f} onClick={() => p('avatar')(i)} className={cx('relative size-16 overflow-hidden rounded-2xl border-2', d.avatar === i ? 'border-brown ring-4 ring-butter' : 'border-line')} aria-label={`Chọn ảnh ${i + 1} làm ảnh tờ rơi`}><img src={f} alt="" className="size-full object-cover" />{d.avatar === i && <Check className="absolute right-1 top-1 size-4 rounded-full bg-butter p-0.5" />}</button>)}</div>}
+          {d.photos.length > 1 && <div className="flex gap-2">{d.photos.map((f, i) => <IconBtn key={f} label={`Chọn ảnh ${i + 1} làm ảnh tờ rơi`} variant="ghost" size="md" onClick={() => p('avatar')(i)} className={cx('relative !size-16 overflow-hidden !rounded-2xl border-2', d.avatar === i ? '!border-brown ring-4 ring-butter' : '!border-line')}><img src={f} alt="" className="size-full object-cover" />{d.avatar === i && <Check className="absolute right-1 top-1 size-4 rounded-full bg-butter p-0.5" />}</IconBtn>)}</div>}
           <Field label="Video ngắn (tuỳ chọn)"><UploadBox label="Tải video" max={1} video files={d.videos} onChange={p('videos')} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Ngày mất tích"><Input type="date" value={d.date} onChange={(e) => p('date')(e.target.value)} /></Field>
@@ -240,9 +241,9 @@ export function FoundWizard() {
       {step === 2 && (
         <div className="space-y-6">
           <div className="space-y-3">{conds.map(([v, i, t, s]) => (
-            <button key={v} onClick={() => p('cond')(v)} aria-pressed={d.cond === v} className={cx('flex w-full items-start gap-3 rounded-3xl border-2 p-4 text-left transition', d.cond === v ? 'border-brown bg-butter/70 shadow-[0_4px_0_var(--color-brown)]' : 'border-line bg-white hover:border-brown')}>
+            <Btn key={v} variant="ghost" size="md" full onClick={() => p('cond')(v)} aria-pressed={d.cond === v} className={cx('!flex !h-auto w-full !items-start !gap-3 !rounded-3xl !border-2 !p-4 text-left transition', d.cond === v ? '!border-brown !bg-butter/70 shadow-[0_4px_0_var(--color-brown)]' : '!border-line !bg-white hover:!border-brown')}>
               <span className="text-2xl">{i}</span><span><span className="block font-display text-lg font-extrabold">{t}</span><span className="text-sm font-semibold text-brown-soft">{s}</span></span>
-            </button>))}</div>
+            </Btn>))}</div>
           {d.cond === 'hurt' && <Note tone="coral" icon={<Siren className="size-5 shrink-0" />}>Báo cáo này sẽ được đưa lên bản đồ như một ca cứu hộ khẩn cấp.</Note>}
           <Field label="Bé đang ở đâu?"><div className="grid grid-cols-2 gap-2">{wheres.map(([v, i, t]) => <Chip key={v} active={d.where === v} onClick={() => p('where')(v)}>{i} {t}</Chip>)}</div></Field>
         </div>
@@ -282,7 +283,7 @@ export function RescueForm() {
           <div className="flex items-start gap-3"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-coral text-white"><Siren className="size-7" /></span>
             <div><h1 className="font-display text-3xl font-extrabold leading-tight text-ink">Đây là trường hợp khẩn cấp?</h1><p className="font-semibold">Chọn mức độ để chúng mình ưu tiên thông báo đúng người.</p></div></div>
           <div className="mt-4 grid gap-2 sm:grid-cols-3">{U.map(([v, t, s]) => (
-            <button key={v} onClick={() => setUrgent(v)} aria-pressed={urgent === v} className={cx('rounded-2xl border-2 p-3 text-left transition', urgent === v ? 'border-ink bg-ink text-white' : 'border-coral/40 bg-white hover:border-ink')}><span className="block font-extrabold">{t}</span><span className="text-xs font-semibold opacity-80">{s}</span></button>))}</div>
+            <Btn key={v} variant="ghost" size="md" full onClick={() => setUrgent(v)} aria-pressed={urgent === v} className={cx('!flex !h-auto !flex-col !items-start !rounded-2xl !border-2 !p-3 text-left transition', urgent === v ? '!border-ink !bg-ink !text-white' : '!border-coral/40 !bg-white hover:!border-ink')}><span className="block font-extrabold">{t}</span><span className="text-xs font-semibold opacity-80">{s}</span></Btn>))}</div>
           {urgent === 'critical' && <p className="mt-3 text-sm font-bold">Nếu bé đang gặp nguy hiểm ngay lúc này, hãy gọi phòng khám gần nhất trong khi gửi yêu cầu.</p>}
         </div>
         <Card className="space-y-5 p-5 md:p-7">

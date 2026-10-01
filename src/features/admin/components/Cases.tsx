@@ -5,7 +5,7 @@ import { useApp } from '@/store'
 import { SHELTERS, CLINICS, timeAgo, userById } from '@/constants'
 import type { Status } from '@/types'
 import CityMap from '@/features/map'
-import { Badge, PetPhoto, StatusBadge, Verified } from '@ui'
+import { Badge, Btn, PetPhoto, StatusBadge, Verified } from '@ui'
 import { useAdmin, toggleIn } from '../store/adminStore'
 import CaseTable from './CaseTable'
 import { ABtn, ASelect, FilterBar, KpiCard, KpiRow, Panel, SearchBox, SevChip, Title, UserCell, caseTimeline, typeLabel, useCases, useRisk, type RiskLevel } from './AdminCommon'
@@ -72,7 +72,7 @@ export function CaseDetail({ id }: { id: string }) {
   const cases = useCases()
   const { reports, flaggedCases, evidenceCases } = useAdmin()
   const c = getCase(id)
-  if (!c || !cases.find((x) => x.id === id)) return <Panel><p className="py-8 text-center font-bold">Không tìm thấy case {id}. <button className="underline" onClick={() => go('/admin/cases')}>Về danh sách</button></p></Panel>
+  if (!c || !cases.find((x) => x.id === id)) return <Panel><p className="py-8 text-center font-bold">Không tìm thấy case {id}. <Btn variant="ghost" size="sm" className="inline h-auto p-0 underline font-bold" onClick={() => go('/admin/cases')}>Về danh sách</Btn></p></Panel>
 
   const rel = reports.filter((r) => r.caseId === c.id)
   const shelter = SHELTERS.find((s) => s.id === c.shelterId)
@@ -152,7 +152,7 @@ export function CaseDetail({ id }: { id: string }) {
           <Panel title={`Report liên quan (${rel.length})`}>
             {rel.length === 0 ? <p className="text-sm text-brown-soft">Không có report.</p> : (
               <ul className="space-y-2">{rel.map((r) => (
-                <li key={r.id}><button onClick={() => go('/admin/reports')} className="w-full rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><span className="flex items-center justify-between gap-2"><b>{r.id} · {r.reason}</b><SevChip s={r.severity} /></span><span className="text-xs text-brown-soft">{r.created} · {r.status}</span></button></li>
+                <li key={r.id}><Btn variant="ghost" size="sm" onClick={() => go('/admin/reports')} className="flex h-auto w-full flex-col items-stretch rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><span className="flex items-center justify-between gap-2"><b>{r.id} · {r.reason}</b><SevChip s={r.severity} /></span><span className="text-xs text-brown-soft">{r.created} · {r.status}</span></Btn></li>
               ))}</ul>
             )}
           </Panel>

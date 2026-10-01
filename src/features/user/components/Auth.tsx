@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Eye, EyeOff, ShieldCheck, Loader2 } from 'lucide-react'
 import pawsImg from '@/assets/paws.png'
 import { useApp } from '@/store'
-import { BrandImage, Btn, Check2, Field, Input, DogIllo, CatIllo, Note } from '@/components/ui'
+import { BrandImage, Btn, IconBtn, Check2, Field, Input, DogIllo, CatIllo, Note } from '@ui'
 
 const Google = () => (
   <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
@@ -73,9 +73,17 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
           <h1 className="font-display text-4xl font-extrabold">{reg ? 'Tạo tài khoản' : 'Chào mừng trở lại'}</h1>
           <p className="mb-6 mt-1 text-brown-soft">{reg ? 'Chỉ mất một phút để tham gia cộng đồng.' : 'Đăng nhập để tiếp tục giúp các bé.'}</p>
 
-          <button onClick={oauth} disabled={busy} className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border-2 border-brown bg-white font-extrabold transition hover:bg-butter/50 disabled:opacity-60">
-            <Google />{reg ? 'Đăng ký với Google' : 'Tiếp tục với Google'}
-          </button>
+          <Btn
+            variant="secondary"
+            size="md"
+            full
+            onClick={oauth}
+            disabled={busy}
+            icon={<Google />}
+            className="!bg-white font-extrabold hover:!bg-butter/50"
+          >
+            {reg ? 'Đăng ký với Google' : 'Tiếp tục với Google'}
+          </Btn>
           <div className="my-5 flex items-center gap-3 text-xs font-bold text-brown-soft"><span className="h-px flex-1 bg-line" />hoặc dùng email<span className="h-px flex-1 bg-line" /></div>
 
           <form onSubmit={submit} className="space-y-4" noValidate>
@@ -84,7 +92,16 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
             <Field label="Mật khẩu" error={err.pw} helper={reg ? 'Ít nhất 6 ký tự.' : undefined} required>
               <div className="relative">
                 <Input type={show ? 'text' : 'password'} value={pw} onChange={(e) => setPw(e.target.value)} placeholder="••••••••" invalid={!!err.pw} className="pr-12" />
-                <button type="button" onClick={() => setShow(!show)} aria-label={show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'} className="absolute right-3 top-1/2 -translate-y-1/2 text-brown-soft">{show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}</button>
+                <IconBtn
+                  type="button"
+                  label={show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShow(!show)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-brown-soft"
+                >
+                  {show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                </IconBtn>
               </div>
             </Field>
             {reg && <div><Check2 on={agree} onChange={setAgree}>Tôi đồng ý với quy tắc cộng đồng và chính sách bảo mật.</Check2>{err.agree && <p className="mt-1 text-sm font-bold text-coral">{err.agree}</p>}</div>}
@@ -93,7 +110,14 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
 
           <p className="mt-5 text-center text-sm font-bold">
             {reg ? 'Đã có tài khoản? ' : 'Chưa có tài khoản? '}
-            <button className="underline underline-offset-4" onClick={() => go(reg ? '/login' : '/register')}>{reg ? 'Đăng nhập' : 'Đăng ký ngay'}</button>
+            <Btn
+              variant="ghost"
+              size="sm"
+              className="!p-0 !h-auto !border-0 inline underline underline-offset-4 font-bold"
+              onClick={() => go(reg ? '/login' : '/register')}
+            >
+              {reg ? 'Đăng nhập' : 'Đăng ký ngay'}
+            </Btn>
           </p>
 
           <div className="mt-6 space-y-2">

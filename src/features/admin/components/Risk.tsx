@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Circle, FileWarning, Hexagon, OctagonAlert, Sparkles, TriangleAlert, MapPin, Trash2, Undo2 } from 'lucide-react'
 import { useApp } from '@/store'
 import CityMap, { MapLegend, type Sel } from '@/features/map'
-import { Badge, Note, Segmented } from '@ui'
+import { Badge, Note, Segmented, Btn, IconBtn, Input } from '@ui'
 import { addRisk, centroid, removeRisk, useAdmin, type ARisk } from '../store/adminStore'
 import { ABtn, AInput, ASelect, Confirm, FormRow, KpiCard, KpiRow, Panel, Title } from './AdminCommon'
 
@@ -92,7 +92,7 @@ export default function RiskPage() {
               <Segmented value={mode} onChange={(m) => { setMode(m); reset() }} options={[{ v: 'circle', label: <span className="flex items-center gap-1 text-xs"><Circle className="size-3.5" />Bán kính</span> }, { v: 'polygon', label: <span className="flex items-center gap-1 text-xs"><Hexagon className="size-3.5" />Đa giác</span> }]} />
               {mode === 'circle' ? (
                 <FormRow label={`Bán kính: ${radius} đv (~${(radius / 62).toFixed(1)} km)`}>
-                  <input type="range" min={20} max={120} value={radius} onChange={(e) => setRadius(+e.target.value)} className="w-full accent-[#6b4128]" aria-label="Bán kính" />
+                  <Input type="range" min={20} max={120} value={radius} onChange={(e) => setRadius(+e.target.value)} className="w-full accent-brown" aria-label="Bán kính" />
                 </FormRow>
               ) : (
                 <div className="flex items-center justify-between rounded-xl bg-cream-2/70 px-3 py-2 text-sm font-bold"><span>{pts.length} điểm {pts.length < 3 && '(cần ít nhất 3)'}</span><ABtn s="xs" icon={<Undo2 />} disabled={!pts.length} onClick={() => setPts((p) => p.slice(0, -1))}>Hoàn tác</ABtn></div>
@@ -112,11 +112,11 @@ export default function RiskPage() {
               {risks.map((r) => (
                 <li key={r.id} className={`rounded-xl border-2 p-2.5 text-sm transition ${sel?.id === r.id ? 'border-brown bg-butter/30' : 'border-line'}`}>
                   <div className="flex items-start justify-between gap-2">
-                    <button className="min-w-0 text-left" onClick={() => { setSel({ kind: 'risk', id: r.id }); setFocus(r.id + Date.now()) }}>
+                    <Btn variant="ghost" size="sm" className="min-w-0 h-auto p-0 flex flex-col items-start text-left" onClick={() => { setSel({ kind: 'risk', id: r.id }); setFocus(r.id + Date.now()) }}>
                       <b className="block truncate">{r.title}</b>
                       <span className="text-xs text-brown-soft">{r.poly ? 'Đa giác' : `Bán kính ~${(r.r / 62).toFixed(1)} km`} · hết hạn {r.expires}</span>
-                    </button>
-                    <div className="flex shrink-0 items-center gap-1.5"><Badge tone={r.severity === 'Cao' ? 'coral' : r.severity === 'Trung bình' ? 'plum' : 'sky'}>{r.severity}</Badge><button onClick={() => setDel(r)} aria-label={`Xóa ${r.title}`} className="grid size-7 place-items-center rounded-lg text-coral hover:bg-coral-soft"><Trash2 className="size-4" /></button></div>
+                    </Btn>
+                    <div className="flex shrink-0 items-center gap-1.5"><Badge tone={r.severity === 'Cao' ? 'coral' : r.severity === 'Trung bình' ? 'plum' : 'sky'}>{r.severity}</Badge><IconBtn variant="ghost" size="sm" onClick={() => setDel(r)} aria-label={`Xóa ${r.title}`} className="size-7 text-coral hover:bg-coral-soft"><Trash2 className="size-4" /></IconBtn></div>
                   </div>
                 </li>
               ))}

@@ -2,28 +2,29 @@ import { Bookmark, Clock, MapPin, HandHeart, ChevronRight, Siren, CheckCircle2 }
 import { timeAgo } from '@/constants/time'
 import type { Case } from '@/types/case'
 import { useApp } from '@/store'
-import { Btn, MatchBadge, StatusBadge, UserAvatar, PetPhoto, Skeleton, cx, Badge } from '@/components/ui'
+import { Btn, IconBtn, MatchBadge, StatusBadge, UserAvatar, PetPhoto, Skeleton, cx, Badge } from '@/components/ui'
 
 export function SaveBtn({ id, className }: { id: string; className?: string }) {
   const { saved, toggleSave, toast } = useApp()
   const on = saved.includes(id)
   return (
-    <button
-      aria-label={on ? 'Bỏ lưu' : 'Lưu case'}
+    <IconBtn
+      label={on ? 'Bỏ lưu' : 'Lưu case'}
       aria-pressed={on}
+      size="sm"
       onClick={(e) => {
         e.stopPropagation()
         toggleSave(id)
         toast(on ? 'Đã bỏ lưu case' : 'Đã lưu case 🐾')
       }}
       className={cx(
-        'grid size-9 place-items-center rounded-full border-2 border-brown bg-paper transition hover:bg-butter',
-        on && 'bg-butter',
+        '!rounded-full !border-brown !bg-paper hover:!bg-butter',
+        on && '!bg-butter',
         className,
       )}
     >
       <Bookmark key={String(on)} className={cx('size-4', on && 'fill-brown animate-[heart_.4s_ease]')} />
-    </button>
+    </IconBtn>
   )
 }
 

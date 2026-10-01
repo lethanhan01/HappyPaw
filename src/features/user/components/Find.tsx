@@ -32,9 +32,10 @@ export function FindHub() {
     <UserShell>
       <PageHead title="Tìm & Cứu Pet" sub="Tìm thú cưng thất lạc, báo thấy hoặc nhận ca cứu hộ gần bạn." />
       <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <button
+        <Card
+          hover
           onClick={() => go('/ai-match')}
-          className="group relative overflow-hidden rounded-[28px] border-2 border-brown bg-plum-soft p-5 text-left shadow-soft transition hover:-translate-y-1 md:col-span-2"
+          className="group relative overflow-hidden rounded-[28px] border-2 border-brown !bg-plum-soft p-5 text-left shadow-soft transition hover:-translate-y-1 md:col-span-2 cursor-pointer"
         >
           <Sparkles className="absolute -right-3 -top-3 size-28 text-plum/20" />
           <Badge tone="plum" icon={<Sparkles className="size-3.5" />}>
@@ -48,7 +49,7 @@ export function FindHub() {
             <ScanSearch className="size-4" />
             Thử AI Matching
           </span>
-        </button>
+        </Card>
         <div className="grid gap-3">
           <Btn size="lg" full onClick={() => go('/report/lost')} icon={<Search className="size-5" />}>
             Tìm pet của tôi
@@ -159,13 +160,15 @@ export function AiMatch() {
   return (
     <UserShell>
       <div className="mx-auto max-w-4xl">
-        <button
+        <Btn
+          variant="ghost"
+          size="sm"
           onClick={() => (phase === 'upload' ? go('/find') : (setPhase('upload'), setPct(0)))}
-          className="mb-2 inline-flex items-center gap-1 text-sm font-extrabold text-brown-soft"
+          icon={<ArrowLeft className="size-4" />}
+          className="!p-0 !h-auto !border-0 mb-2 inline-flex items-center gap-1 text-sm font-extrabold text-brown-soft"
         >
-          <ArrowLeft className="size-4" />
           Quay lại
-        </button>
+        </Btn>
         <h1 className="bubble mb-1 font-display text-4xl font-extrabold">So khớp bằng AI</h1>
         <p className="mb-5 font-semibold text-brown-soft">
           Kết quả chỉ mang tính gợi ý. Hãy luôn xác nhận trực tiếp với người đăng.
@@ -188,8 +191,11 @@ export function AiMatch() {
               Bắt đầu phân tích
             </Btn>
             {!files.length && (
-              <button
-                className="w-full text-center text-sm font-extrabold underline underline-offset-4"
+              <Btn
+                variant="ghost"
+                size="sm"
+                full
+                className="!p-0 !h-auto !border-0 w-full text-center text-sm font-extrabold underline underline-offset-4"
                 onClick={() => {
                   setFiles([
                     'https://images.unsplash.com/photo-1558788353-f76d92427f16?w=500&h=500&fit=crop&auto=format&q=75',
@@ -197,7 +203,7 @@ export function AiMatch() {
                 }}
               >
                 Dùng ảnh mẫu (Golden Retriever)
-              </button>
+              </Btn>
             )}
           </Card>
         )}

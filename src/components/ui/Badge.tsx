@@ -6,13 +6,13 @@ import { STATUS_META } from '@/constants/status'
 import type { Status, Case } from '@/types/case'
 
 const tones: Record<string, string> = {
-  coral: 'bg-coral-soft text-[#8f2a1c] border-coral/40',
-  orange: 'bg-orange-soft text-[#8a4a0c] border-orange/40',
+  coral: 'bg-coral-soft text-coral-dark border-coral/40',
+  orange: 'bg-orange-soft text-orange-dark border-orange/40',
   butter: 'bg-butter text-brown border-butter-2',
-  sage: 'bg-sage-soft text-[#2f5a22] border-sage',
-  sky: 'bg-sky-soft text-[#1f5873] border-sky',
-  pink: 'bg-pink text-[#7d2c3f] border-pink-2/40',
-  plum: 'bg-plum-soft text-[#573578] border-plum/40',
+  sage: 'bg-sage-soft text-sage-dark border-sage',
+  sky: 'bg-sky-soft text-sky-dark border-sky',
+  pink: 'bg-pink text-pink-dark border-pink-2/40',
+  plum: 'bg-plum-soft text-plum-dark border-plum/40',
   ink: 'bg-ink text-white border-ink',
   brown: 'bg-cream-2 text-brown border-line',
 }

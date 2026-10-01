@@ -18,10 +18,10 @@ export function EmergencySosModal({ open, onClose, onReportClick }: EmergencySos
         <div className="flex items-start gap-3 rounded-2xl border-2 border-coral bg-coral-soft p-4">
           <AlertTriangle className="size-6 text-coral shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-display text-base font-extrabold text-[#8f2a1c]">
+            <h4 className="font-display text-base font-extrabold text-coral-dark">
               Nếu gặp động vật bị tai nạn nguy kịch ngoài đường:
             </h4>
-            <p className="mt-1 text-sm font-semibold text-[#8f2a1c] leading-snug">
+            <p className="mt-1 text-sm font-semibold text-coral-dark leading-snug">
               Hãy giữ an toàn cho bản thân trước, sau đó liên hệ ngay phòng khám cấp cứu gần nhất hoặc bấm nút báo ca để đội cứu hộ tiếp cận.
             </p>
           </div>
@@ -123,10 +123,13 @@ export function FloatingSosButton({ onClick }: { onClick: () => void }) {
       {/* Pulse wave ring */}
       <span className="absolute inset-0 size-full rounded-full bg-coral animate-ping opacity-35 pointer-events-none" />
 
-      <button
+      <Btn
+        variant="danger"
+        size="lg"
+        pill
         onClick={onClick}
         aria-label="Cứu hộ khẩn cấp 24/7"
-        className="relative flex items-center gap-2.5 rounded-full border-[2.5px] border-brown bg-coral px-5 py-3.5 font-extrabold text-white shadow-[0_5px_0_var(--color-brown)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_var(--color-brown)] active:translate-y-1 active:shadow-none"
+        className="relative !h-auto !py-3.5 !px-5 gap-2.5 shadow-[0_5px_0_var(--color-brown)] hover:shadow-[0_8px_0_var(--color-brown)]"
       >
         <Siren className="size-6 animate-bounce-soft" />
         <span className="hidden sm:inline font-display text-base tracking-wide">
@@ -135,7 +138,7 @@ export function FloatingSosButton({ onClick }: { onClick: () => void }) {
         <span className="sm:hidden font-display text-sm tracking-wide">
           SOS
         </span>
-      </button>
+      </Btn>
     </div>
   )
 }

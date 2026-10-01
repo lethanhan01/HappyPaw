@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, Sparkles, UserPlus } from 'lucide-react'
 import { useApp } from '@/store'
-import { Btn, Badge } from '@/components/ui'
+import { Btn, Badge } from '@ui'
 import LandingNav from './components/Nav'
 import HeroSection from './components/Hero'
 import ImpactStats from './components/Stats'

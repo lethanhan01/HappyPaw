@@ -3,7 +3,7 @@ import { AlertCircle, AlertTriangle, ArrowDown, ArrowUp, ChevronsUpDown, Info, M
 import { useApp } from '@/store'
 import type { Case, Report } from '@/types'
 import { userById } from '@/constants'
-import { Avatar, Badge, Modal } from '@ui'
+import { Avatar, Badge, Modal, Btn, IconBtn, Input, Select, Textarea } from '@ui'
 import { cx } from '@/lib'
 import { useAdmin } from '../store/adminStore'
 
@@ -26,7 +26,7 @@ export function Title({ title, sub, right, back }: { title: string; sub?: string
   return (
     <div className="mb-3 flex flex-wrap items-end md:mb-4 justify-between gap-3">
       <div className="min-w-0">
-        {back && <button onClick={back} className="mb-0.5 text-xs font-extrabold text-brown-soft hover:text-brown">← Quay lại</button>}
+        {back && <Btn variant="ghost" size="sm" onClick={back} className="mb-0.5 inline h-auto p-0 text-xs font-extrabold text-brown-soft hover:text-brown">← Quay lại</Btn>}
         <h1 className="font-display text-xl font-bold leading-tight md:text-2xl">{title}</h1>
         {sub && <p className="text-sm text-brown-soft">{sub}</p>}
       </div>
@@ -40,27 +40,41 @@ const bv: Record<V, string> = {
   dark: 'bg-ink text-white border-ink hover:bg-brown',
   primary: 'bg-butter text-brown border-brown hover:bg-butter-2',
   outline: 'bg-paper text-brown border-line hover:border-brown',
-  danger: 'bg-coral text-white border-coral hover:bg-[#bd3f2f]',
+  danger: 'bg-coral text-white border-coral hover:bg-coral-hover',
   ghost: 'bg-transparent text-brown border-transparent hover:bg-brown/10',
   soft: 'bg-cream-2 text-brown border-transparent hover:bg-peach',
-  ok: 'bg-sage-2 text-white border-sage-2 hover:bg-[#3f6a31]',
+  ok: 'bg-sage-2 text-white border-sage-2 hover:bg-sage-hover',
 }
 export function ABtn({ v = 'outline', s = 'md', icon, className, children, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { v?: V; s?: 'xs' | 'sm' | 'md'; icon?: ReactNode }) {
+  const bSize = s === 'md' ? 'md' : 'sm'
+  const bVar = v === 'ok' ? 'ghost' : v === 'primary' ? 'primary' : v === 'dark' ? 'dark' : v === 'danger' ? 'danger' : v === 'soft' ? 'soft' : v === 'ghost' ? 'ghost' : 'outline'
   return (
-    <button {...p} className={cx('inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border-[1.5px] font-extrabold transition disabled:opacity-45 [&_svg]:size-4',
-      s === 'xs' && 'h-11 px-2.5 text-xs md:h-7 md:px-2 [&_svg]:size-3.5', s === 'sm' && 'h-11 px-3 text-[13px] md:h-8', s === 'md' && 'h-11 px-3.5 text-sm md:h-9', bv[v], className)}>
-      {icon}{children}
-    </button>
+    <Btn
+      variant={bVar}
+      size={bSize}
+      icon={icon}
+      {...p}
+      className={cx(
+        'shrink-0 border-[1.5px]',
+        s === 'xs' && 'h-11 px-2.5 text-xs md:h-7 md:px-2 [&_svg]:size-3.5',
+        s === 'sm' && 'h-11 px-3 text-[13px] md:h-8',
+        s === 'md' && 'h-11 px-3.5 text-sm md:h-9',
+        bv[v],
+        className,
+      )}
+    >
+      {children}
+    </Btn>
   )
 }
 
 const inp = 'h-11 w-full md:h-9 rounded-xl border-[1.5px] border-line bg-white px-3 text-sm font-semibold text-brown placeholder:font-medium placeholder:text-brown/45 focus:border-brown focus:outline-none focus:ring-2 focus:ring-butter'
-export const AInput = ({ className, ...p }: InputHTMLAttributes<HTMLInputElement>) => <input {...p} className={cx(inp, className)} />
-export const ASelect = ({ className, children, ...p }: SelectHTMLAttributes<HTMLSelectElement>) => (
-  <select {...p} className={cx(inp, 'cursor-pointer pr-2', className)}>{children}</select>
+export const AInput = ({ className, ...p }: Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>) => <Input size="sm" {...p} className={cx(inp, className)} />
+export const ASelect = ({ className, children, ...p }: Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'>) => (
+  <Select size="sm" {...p} className={cx(inp, 'cursor-pointer pr-2', className)}>{children}</Select>
 )
 export const ATextarea = ({ className, ...p }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-  <textarea {...p} className={cx(inp, 'h-auto min-h-20 py-2', className)} />
+  <Textarea size="sm" {...p} className={cx(inp, 'h-auto min-h-20 py-2', className)} />
 )
 export function FormRow({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
   return (
@@ -120,10 +134,10 @@ export function DataTable<T>({ cols, rows, rowKey, onRow, empty = 'Không có d�
               {cols.map((c) => (
                 <th key={c.key} className={cx("whitespace-nowrap px-1.5 py-2 font-bold", c.className)} aria-sort={sort?.key === c.key ? (sort.dir === 1 ? 'ascending' : 'descending') : undefined}>
                   {c.sort ? (
-                    <button onClick={() => setSort((s) => (s?.key === c.key ? (s.dir === 1 ? { key: c.key, dir: -1 } : null) : { key: c.key, dir: 1 }))} className="inline-flex items-center gap-1 uppercase hover:text-brown">
+                    <Btn variant="ghost" size="sm" onClick={() => setSort((s) => (s?.key === c.key ? (s.dir === 1 ? { key: c.key, dir: -1 } : null) : { key: c.key, dir: 1 }))} className="inline-flex h-auto p-0 items-center gap-1 uppercase hover:text-brown font-bold text-[11px]">
                       {c.label}
                       {sort?.key === c.key ? (sort.dir === 1 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />) : <ChevronsUpDown className="size-3 opacity-40" />}
-                    </button>
+                    </Btn>
                   ) : c.label}
                 </th>
               ))}
@@ -188,15 +202,15 @@ export function ActionMenu({ items, label = 'Hành động' }: { items: MenuItem
   }
   return (
     <>
-      <button ref={btn} onClick={openMenu} aria-label={label} aria-haspopup="menu" className="grid size-11 place-items-center rounded-xl border border-line bg-paper hover:border-brown md:size-8"><MoreVertical className="size-4" /></button>
+      <IconBtn variant="ghost" ref={btn} onClick={openMenu} aria-label={label} aria-haspopup="menu" className="grid size-11 place-items-center rounded-xl border border-line bg-paper hover:border-brown md:size-8"><MoreVertical className="size-4" /></IconBtn>
       {pos && (
         <div className="fixed inset-0 z-[90]" onClick={(e) => { e.stopPropagation(); setPos(null) }}>
           <div role="menu" style={{ left: pos.x, top: pos.y, transform: pos.up ? 'translateY(-100%)' : undefined }} className="absolute w-44 rounded-xl border border-brown/40 bg-paper p-1 shadow-lg">
             {items.map((it) => (
-              <button key={it.label} role="menuitem" disabled={it.disabled} onClick={(e) => { e.stopPropagation(); setPos(null); it.onClick() }}
-                className={cx('flex min-h-11 w-full items-center gap-2 rounded-lg px-2.5 text-left text-sm font-bold hover:bg-butter/40 disabled:opacity-40 disabled:hover:bg-transparent md:min-h-9 [&_svg]:size-4', it.danger && 'text-coral')}>
+              <Btn key={it.label} variant="ghost" size="sm" role="menuitem" disabled={it.disabled} onClick={(e) => { e.stopPropagation(); setPos(null); it.onClick() }}
+                className={cx('flex min-h-11 w-full items-center justify-start gap-2 rounded-lg px-2.5 text-left text-sm font-bold hover:bg-butter/40 disabled:opacity-40 disabled:hover:bg-transparent md:min-h-9 [&_svg]:size-4', it.danger && 'text-coral')}>
                 {it.icon}{it.label}
-              </button>
+              </Btn>
             ))}
           </div>
         </div>
@@ -233,7 +247,7 @@ export function Drawer({ open, onClose, title, children }: { open: boolean; onCl
       <aside onClick={(e) => e.stopPropagation()} className="flex h-full w-full max-w-md animate-[rise_.2s_ease-out] flex-col overflow-y-auto border-l-2 border-brown bg-paper p-5">
         <div className="mb-3 flex items-start justify-between gap-3">
           <h3 className="font-display text-xl font-extrabold">{title}</h3>
-          <button onClick={onClose} aria-label="Đóng" className="grid size-8 place-items-center rounded-lg hover:bg-brown/10"><X className="size-5" /></button>
+          <IconBtn variant="ghost" onClick={onClose} aria-label="Đóng" className="grid size-8 place-items-center rounded-lg hover:bg-brown/10"><X className="size-5" /></IconBtn>
         </div>
         {children}
       </aside>
@@ -270,10 +284,10 @@ export function UserCell({ id, sub }: { id?: string; sub?: string }) {
   const u = userById(id)
   if (!u) return <span className="text-brown-soft">Hệ thống</span>
   return (
-    <button onClick={(e) => { e.stopPropagation(); go('/admin/users/' + u.id) }} className="flex items-center gap-2 text-left hover:underline">
+    <Btn variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); go('/admin/users/' + u.id) }} className="flex h-auto p-0 items-center gap-2 text-left hover:underline">
       <Avatar name={u.name} tone={u.avatar} size={26} />
       <span className="min-w-0"><span className="block truncate font-bold leading-tight">{u.name}</span>{sub && <span className="block text-xs text-brown-soft">{sub}</span>}</span>
-    </button>
+    </Btn>
   )
 }
 

@@ -4,7 +4,7 @@ import { ChevronRight, CheckCircle2, FileWarning, MapPinned, PawPrint, Siren, Tr
 import { useApp } from '@/store'
 import { CLINICS, SHELTERS } from '@/constants'
 import CityMap, { MapLegend, type Sel } from '@/features/map'
-import { PetPhoto } from '@ui'
+import { PetPhoto, Btn } from '@ui'
 import { useAdmin } from '../store/adminStore'
 import { ABtn, KpiCard, Panel, Title, useCases } from './AdminCommon'
 import CaseTable from './CaseTable'
@@ -82,11 +82,11 @@ export default function Dashboard() {
         <ul className="grid gap-1 p-2 sm:grid-cols-2 xl:grid-cols-4">
           {alerts.map((a) => (
             <li key={a.t}>
-              <button onClick={() => go(a.to)} className="flex min-h-11 w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm hover:bg-paper">
+              <Btn variant="ghost" size="sm" onClick={() => go(a.to)} className="flex min-h-11 w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm hover:bg-paper">
                 <span aria-hidden>{a.dot}</span>
                 <span className="min-w-0 flex-1 font-semibold leading-tight"><b className="font-display text-lg">{a.n}</b> {a.t}</span>
                 <ChevronRight className="size-4 shrink-0 text-brown-soft" />
-              </button>
+              </Btn>
             </li>
           ))}
         </ul>
@@ -120,11 +120,11 @@ export default function Dashboard() {
           <ul className="divide-y divide-line/70">
             {[...risks].sort((a, b) => b.reports - a.reports).slice(0, 5).map((r) => (
               <li key={r.id}>
-                <button onClick={() => go('/admin/risk')} className="flex min-h-11 w-full items-center gap-2 py-1.5 text-left text-[13px]">
+                <Btn variant="ghost" size="sm" onClick={() => go('/admin/risk')} className="flex min-h-11 w-full items-center justify-start gap-2 py-1.5 text-left text-[13px]">
                   <span className={`size-2 shrink-0 rounded-full ${r.severity === 'Cao' ? 'bg-coral' : r.severity === 'Trung bình' ? 'bg-orange' : 'bg-plum'}`} />
                   <span className="min-w-0 flex-1"><b className="block truncate">{r.title}</b><span className="text-xs text-brown-soft">{r.severity} · {r.reports} report</span></span>
                   <ChevronRight className="size-4 text-brown-soft" />
-                </button>
+                </Btn>
               </li>
             ))}
           </ul>

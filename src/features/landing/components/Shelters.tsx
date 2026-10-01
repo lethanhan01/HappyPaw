@@ -93,12 +93,14 @@ export default function SheltersPartners() {
                         <Phone className="size-3.5" />
                         {s.phone}
                       </a>
-                      <button
+                      <Btn
+                        variant="ghost"
+                        size="sm"
                         onClick={() => go('/shelters')}
-                        className="text-xs font-extrabold text-brown-soft hover:text-brown"
+                        className="!p-0 !h-auto !border-0 text-xs font-extrabold text-brown-soft hover:text-brown"
                       >
                         Chi tiết →
-                      </button>
+                      </Btn>
                     </div>
                   </div>
                 </div>
@@ -142,7 +144,7 @@ export default function SheltersPartners() {
 
                       <div className="mt-3 flex flex-wrap gap-1">
                         {c.services.slice(0, 3).map((srv, i) => (
-                          <span key={i} className="rounded-md bg-sky-soft px-2 py-0.5 text-[11px] font-extrabold text-[#1f5873]">
+                          <span key={i} className="rounded-md bg-sky-soft px-2 py-0.5 text-[11px] font-extrabold text-sky-dark">
                             {srv}
                           </span>
                         ))}

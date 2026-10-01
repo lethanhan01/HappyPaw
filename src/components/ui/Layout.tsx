@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import { cx } from '@/lib/cn'
+import { Btn } from './Button'
 
 /* ---------- Stepper ---------- */
 export function Stepper({ steps, current }: { steps: string[]; current: number }) {
@@ -58,9 +59,14 @@ export function PageHead({
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
         {back && (
-          <button onClick={back} className="mb-1 text-sm font-extrabold text-brown-soft hover:text-brown">
+          <Btn
+            variant="ghost"
+            size="sm"
+            onClick={back}
+            className="mb-1 !h-auto !px-0 !py-0 text-sm font-extrabold text-brown-soft hover:text-brown"
+          >
             ← Quay lại
-          </button>
+          </Btn>
         )}
         <h1 className="font-display text-3xl font-extrabold leading-tight md:text-4xl">{title}</h1>
         {sub && <p className="mt-0.5 text-brown-soft">{sub}</p>}

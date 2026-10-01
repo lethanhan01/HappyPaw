@@ -5,14 +5,14 @@ const STATS = [
     value: '1.240+',
     label: 'Bé đã đoàn tụ an toàn',
     desc: 'Được gia đình đón về hoặc tìm được chủ nhân mới yêu thương',
-    tone: 'bg-sage-soft text-[#2f5a22] border-sage',
+    tone: 'bg-sage-soft text-sage-dark border-sage',
     icon: HeartHandshake,
   },
   {
     value: '42+',
     label: 'Mái ấm & Phòng khám',
     desc: 'Hệ thống đối tác uy tín có phòng khám thú y 24/7 trực đêm',
-    tone: 'bg-sky-soft text-[#1f5873] border-sky',
+    tone: 'bg-sky-soft text-sky-dark border-sky',
     icon: Building2,
   },
   {
@@ -26,7 +26,7 @@ const STATS = [
     value: '< 15 phút',
     label: 'Tốc độ phản hồi trung bình',
     desc: 'Các ca nguy kịch được tình nguyện viên gần nhất tiếp cận ngay',
-    tone: 'bg-coral-soft text-[#8f2a1c] border-coral/40',
+    tone: 'bg-coral-soft text-coral-dark border-coral/40',
     icon: Zap,
   },
 ]

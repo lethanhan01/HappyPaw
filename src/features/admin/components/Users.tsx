@@ -3,7 +3,7 @@ import { PawPrint, Users, Ban, BadgeCheck, CheckCircle2, Eye, ShieldAlert, Shiel
 import { parsePath } from '@/lib'
 import { useApp } from '@/store'
 import type { User } from '@/types'
-import { Avatar, Badge, StatusBadge, Verified } from '@ui'
+import { Avatar, Badge, StatusBadge, Verified, Btn } from '@ui'
 import { setAdmin, setUserStatus, setUserVerified, useAdmin } from '../store/adminStore'
 import { ABtn, ASelect, Col, DataTable, KpiCard, KpiRow, Panel, SearchBox, SevChip, Title, UserCell, typeLabel, useCases } from './AdminCommon'
 
@@ -82,7 +82,7 @@ export function UserDetail({ id }: { id: string }) {
   const { users, reports } = useAdmin()
   const cases = useCases()
   const u = users.find((x) => x.id === id)
-  if (!u) return <Panel><p className="py-8 text-center font-bold">Không tìm thấy user. <button className="underline" onClick={() => go('/admin/users')}>Quay lại</button></p></Panel>
+  if (!u) return <Panel><p className="py-8 text-center font-bold">Không tìm thấy user. <Btn variant="ghost" size="sm" className="inline h-auto p-0 underline font-bold" onClick={() => go('/admin/users')}>Quay lại</Btn></p></Panel>
   const mine = cases.filter((c) => c.reporter === u.id)
   const rescues = cases.filter((c) => c.assignee === u.id)
   const against = reports.filter((r) => r.reported === u.id)
@@ -107,10 +107,10 @@ export function UserDetail({ id }: { id: string }) {
           {against.length > 0 && <ABtn className="mt-2" s="sm" icon={<ShieldAlert />} onClick={() => go('/admin/fraud/' + u.id)}>Mở điều tra</ABtn>}
         </Panel>
         <Panel title={`Case đã đăng (${mine.length})`}>
-          {mine.length === 0 ? <p className="text-sm text-brown-soft">Chưa có case.</p> : <ul className="space-y-2">{mine.map((c) => <li key={c.id}><button onClick={() => go('/admin/cases/' + c.id)} className="flex w-full items-center justify-between gap-2 rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><span><b>{c.id}</b> · {c.name} <span className="text-xs text-brown-soft">{typeLabel[c.type]}</span></span><StatusBadge status={c.status} critical={c.critical} type={c.type} /></button></li>)}</ul>}
+          {mine.length === 0 ? <p className="text-sm text-brown-soft">Chưa có case.</p> : <ul className="space-y-2">{mine.map((c) => <li key={c.id}><Btn variant="ghost" size="sm" onClick={() => go('/admin/cases/' + c.id)} className="flex h-auto w-full items-center justify-between gap-2 rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><span><b>{c.id}</b> · {c.name} <span className="text-xs text-brown-soft">{typeLabel[c.type]}</span></span><StatusBadge status={c.status} critical={c.critical} type={c.type} /></Btn></li>)}</ul>}
         </Panel>
         <Panel title={`Lịch sử cứu hộ (${rescues.length})`}>
-          {rescues.length === 0 ? <p className="text-sm text-brown-soft">Chưa nhận cứu hộ case nào trong hệ thống.</p> : <ul className="space-y-2">{rescues.map((c) => <li key={c.id}><button onClick={() => go('/admin/cases/' + c.id)} className="flex w-full items-center justify-between gap-2 rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><span><b>{c.id}</b> · {c.name}</span><StatusBadge status={c.status} critical={c.critical} type={c.type} /></button></li>)}</ul>}
+          {rescues.length === 0 ? <p className="text-sm text-brown-soft">Chưa nhận cứu hộ case nào trong hệ thống.</p> : <ul className="space-y-2">{rescues.map((c) => <li key={c.id}><Btn variant="ghost" size="sm" onClick={() => go('/admin/cases/' + c.id)} className="flex h-auto w-full items-center justify-between gap-2 rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><span><b>{c.id}</b> · {c.name}</span><StatusBadge status={c.status} critical={c.critical} type={c.type} /></Btn></li>)}</ul>}
         </Panel>
       </div>
     </div>
@@ -129,7 +129,7 @@ export function UserVerification() {
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {queue.map((u) => (
             <Panel key={u.id}>
-              <div className="flex items-center gap-3"><Avatar name={u.name} tone={u.avatar} size={40} /><div className="min-w-0"><button onClick={() => go('/admin/users/' + u.id)} className="block truncate font-extrabold hover:underline">{u.name}</button><p className="text-xs text-brown-soft">{u.area} · tham gia {u.joined}</p></div></div>
+              <div className="flex items-center gap-3"><Avatar name={u.name} tone={u.avatar} size={40} /><div className="min-w-0"><Btn variant="ghost" size="sm" onClick={() => go('/admin/users/' + u.id)} className="inline h-auto p-0 block truncate font-extrabold hover:underline">{u.name}</Btn><p className="text-xs text-brown-soft">{u.area} · tham gia {u.joined}</p></div></div>
               <dl className="mt-2 space-y-0.5 text-sm"><div className="flex gap-2"><dt className="w-20 text-brown-soft">SĐT</dt><dd className="font-bold">{u.phone}</dd></div><div className="flex gap-2"><dt className="w-20 text-brown-soft">Giấy tờ</dt><dd className="font-bold">CCCD (đã tải lên)</dd></div><div className="flex gap-2"><dt className="w-20 text-brown-soft">Trạng thái</dt><dd><UserStatus s={u.status} /></dd></div></dl>
               <div className="mt-3 flex gap-2">
                 <ABtn v="ok" icon={<ShieldCheck />} disabled={u.status === 'Bị khóa'} onClick={() => { setUserVerified(u.id, true); toast(`Đã xác minh ${u.name}`) }}>Xác minh</ABtn>

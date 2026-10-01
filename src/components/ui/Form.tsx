@@ -49,23 +49,47 @@ export function Field({
   )
 }
 
-const inputCls =
-  'w-full rounded-2xl border-2 border-line bg-white px-4 text-[15px] font-semibold text-brown placeholder:font-medium placeholder:text-brown/45 transition focus:border-brown focus:outline-none focus:ring-4 focus:ring-butter/70'
+const baseInputCls =
+  'w-full border-2 border-line bg-white font-semibold text-brown placeholder:font-medium placeholder:text-brown/45 transition focus:border-brown focus:outline-none focus:ring-4 focus:ring-butter/70 disabled:opacity-50 disabled:bg-cream-2'
 
 export const Input = ({
   className,
   invalid,
+  size = 'md',
   ...p
-}: InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }) => (
-  <input {...p} className={cx(inputCls, 'h-12', invalid && 'border-coral', className)} />
+}: Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
+  invalid?: boolean
+  size?: 'sm' | 'md' | 'lg'
+}) => (
+  <input
+    {...p}
+    className={cx(
+      baseInputCls,
+      size === 'sm' && 'h-9 px-3 text-sm rounded-xl',
+      size === 'md' && 'h-12 px-4 text-[15px] rounded-2xl',
+      size === 'lg' && 'h-14 px-5 text-lg rounded-2xl',
+      invalid && 'border-coral focus:border-coral focus:ring-coral/20',
+      className,
+    )}
+  />
 )
 
-export const Select = ({ className, children, ...p }: SelectHTMLAttributes<HTMLSelectElement>) => (
+export const Select = ({
+  className,
+  size = 'md',
+  children,
+  ...p
+}: Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> & {
+  size?: 'sm' | 'md' | 'lg'
+}) => (
   <select
     {...p}
     className={cx(
-      inputCls,
-      'h-12 appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236b4128%27 stroke-width=%273%27 stroke-linecap=%27round%27%3E%3Cpath d=%27m6 9 6 6 6-6%27/%3E%3C/svg%3E")] bg-[length:16px] bg-[right_16px_center] bg-no-repeat pr-10',
+      baseInputCls,
+      'appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236b4128%27 stroke-width=%273%27 stroke-linecap=%27round%27%3E%3Cpath d=%27m6 9 6 6 6-6%27/%3E%3C/svg%3E")] bg-no-repeat',
+      size === 'sm' && 'h-9 px-3 pr-8 text-sm rounded-xl bg-[length:14px] bg-[right_10px_center]',
+      size === 'md' && 'h-12 px-4 pr-10 text-[15px] rounded-2xl bg-[length:16px] bg-[right_16px_center]',
+      size === 'lg' && 'h-14 px-5 pr-12 text-lg rounded-2xl bg-[length:18px] bg-[right_20px_center]',
       className,
     )}
   >
@@ -73,8 +97,23 @@ export const Select = ({ className, children, ...p }: SelectHTMLAttributes<HTMLS
   </select>
 )
 
-export const Textarea = ({ className, ...p }: TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-  <textarea {...p} className={cx(inputCls, 'min-h-28 py-3', className)} />
+export const Textarea = ({
+  className,
+  size = 'md',
+  ...p
+}: TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  size?: 'sm' | 'md' | 'lg'
+}) => (
+  <textarea
+    {...p}
+    className={cx(
+      baseInputCls,
+      size === 'sm' && 'px-3 py-2 text-sm rounded-xl min-h-20',
+      size === 'md' && 'px-4 py-3 text-[15px] rounded-2xl min-h-28',
+      size === 'lg' && 'px-5 py-4 text-lg rounded-2xl min-h-36',
+      className,
+    )}
+  />
 )
 
 export function Segmented<T extends string>({

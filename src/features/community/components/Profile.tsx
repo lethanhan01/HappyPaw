@@ -24,9 +24,9 @@ export default function Profile({ uid }: { uid?: string }) {
   const mini = (list: typeof cases, empty: string) => list.length === 0
     ? <p className="text-sm text-brown-soft">{empty}</p>
     : <ul className="space-y-2">{list.slice(0, 3).map((c) => (
-      <li key={c.id}><button onClick={() => go(`/case/${c.id}`)} className="flex w-full items-center gap-2 rounded-2xl bg-cream-2/70 p-1.5 pr-3 text-left hover:bg-butter/60">
+      <li key={c.id}><Btn variant="ghost" size="sm" onClick={() => go(`/case/${c.id}`)} className="flex h-auto w-full items-center gap-2 rounded-2xl bg-cream-2/70 p-1.5 pr-3 text-left hover:bg-butter/60">
         <img src={c.photo} alt={c.name} className="size-9 rounded-xl object-cover" /><span className="truncate text-sm font-extrabold">{c.name}</span><span className="ml-auto text-xs text-brown-soft">{c.district}</span>
-      </button></li>))}</ul>
+      </Btn></li>))}</ul>
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -77,7 +77,7 @@ export default function Profile({ uid }: { uid?: string }) {
       </section>
 
       {!own && (
-        <p className="text-center text-sm text-brown-soft">Thấy hành vi đáng ngờ? <button className="font-extrabold underline" onClick={() => go(`/safety/report?user=${u.id}`)}>Báo cáo người dùng này</button></p>
+        <p className="text-center text-sm text-brown-soft">Thấy hành vi đáng ngờ? <Btn variant="ghost" size="sm" className="inline h-auto p-0 font-extrabold underline" onClick={() => go(`/safety/report?user=${u.id}`)}>Báo cáo người dùng này</Btn></p>
       )}
     </div>
   )

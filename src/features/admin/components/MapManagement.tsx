@@ -3,7 +3,7 @@ import { BadgeCheck, EyeOff, Eye, Pencil, Trash2, X } from 'lucide-react'
 import { parsePath } from '@/lib'
 import { useApp } from '@/store'
 import CityMap, { MapLegend, type Sel } from '@/features/map'
-import { Badge, Chip, Modal, StatusBadge } from '@ui'
+import { Badge, Chip, Modal, StatusBadge, IconBtn } from '@ui'
 import { patchRisk, removeClinic, removeRisk, removeShelter, removeCase, setVerify, toggleIn, useAdmin } from '../store/adminStore'
 import { ABtn, AInput, ASelect, ATextarea, Confirm, FormRow, Panel, Title, useCases } from './AdminCommon'
 import { PlaceForm } from './Places'
@@ -90,7 +90,7 @@ export default function MapManagement({ path }: { path: string }) {
                     <Badge tone={sel.kind === 'case' ? 'coral' : sel.kind === 'shelter' ? 'sage' : sel.kind === 'clinic' ? 'sky' : 'plum'}>{{ case: 'Case', shelter: 'Mái ấm', clinic: 'Phòng khám', risk: 'Khu vực cảnh báo' }[sel.kind]}</Badge>
                     <h3 className="mt-1 font-display text-lg font-extrabold leading-tight">{sel.kind === 'case' ? `${d.id} · ${d.name}` : sel.kind === 'risk' ? d.title : d.name}</h3>
                   </div>
-                  <button onClick={() => setSel(null)} aria-label="Bỏ chọn" className="grid size-7 place-items-center rounded-lg hover:bg-brown/10"><X className="size-4" /></button>
+                  <IconBtn variant="ghost" size="sm" onClick={() => setSel(null)} aria-label="Bỏ chọn" className="size-7"><X className="size-4" /></IconBtn>
                 </div>
                 {sel.kind === 'case' && <><StatusBadge status={d.status} critical={d.critical} type={d.type} /><p className="text-sm">{d.species} · {d.breed}</p><p className="text-sm text-brown-soft">{d.street}, {d.district}</p></>}
                 {(sel.kind === 'shelter' || sel.kind === 'clinic') && <><img src={d.photo} alt="" className="h-24 w-full rounded-xl object-cover" /><p className="text-sm text-brown-soft">{d.address}</p><p className="text-sm font-bold">{d.phone}</p></>}

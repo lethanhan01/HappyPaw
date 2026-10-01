@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react'
 import { Search, X, Clock, History, Sparkles, Lock, MapPin, Eye, HandHeart, Star } from 'lucide-react'
+import { useApp } from '@/store'
 import { CLINICS, SHELTERS } from '@/constants/mock/places'
 import { RISKS } from '@/constants/mock/risks'
 import { timeAgo } from '@/constants/time'
 import type { Case } from '@/types/case'
 import { PIN_META, caseType, kmFrom, type PinType, type Sel } from '../engine/MapEngine'
-import { useApp } from '@/store'
-import { Btn, Input, MatchBadge, PetPhoto, StatusBadge, Verified, WarnBadge, cx } from '@/components/ui'
+import { Btn, IconBtn, Input, MatchBadge, PetPhoto, StatusBadge, Verified, WarnBadge, cx } from '@ui'
 
 /* ---------- Filters ---------- */
 export type StatusKey = 'active' | 'progress' | 'resolved'
@@ -148,16 +148,18 @@ export function SearchBar({
         className={cx('rounded-full pl-10 pr-10 text-sm', size === 'lg' ? 'h-12 border-brown shadow-soft' : 'h-11')}
       />
       {typed && (
-        <button
+        <IconBtn
+          label="Xóa tìm kiếm"
+          variant="ghost"
+          size="sm"
           onClick={() => {
             onChange('')
             setOpen(true)
           }}
-          aria-label="Xóa tìm kiếm"
-          className="absolute right-1.5 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full hover:bg-brown/10"
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 !rounded-full"
         >
           <X className="size-4" />
-        </button>
+        </IconBtn>
       )}
       {open && (
         <div className="absolute inset-x-0 top-full z-40 mt-2 max-h-[55vh] animate-[rise_.18s_both] overflow-y-auto rounded-3xl border-2 border-brown bg-paper p-2 shadow-soft">
@@ -166,13 +168,16 @@ export function SearchBar({
               <ul>
                 {hits.map((h) => (
                   <li key={h.key}>
-                    <button
+                    <Btn
+                      variant="ghost"
+                      size="md"
+                      full
                       onClick={() => {
                         h.onPick()
                         onCommit(value)
                         setOpen(false)
                       }}
-                      className="flex min-h-12 w-full items-center gap-3 rounded-2xl px-2.5 py-1.5 text-left hover:bg-butter/60"
+                      className="!justify-start !rounded-2xl !px-2.5 !py-1.5 text-left hover:!bg-butter/60"
                     >
                       <span
                         className="size-3.5 shrink-0 rounded-full border-2 border-brown"
@@ -182,7 +187,7 @@ export function SearchBar({
                         <span className="block truncate text-sm font-extrabold">{h.label}</span>
                         <span className="block truncate text-xs font-semibold text-brown-soft">{h.sub}</span>
                       </span>
-                    </button>
+                    </Btn>
                   </li>
                 ))}
               </ul>
@@ -197,32 +202,43 @@ export function SearchBar({
                 <div className="pb-1">
                   <div className="flex items-center justify-between px-2.5 pb-1 pt-1 text-xs font-extrabold uppercase tracking-wide text-brown-soft">
                     <span>Tìm gần đây</span>
-                    <button onClick={onClearRecent} className="normal-case underline">
+                    <Btn
+                      variant="ghost"
+                      size="sm"
+                      onClick={onClearRecent}
+                      className="!p-0 !h-auto !border-0 normal-case underline text-xs font-extrabold text-brown-soft"
+                    >
                       Xóa
-                    </button>
+                    </Btn>
                   </div>
                   {recent.map((r) => (
-                    <button
+                    <Btn
                       key={r}
+                      variant="ghost"
+                      size="md"
+                      full
                       onClick={() => pick(r)}
-                      className="flex min-h-11 w-full items-center gap-3 rounded-2xl px-2.5 text-left text-sm font-bold hover:bg-butter/60"
+                      className="!justify-start !rounded-2xl !px-2.5 text-left text-sm font-bold hover:!bg-butter/60"
                     >
                       <History className="size-4 text-brown/50" />
                       {r}
-                    </button>
+                    </Btn>
                   ))}
                 </div>
               )}
               <div className="px-2.5 pb-1 pt-1 text-xs font-extrabold uppercase tracking-wide text-brown-soft">Gợi ý</div>
               {SUGGESTED.map((r) => (
-                <button
+                <Btn
                   key={r}
+                  variant="ghost"
+                  size="md"
+                  full
                   onClick={() => pick(r)}
-                  className="flex min-h-11 w-full items-center gap-3 rounded-2xl px-2.5 text-left text-sm font-bold hover:bg-butter/60"
+                  className="!justify-start !rounded-2xl !px-2.5 text-left text-sm font-bold hover:!bg-butter/60"
                 >
                   <Sparkles className="size-4 text-brown/50" />
                   {r}
-                </button>
+                </Btn>
               ))}
             </>
           )}
@@ -234,13 +250,15 @@ export function SearchBar({
 
 /* ---------- Preview card (click on a pin) ---------- */
 const Close = ({ onClose }: { onClose: () => void }) => (
-  <button
+  <IconBtn
+    label="Đóng"
+    variant="ghost"
+    size="sm"
     onClick={onClose}
-    aria-label="Đóng"
-    className="grid size-8 shrink-0 place-items-center rounded-full hover:bg-brown/10"
+    className="!size-8 !rounded-full hover:!bg-brown/10"
   >
     <X className="size-4" />
-  </button>
+  </IconBtn>
 )
 
 export function MapPreview({ sel, onClose, className }: { sel: Sel; onClose: () => void; className?: string }) {

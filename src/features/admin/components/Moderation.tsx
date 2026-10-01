@@ -3,7 +3,7 @@ import { Ban, Eye, Gavel, Lock, Pencil, Plus, ShieldAlert, ShieldX, Siren, Trash
 import { useApp } from '@/store'
 import { userById } from '@/constants'
 import type { Report } from '@/types'
-import { Badge, Modal, StatusBadge } from '@ui'
+import { Badge, Modal, StatusBadge, Btn } from '@ui'
 import {
   DUP_PHONES,
   addBlacklist,
@@ -64,7 +64,7 @@ export function ReportQueue() {
     { key: 'rp', label: 'Reporter', render: (r) => <UserCell id={r.reporter} /> },
     { key: 'rd', label: 'Reported user', render: (r) => <UserCell id={r.reported} /> },
     { key: 'reason', label: 'Reason', sort: (r) => r.reason, render: (r) => r.reason },
-    { key: 'case', label: 'Related case', sort: (r) => r.caseId, render: (r) => <button className="font-bold underline" onClick={(e) => { e.stopPropagation(); go('/admin/cases/' + r.caseId) }}>{r.caseId}</button> },
+    { key: 'case', label: 'Related case', sort: (r) => r.caseId, render: (r) => <Btn variant="ghost" size="sm" className="inline h-auto p-0 font-bold underline" onClick={(e) => { e.stopPropagation(); go('/admin/cases/' + r.caseId) }}>{r.caseId}</Btn> },
     { key: 'cr', label: 'Created', render: (r) => r.created },
     { key: 'sev', label: 'Severity', sort: (r) => sevRank(r.severity), render: (r) => <SevChip s={r.severity} /> },
     { key: 'st', label: 'Status', sort: (r) => r.status, render: (r) => <RStatus s={r.status} /> },
@@ -98,7 +98,7 @@ export function ReportQueue() {
               <div className="flex gap-2"><dt className="w-28 text-brown-soft">Reporter</dt><dd><UserCell id={cur.reporter} /></dd></div>
               <div className="flex gap-2"><dt className="w-28 text-brown-soft">Reported user</dt><dd><UserCell id={cur.reported} /></dd></div>
               <div className="flex gap-2"><dt className="w-28 text-brown-soft">Lý do</dt><dd className="font-bold">{cur.reason}</dd></div>
-              <div className="flex gap-2"><dt className="w-28 text-brown-soft">Case</dt><dd><button className="font-bold underline" onClick={() => go('/admin/cases/' + cur.caseId)}>{cur.caseId}</button></dd></div>
+              <div className="flex gap-2"><dt className="w-28 text-brown-soft">Case</dt><dd><Btn variant="ghost" size="sm" className="inline h-auto p-0 font-bold underline" onClick={() => go('/admin/cases/' + cur.caseId)}>{cur.caseId}</Btn></dd></div>
               <div className="flex gap-2"><dt className="w-28 text-brown-soft">Thời gian</dt><dd className="font-bold">{cur.created}</dd></div>
             </dl>
             <div className="rounded-xl border-2 border-line bg-cream-2/50 p-3"><p className="mb-1 text-xs font-extrabold uppercase text-brown-soft">Nội dung report</p>{cur.note}</div>
@@ -200,7 +200,7 @@ function FraudDetail({ uid }: { uid: string }) {
           )}
         </Panel>
         <Panel title={`Case liên quan (${rc.length})`} className="lg:col-span-3">
-          {rc.length === 0 ? <p className="text-sm text-brown-soft">Không có.</p> : <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{rc.map((c) => <button key={c.id} onClick={() => go('/admin/cases/' + c.id)} className="flex items-center gap-2 rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><img src={c.photo} alt="" className="size-10 rounded-lg object-cover" /><span className="min-w-0 flex-1"><b>{c.id}</b> · {c.name}<span className="block text-xs text-brown-soft">{c.district}</span></span><StatusBadge status={c.status} critical={c.critical} type={c.type} /></button>)}</div>}
+          {rc.length === 0 ? <p className="text-sm text-brown-soft">Không có.</p> : <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">{rc.map((c) => <Btn variant="ghost" size="sm" key={c.id} onClick={() => go('/admin/cases/' + c.id)} className="flex h-auto w-full items-center justify-start gap-2 rounded-xl border border-line p-2 text-left text-sm hover:border-brown"><img src={c.photo} alt="" className="size-10 rounded-lg object-cover" /><span className="min-w-0 flex-1"><b>{c.id}</b> · {c.name}<span className="block text-xs text-brown-soft">{c.district}</span></span><StatusBadge status={c.status} critical={c.critical} type={c.type} /></Btn>)}</div>}
         </Panel>
       </div>
       <Modal open={bl} onClose={() => setBl(false)} title="Thêm vào blacklist" sheet={false}>

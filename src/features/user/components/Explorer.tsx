@@ -39,7 +39,7 @@ import { useApp } from '@/store'
 import { CLINICS, SHELTERS } from '@/constants/mock/places'
 import { RISKS } from '@/constants/mock/risks'
 import { DISTRICTS } from '@/constants/districts'
-import { BottomSheet, Btn, Chip, Empty, Field, Input, Modal, Segmented, Select, cx } from '@/components/ui'
+import { BottomSheet, Btn, IconBtn, Chip, Empty, Field, Input, Modal, Segmented, Select, cx } from '@ui'
 import { useMedia } from '@/hooks/useMedia'
 import { CaseCard, CaseCardSkeleton } from '@/components/common'
 
@@ -205,13 +205,15 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
   )
 
   const filterBtn = (
-    <button
+    <Btn
+      variant={n ? 'primary' : 'secondary'}
+      size={desktop ? 'md' : 'lg'}
+      pill
       onClick={openFilter}
       aria-label={`Bộ lọc${n ? ` · ${n}` : ''}`}
       className={cx(
-        'relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full border-2 border-brown font-extrabold',
-        n ? 'bg-butter' : 'bg-paper hover:bg-butter/60',
-        desktop ? 'h-11 px-4 text-sm' : 'size-12 shadow-soft',
+        'relative inline-flex shrink-0 items-center justify-center gap-2 border-2 border-brown font-extrabold',
+        desktop ? 'h-11 px-4 text-sm' : '!size-12 !p-0 shadow-soft',
       )}
     >
       <SlidersHorizontal className="size-5" />
@@ -221,7 +223,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
           {n}
         </span>
       )}
-    </button>
+    </Btn>
   )
 
   const resultList = loading ? (
@@ -258,13 +260,18 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
         <ul className="mt-1 space-y-0.5 text-sm font-bold">
           {examples.map((c) => (
             <li key={c.id}>
-              <button className="text-left hover:underline" onClick={() => select({ kind: 'case', id: c.id })}>
+              <Btn
+                variant="ghost"
+                size="sm"
+                className="!p-0 !h-auto !border-0 text-left hover:underline font-bold"
+                onClick={() => select({ kind: 'case', id: c.id })}
+              >
                 {c.district} —{' '}
                 {c.type === 'rescue'
                   ? 'cần cứu hộ'
                   : `${c.species.toLowerCase()} ${c.color.toLowerCase()} ${c.type === 'found' ? 'được báo thấy' : 'bị lạc'}`}
                 .
-              </button>
+              </Btn>
             </li>
           ))}
         </ul>
@@ -308,17 +315,18 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                 <p className="text-sm text-brown-soft">Cùng tìm lại những chiếc đuôi nhỏ.</p>
                 <div className="mt-3 grid grid-cols-5 gap-2">
                   {QUICK.map((a) => (
-                    <button
+                    <Btn
                       key={a.label}
                       onClick={() => go(a.to)}
+                      variant="ghost"
                       className={cx(
-                        'flex flex-col items-center gap-1 rounded-2xl border-2 border-brown/20 px-1 py-2.5 text-center text-[11px] font-extrabold leading-tight transition hover:-translate-y-0.5 hover:border-brown',
+                        'flex h-auto flex-col items-center gap-1 rounded-2xl border-2 border-brown/20 px-1 py-2.5 text-center text-[11px] font-extrabold leading-tight transition hover:-translate-y-0.5 hover:border-brown',
                         a.tone,
                       )}
                     >
                       <a.icon className="size-5" />
                       {a.label}
-                    </button>
+                    </Btn>
                   ))}
                 </div>
               </div>
@@ -412,9 +420,10 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                 {variant === 'home' && (
                   <div className="pointer-events-auto no-scrollbar -mx-3 flex gap-2 overflow-x-auto px-3">
                     {QUICK.map((a) => (
-                      <button
+                      <Btn
                         key={a.label}
                         onClick={() => go(a.to)}
+                        variant="ghost"
                         className={cx(
                           'flex h-10 shrink-0 items-center gap-1.5 rounded-full border-2 border-brown px-3.5 text-[13px] font-extrabold shadow-soft',
                           a.tone,
@@ -422,7 +431,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                       >
                         <a.icon className="size-4" />
                         {a.label}
-                      </button>
+                      </Btn>
                     ))}
                   </div>
                 )}
@@ -434,27 +443,30 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                 )}
               >
                 {filterBtn}
-                <button
+                <IconBtn
+                  variant="ghost"
                   onClick={() => api.current?.locate()}
                   aria-label="Vị trí hiện tại"
-                  className="grid size-12 place-items-center rounded-full border-2 border-brown bg-paper shadow-soft active:scale-95"
+                  className="size-12 rounded-full border-2 border-brown bg-paper shadow-soft"
                 >
                   <LocateFixed className="size-5" />
-                </button>
-                <button
+                </IconBtn>
+                <IconBtn
+                  variant="ghost"
                   onClick={() => api.current?.zoom(1.3)}
                   aria-label="Phóng to"
-                  className="grid size-12 place-items-center rounded-full border-2 border-brown bg-paper shadow-soft active:scale-95"
+                  className="size-12 rounded-full border-2 border-brown bg-paper shadow-soft"
                 >
                   <Plus className="size-5" />
-                </button>
-                <button
+                </IconBtn>
+                <IconBtn
+                  variant="ghost"
                   onClick={() => api.current?.zoom(0.77)}
                   aria-label="Thu nhỏ"
-                  className="grid size-12 place-items-center rounded-full border-2 border-brown bg-paper shadow-soft active:scale-95"
+                  className="size-12 rounded-full border-2 border-brown bg-paper shadow-soft"
                 >
                   <Minus className="size-5" />
-                </button>
+                </IconBtn>
               </div>
               {snap === 0 && (
                 <div className="absolute bottom-[116px] left-3 z-10">

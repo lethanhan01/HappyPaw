@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type MutableRefObject, type R
 import { Plus, Minus, LocateFixed, ChevronDown, ChevronUp } from 'lucide-react'
 import type { Case, Clinic, Risk, Shelter } from '@/types'
 import { DISTRICT_XY } from '@/constants/districts'
-import { cx } from '@/components/ui'
+import { Btn, IconBtn, cx } from '@ui'
 
 export const ME_POS = { x: 345, y: 285 }
 export const KM = 62 // map units per km
@@ -173,7 +173,7 @@ export default function CityMap(p: CityMapProps) {
   const caseMap = (p.cases || [])
 
   return (
-    <div className={cx('relative overflow-hidden bg-[#efe5c4]', p.className)}>
+    <div className={cx('relative overflow-hidden bg-map-sand', p.className)}>
       <svg ref={svg} viewBox="0 0 1000 720" preserveAspectRatio="xMidYMid slice" className="map-grab size-full select-none"
         onPointerDown={(e) => { drag.current = { ...pt(e), moved: false }; (e.currentTarget as Element).setPointerCapture(e.pointerId) }}
         onPointerMove={(e) => {
@@ -337,9 +337,9 @@ export default function CityMap(p: CityMapProps) {
 
       {p.controls !== false && (
         <div className={cx('absolute bottom-4 right-4 z-10 flex flex-col gap-2', p.controlsClass)}>
-          <button aria-label="Phóng to" onClick={() => zoomAt(1.3)} className="grid size-11 place-items-center rounded-2xl border-2 border-brown bg-paper shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"><Plus className="size-5" /></button>
-          <button aria-label="Thu nhỏ" onClick={() => zoomAt(0.77)} className="grid size-11 place-items-center rounded-2xl border-2 border-brown bg-paper shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"><Minus className="size-5" /></button>
-          <button aria-label="Vị trí hiện tại" onClick={() => recenter({ ...(p.me || ME_POS), k: 1.5 })} className="grid size-11 place-items-center rounded-2xl border-2 border-brown bg-butter shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"><LocateFixed className="size-5" /></button>
+          <IconBtn label="Phóng to" variant="default" size="md" onClick={() => zoomAt(1.3)} className="shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"><Plus className="size-5" /></IconBtn>
+          <IconBtn label="Thu nhỏ" variant="default" size="md" onClick={() => zoomAt(0.77)} className="shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"><Minus className="size-5" /></IconBtn>
+          <IconBtn label="Vị trí hiện tại" variant="primary" size="md" onClick={() => recenter({ ...(p.me || ME_POS), k: 1.5 })} className="shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"><LocateFixed className="size-5" /></IconBtn>
         </div>
       )}
 
@@ -362,9 +362,9 @@ export function MapLegend({ className, defaultOpen = true, hidden = [], onToggle
   const [open, setOpen] = useState(defaultOpen)
   return (
     <div className={cx('rounded-2xl border-2 border-line bg-paper/95 text-xs font-bold shadow-soft', className)}>
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-9 w-full items-center justify-between gap-3 px-3 py-1.5 font-extrabold">
+      <Btn variant="ghost" size="sm" full onClick={() => setOpen(!open)} aria-expanded={open} className="!justify-between !min-h-9 !px-3 !py-1.5 font-extrabold !border-0 hover:!bg-butter/30">
         Chú giải{open ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
-      </button>
+      </Btn>
       {open && (
         <ul className="space-y-0.5 px-1.5 pb-1.5">
           {LEGEND.map((t) => {
@@ -373,7 +373,7 @@ export function MapLegend({ className, defaultOpen = true, hidden = [], onToggle
             return (
               <li key={t}>
                 {onToggle
-                  ? <button onClick={() => onToggle(t)} aria-pressed={!off} className="flex min-h-8 w-full items-center gap-2 rounded-xl px-1.5 hover:bg-butter/50">{row}</button>
+                  ? <Btn variant="ghost" size="sm" full onClick={() => onToggle(t)} aria-pressed={!off} className="!justify-start !min-h-8 !border-0 !px-1.5 rounded-xl hover:!bg-butter/50 font-normal">{row}</Btn>
                   : <span className="flex min-h-7 items-center gap-2 px-1.5">{row}</span>}
               </li>
             )

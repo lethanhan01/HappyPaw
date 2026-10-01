@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { cx } from '@/lib/cn'
+import { IconBtn } from './Button'
 
 /* ---------- Modal + sheet ---------- */
 export function Modal({
@@ -46,13 +47,15 @@ export function Modal({
         {sheet && <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-brown/25 sm:hidden" />}
         <div className="mb-3 flex items-start justify-between gap-3">
           {title && <h3 className="font-display text-2xl font-extrabold leading-tight">{title}</h3>}
-          <button
+          <IconBtn
+            label="Đóng"
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            aria-label="Đóng"
-            className="ml-auto grid size-9 place-items-center rounded-xl hover:bg-brown/10"
+            className="ml-auto"
           >
             <X className="size-5" />
-          </button>
+          </IconBtn>
         </div>
         {children}
       </div>

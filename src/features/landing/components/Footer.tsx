@@ -1,6 +1,6 @@
 import { Heart, MapPin, Phone, Mail } from 'lucide-react'
 import { useApp } from '@/store'
-import { Logo } from '@/components/ui'
+import { Logo, Btn } from '@/components/ui'
 
 export default function LandingFooter() {
   const { go } = useApp()
@@ -38,24 +38,24 @@ export default function LandingFooter() {
             <h4 className="font-display text-base font-extrabold text-brown">Cứu hộ & Tìm kiếm</h4>
             <ul className="mt-3.5 space-y-2 text-sm font-bold text-brown-soft">
               <li>
-                <button onClick={() => go('/map')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/map')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Bản đồ radar cứu trợ
-                </button>
+                </Btn>
               </li>
               <li>
-                <button onClick={() => go('/find')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/find')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Tìm kiếm thú cưng lạc
-                </button>
+                </Btn>
               </li>
               <li>
-                <button onClick={() => go('/ai-match')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/ai-match')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Công nghệ AI Match
-                </button>
+                </Btn>
               </li>
               <li>
-                <button onClick={() => go('/report')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/report')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Báo ca khẩn cấp
-                </button>
+                </Btn>
               </li>
             </ul>
           </div>
@@ -65,24 +65,24 @@ export default function LandingFooter() {
             <h4 className="font-display text-base font-extrabold text-brown">Cộng đồng & Trạm</h4>
             <ul className="mt-3.5 space-y-2 text-sm font-bold text-brown-soft">
               <li>
-                <button onClick={() => go('/shelters')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/shelters')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Mạng lưới mái ấm
-                </button>
+                </Btn>
               </li>
               <li>
-                <button onClick={() => go('/clinics')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/clinics')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Phòng khám thú y 24/7
-                </button>
+                </Btn>
               </li>
               <li>
-                <button onClick={() => go('/donate')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/donate')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Ủng hộ thức ăn & thuốc
-                </button>
+                </Btn>
               </li>
               <li>
-                <button onClick={() => go('/leaderboard')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/leaderboard')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Bảng vinh danh tình nguyện
-                </button>
+                </Btn>
               </li>
             </ul>
           </div>
@@ -92,9 +92,9 @@ export default function LandingFooter() {
             <h4 className="font-display text-base font-extrabold text-brown">An toàn & Điều khoản</h4>
             <ul className="mt-3.5 space-y-2 text-sm font-bold text-brown-soft">
               <li>
-                <button onClick={() => go('/safety')} className="hover:text-brown transition">
+                <Btn variant="ghost" size="sm" onClick={() => go('/safety')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Cảnh báo điểm đen & lừa đảo
-                </button>
+                </Btn>
               </li>
               <li>
                 <span className="cursor-default">Quy tắc nhận nuôi văn minh</span>

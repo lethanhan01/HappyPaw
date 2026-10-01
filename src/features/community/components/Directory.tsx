@@ -134,7 +134,7 @@ export function PlaceDetail({ kind, id }: { kind: Kind; id: string }) {
 
   return (
     <div className="space-y-6">
-      <button onClick={back} className="text-sm font-extrabold text-brown-soft hover:text-brown">← Quay lại</button>
+      <Btn variant="ghost" size="sm" onClick={back} className="h-auto p-0 font-extrabold text-brown-soft hover:text-brown">← Quay lại</Btn>
       <div className="overflow-hidden rounded-[28px] border-2 border-brown bg-paper shadow-soft">
         <div className="h-48 bg-cream-2 sm:h-64"><img src={p.photo} alt={`Ảnh ${p.name}`} className="size-full object-cover" /></div>
         <div className="space-y-3 p-5 md:p-6">

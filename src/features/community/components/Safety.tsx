@@ -26,10 +26,10 @@ export function Safety() {
   return (
     <div className="space-y-6">
       <PageHead title="Cảnh báo an toàn" sub="Các khu vực và hành vi được cộng đồng đánh dấu để mọi người cùng cẩn thận." />
-      <button onClick={() => go('/safety/report')}
-        className="flex w-full items-center justify-center gap-3 rounded-[24px] border-2 border-brown bg-coral px-5 py-4 text-lg font-extrabold text-white shadow-[0_5px_0_var(--color-brown)] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none">
+      <Btn variant="danger" size="lg" full onClick={() => go('/safety/report')}
+        className="h-auto py-4 text-lg rounded-[24px]">
         <span aria-hidden>🚨</span> Báo cáo người dùng
-      </button>
+      </Btn>
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4">
           <div className="overflow-hidden rounded-[24px] border-2 border-brown shadow-soft">
@@ -38,7 +38,7 @@ export function Safety() {
           </div>
           {picked ? (
             <Card className="animate-[rise_.25s_both] space-y-2 border-coral/60 bg-coral-soft/50">
-              <p className="flex items-start gap-2 font-extrabold text-[#8f2a1c]"><AlertTriangle className="mt-0.5 size-5 shrink-0" />Cẩn thận! Đây là khu vực được cộng đồng đánh dấu có rủi ro.</p>
+              <p className="flex items-start gap-2 font-extrabold text-coral-dark"><AlertTriangle className="mt-0.5 size-5 shrink-0" />Cẩn thận! Đây là khu vực được cộng đồng đánh dấu có rủi ro.</p>
               <div className="flex flex-wrap items-center gap-2"><h3 className="font-display text-xl font-extrabold">{picked.title}</h3><Badge tone={sevTone(picked.severity)}>Mức độ: {picked.severity}</Badge></div>
               <p>{picked.note}</p>
               <p className="text-sm text-brown-soft">{picked.reports} báo cáo · Hiệu lực đến {picked.expires}</p>
@@ -56,11 +56,11 @@ export function Safety() {
                 <ul className="space-y-2">
                   {items.map((r) => (
                     <li key={r.id}>
-                      <button onClick={() => setSel({ kind: 'risk', id: r.id })} aria-pressed={sel?.id === r.id}
-                        className={cx('flex w-full items-center gap-3 rounded-2xl border-2 bg-paper p-3 text-left transition hover:border-brown', sel?.id === r.id ? 'border-brown ring-4 ring-butter' : 'border-line')}>
+                      <Btn variant="ghost" onClick={() => setSel({ kind: 'risk', id: r.id })} aria-pressed={sel?.id === r.id}
+                        className={cx('flex h-auto w-full items-center gap-3 rounded-2xl border-2 bg-paper p-3 text-left transition hover:border-brown', sel?.id === r.id ? 'border-brown ring-4 ring-butter' : 'border-line')}>
                         <span className="min-w-0 flex-1"><span className="block font-extrabold">{r.title}</span><span className="block text-sm text-brown-soft">{r.reports} báo cáo · đến {r.expires}</span></span>
                         <Badge tone={sevTone(r.severity)} icon={<AlertTriangle className="size-3.5" />}>{r.severity}</Badge>
-                      </button>
+                      </Btn>
                     </li>
                   ))}
                 </ul>
@@ -118,8 +118,8 @@ export function SafetyReport({ caseId, userId }: { caseId?: string; userId?: str
             <h2 className="text-xl font-extrabold">Chọn lý do báo cáo</h2>
             <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Lý do báo cáo">
               {REASONS.map((r) => (
-                <button key={r} role="radio" aria-checked={reason === r} onClick={() => setReason(r)}
-                  className={cx('rounded-2xl border-2 px-4 py-3 text-left font-bold transition', reason === r ? 'border-brown bg-butter' : 'border-line bg-white hover:border-brown/60')}>{r}</button>
+                <Btn key={r} variant="ghost" role="radio" aria-checked={reason === r} onClick={() => setReason(r)}
+                  className={cx('h-auto rounded-2xl border-2 px-4 py-3 text-left font-bold transition', reason === r ? 'border-brown bg-butter' : 'border-line bg-white hover:border-brown/60')}>{r}</Btn>
               ))}
             </div>
           </>

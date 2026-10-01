@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Menu, X, PhoneCall, ArrowRight, LayoutDashboard, Home, MapPin } from 'lucide-react'
 import { useApp } from '@/store'
-import { Logo, Btn, Avatar } from '@/components/ui'
+import { Logo, Btn, IconBtn, Avatar } from '@/components/ui'
 import { USERS } from '@/constants/mock/users'
 
 interface LandingNavProps {
@@ -29,55 +29,69 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden items-center gap-1 xl:gap-2 lg:flex" aria-label="Điều hướng chính">
-          <button
+          <Btn
+            variant="ghost"
+            size="sm"
             onClick={() => go('/map')}
-            className="flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-[15px] font-extrabold text-brown/85 transition hover:bg-butter hover:text-brown"
+            icon={<MapPin className="size-4 text-coral" />}
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
           >
-            <MapPin className="size-4 text-coral" />
             Bản đồ cứu hộ
-          </button>
-          <button
+          </Btn>
+          <Btn
+            variant="ghost"
+            size="sm"
             onClick={() => scrollToSection('recent-cases')}
-            className="rounded-2xl px-3.5 py-2 text-[15px] font-extrabold text-brown/85 transition hover:bg-butter hover:text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
           >
             Ca cứu trợ
-          </button>
-          <button
+          </Btn>
+          <Btn
+            variant="ghost"
+            size="sm"
             onClick={() => scrollToSection('features')}
-            className="rounded-2xl px-3.5 py-2 text-[15px] font-extrabold text-brown/85 transition hover:bg-butter hover:text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
           >
             Tính năng
-          </button>
-          <button
+          </Btn>
+          <Btn
+            variant="ghost"
+            size="sm"
             onClick={() => scrollToSection('workflow')}
-            className="rounded-2xl px-3.5 py-2 text-[15px] font-extrabold text-brown/85 transition hover:bg-butter hover:text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
           >
             Quy trình
-          </button>
-          <button
+          </Btn>
+          <Btn
+            variant="ghost"
+            size="sm"
             onClick={() => scrollToSection('shelters')}
-            className="rounded-2xl px-3.5 py-2 text-[15px] font-extrabold text-brown/85 transition hover:bg-butter hover:text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
           >
             Mạng lưới trạm
-          </button>
-          <button
+          </Btn>
+          <Btn
+            variant="ghost"
+            size="sm"
             onClick={() => scrollToSection('stories')}
-            className="rounded-2xl px-3.5 py-2 text-[15px] font-extrabold text-brown/85 transition hover:bg-butter hover:text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
           >
             Câu chuyện
-          </button>
+          </Btn>
         </nav>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2.5">
           {/* Quick Hotline Trigger */}
-          <button
+          <Btn
+            variant="danger"
+            size="sm"
+            icon={<PhoneCall className="size-4 animate-bounce-soft" />}
             onClick={onOpenSos}
-            className="hidden sm:inline-flex items-center gap-2 rounded-2xl border-2 border-coral/30 bg-coral-soft px-3 py-2 text-sm font-extrabold text-[#8f2a1c] transition hover:border-coral hover:bg-coral hover:text-white"
+            className="hidden sm:inline-flex !bg-coral-soft !border-coral/30 !text-coral-dark hover:!bg-coral hover:!text-white hover:!border-coral shadow-none"
           >
-            <PhoneCall className="size-4 animate-bounce-soft" />
             <span>Hotline 24/7</span>
-          </button>
+          </Btn>
 
           {auth === 'guest' ? (
             <div className="flex items-center gap-2">
@@ -104,13 +118,15 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
           )}
 
           {/* Mobile Menu Toggle Button */}
-          <button
+          <IconBtn
+            label={mobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
+            size="md"
+            variant="default"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="grid size-11 place-items-center rounded-2xl border-2 border-brown/20 bg-paper text-brown lg:hidden hover:border-brown hover:bg-white"
-            aria-label="Mở menu"
+            className="lg:hidden"
           >
             {mobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
-          </button>
+          </IconBtn>
         </div>
       </div>
 
@@ -118,60 +134,81 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
       {mobileMenuOpen && (
         <div className="border-b-2 border-brown/15 bg-paper p-4 lg:hidden animate-[rise_.2s_ease-out]">
           <nav className="flex flex-col gap-1.5" aria-label="Menu di động">
-            <button
+            <Btn
+              variant="ghost"
+              size="md"
+              full
               onClick={() => { setMobileMenuOpen(false); go('/map') }}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-base font-extrabold text-brown hover:bg-butter/50"
+              className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span className="flex items-center gap-2">
                 <MapPin className="size-5 text-coral" />
                 Bản đồ cứu trợ trực tiếp (Hà Nội)
               </span>
               <ArrowRight className="size-4 text-brown-soft" />
-            </button>
-            <button
+            </Btn>
+            <Btn
+              variant="ghost"
+              size="md"
+              full
               onClick={() => scrollToSection('recent-cases')}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-base font-extrabold text-brown hover:bg-butter/50"
+              className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Ca cứu trợ & Thú cưng đi lạc</span>
               <ArrowRight className="size-4 text-brown-soft" />
-            </button>
-            <button
+            </Btn>
+            <Btn
+              variant="ghost"
+              size="md"
+              full
               onClick={() => scrollToSection('features')}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-base font-extrabold text-brown hover:bg-butter/50"
+              className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Tính năng cốt lõi (Bản đồ & AI Match)</span>
               <ArrowRight className="size-4 text-brown-soft" />
-            </button>
-            <button
+            </Btn>
+            <Btn
+              variant="ghost"
+              size="md"
+              full
               onClick={() => scrollToSection('workflow')}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-base font-extrabold text-brown hover:bg-butter/50"
+              className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Quy trình 3 bước cứu hộ</span>
               <ArrowRight className="size-4 text-brown-soft" />
-            </button>
-            <button
+            </Btn>
+            <Btn
+              variant="ghost"
+              size="md"
+              full
               onClick={() => scrollToSection('shelters')}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-base font-extrabold text-brown hover:bg-butter/50"
+              className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Mạng lưới trạm & phòng khám</span>
               <ArrowRight className="size-4 text-brown-soft" />
-            </button>
-            <button
+            </Btn>
+            <Btn
+              variant="ghost"
+              size="md"
+              full
               onClick={() => scrollToSection('stories')}
-              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-base font-extrabold text-brown hover:bg-butter/50"
+              className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Câu chuyện đoàn tụ</span>
               <ArrowRight className="size-4 text-brown-soft" />
-            </button>
+            </Btn>
 
             <div className="mt-3 border-t-2 border-line pt-3 flex flex-col gap-2">
-              <button
+              <Btn
+                variant="danger"
+                size="md"
+                full
+                icon={<PhoneCall className="size-5" />}
                 onClick={() => { setMobileMenuOpen(false); onOpenSos() }}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-coral bg-coral font-extrabold text-white shadow-[0_3px_0_var(--color-brown)]"
+                className="!h-12 shadow-[0_3px_0_var(--color-brown)] font-extrabold"
               >
-                <PhoneCall className="size-5" />
                 Hotline Cấp Cứu 24/7
-              </button>
+              </Btn>
               {auth === 'guest' ? (
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <Btn variant="secondary" onClick={() => { setMobileMenuOpen(false); go('/login') }}>

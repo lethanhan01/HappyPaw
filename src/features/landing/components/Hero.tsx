@@ -1,6 +1,6 @@
 import { Siren, MapPin, Sparkles, HeartHandshake, ShieldCheck, ArrowRight } from 'lucide-react'
 import { useApp } from '@/store'
-import { Btn, DogIllo, CatIllo, Paw } from '@/components/ui'
+import { Btn, IconBtn, DogIllo, CatIllo, Paw } from '@ui'
 import pawsImg from '@/assets/paws.png'
 
 interface HeroSectionProps {
@@ -123,13 +123,15 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                   <p className="text-xs font-bold text-brown-soft">Phát hiện 8 phút trước · Mèo bị thương ở chân</p>
                 </div>
               </div>
-              <button
+              <IconBtn
+                label="Xem ca trên bản đồ"
+                variant="primary"
+                size="sm"
                 onClick={() => go('/map')}
-                className="grid size-9 place-items-center rounded-full border-2 border-brown bg-butter text-brown hover:scale-105 transition"
-                aria-label="Xem ca trên bản đồ"
+                className="!rounded-full hover:scale-105"
               >
                 <ArrowRight className="size-4" />
-              </button>
+              </IconBtn>
             </div>
           </div>
         </div>

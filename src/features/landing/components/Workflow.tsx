@@ -19,7 +19,7 @@ const STEPS = [
     title: 'AI & Cộng đồng Kết nối',
     desc: 'Công nghệ AI phân tích đặc điểm nhận diện, đồng thời gửi thông báo khẩn tới các tình nguyện viên và mái ấm gần nhất trong bán kính 3km.',
     icon: Radio,
-    tone: 'bg-coral-soft text-[#8f2a1c]',
+    tone: 'bg-coral-soft text-coral-dark',
     tag: 'PHẢN HỒI TỰ ĐỘNG',
   },
   {
@@ -27,7 +27,7 @@ const STEPS = [
     title: 'Tiếp nhận Y tế & Đoàn tụ',
     desc: 'Đội cứu trợ tiếp cận hiện trường, sơ cứu và đưa bé tới phòng khám đối tác 24/7 để chữa trị hoặc đối soát thông tin đưa bé về với chủ nhân.',
     icon: HeartHandshake,
-    tone: 'bg-sage-soft text-[#2f5a22]',
+    tone: 'bg-sage-soft text-sage-dark',
     tag: 'AN TOÀN TUYỆT ĐỐI',
   },
 ]

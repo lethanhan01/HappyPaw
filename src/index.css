@@ -43,6 +43,16 @@
   --color-ink: #2d2622;
   --color-line: #e6d3ad;
 
+  --color-coral-dark: #8f2a1c;
+  --color-coral-hover: #bd3f2f;
+  --color-sage-dark: #2f5a22;
+  --color-sage-hover: #3f6a31;
+  --color-sky-dark: #1f5873;
+  --color-orange-dark: #8a4a0c;
+  --color-pink-dark: #7d2c3f;
+  --color-plum-dark: #573578;
+  --color-map-sand: #efe5c4;
+
   --shadow-soft: 0 5px 0 rgba(107, 65, 40, 0.07), 0 14px 28px -14px rgba(107, 65, 40, 0.3);
   --shadow-pop: 0 4px 0 rgba(107, 65, 40, 0.9);
   --animate-bounce-soft: bounce-soft 1.6s ease-in-out infinite;

@@ -114,7 +114,7 @@ export function CaseDetail({ id, query }: { id: string; query: Record<string, st
   return (
     <UserShell hideFab>
       <div className="mx-auto max-w-6xl">
-        <button onClick={back} className="mb-3 inline-flex items-center gap-1 text-sm font-extrabold text-brown-soft hover:text-brown"><ArrowLeft className="size-4" />Quay lại</button>
+        <Btn variant="ghost" size="sm" onClick={back} icon={<ArrowLeft className="size-4" />} className="mb-3">Quay lại</Btn>
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <StatusBadge status={c.status} critical={c.critical} type={c.type} />
           <Badge tone="cream">{c.id}</Badge>
@@ -133,7 +133,7 @@ export function CaseDetail({ id, query }: { id: string; query: Record<string, st
             {mine && <Card className="p-4"><VerifyStepper kind={hp?.kind ?? 'shelter'} shelter={fl.mismatch ? 'warn' : fl.shelterConfirmed ? 'done' : 'wait'} admin="wait" /></Card>}
           </div>
         )}
-        {c.status === 'resolved' && <div className="mb-5"><Note tone="sage" icon={<Check className="size-5 shrink-0" />}><span>Case đã được giải quyết thành công và không còn hiển thị trên bản đồ realtime.{mine && <> <button className="font-extrabold underline" onClick={() => go(`/case/${c.id}/resolved`)}>Xem kết quả</button></>}</span></Note></div>}
+        {c.status === 'resolved' && <div className="mb-5"><Note tone="sage" icon={<Check className="size-5 shrink-0" />}><span>Case đã được giải quyết thành công và không còn hiển thị trên bản đồ realtime.{mine && <> <Btn variant="ghost" size="sm" className="inline h-auto p-0 font-extrabold underline" onClick={() => go(`/case/${c.id}/resolved`)}>Xem kết quả</Btn></>}</span></Note></div>}
         {fl.mismatch && c.status !== 'resolved' && <div className="mb-5"><MismatchCard onView={() => go(`/case/${c.id}/shelter-confirm`)} /></div>}
 
         <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
@@ -193,7 +193,7 @@ export function CaseDetail({ id, query }: { id: string; query: Record<string, st
             </Card>
 
             <Card className="space-y-2.5 p-5">
-              {hasRescue && c.status === 'active' && <Note tone="butter" icon={<TriangleAlert className="size-5 shrink-0" />}>Bạn đang phụ trách một ca khác (<button className="underline" onClick={() => go(`/case/${myRescue}`)}>{myRescue}</button>). Mỗi người chỉ nhận một ca tại một thời điểm.</Note>}
+              {hasRescue && c.status === 'active' && <Note tone="butter" icon={<TriangleAlert className="size-5 shrink-0" />}>Bạn đang phụ trách một ca khác (<Btn variant="ghost" size="sm" className="inline h-auto p-0 font-extrabold underline" onClick={() => go(`/case/${myRescue}`)}>{myRescue}</Btn>). Mỗi người chỉ nhận một ca tại một thời điểm.</Note>}
               {primary && <div className="hidden lg:block">{primary}</div>}
               {mine && c.status === 'pending' && c.shelterId && <Btn size="lg" full variant="secondary" onClick={() => go(`/case/${c.id}/shelter-confirm`)}>Xem xác nhận từ nơi tiếp nhận</Btn>}
               {c.status !== 'resolved' && (
@@ -265,7 +265,7 @@ export function UpdateLocation({ id }: { id: string }) {
   return (
     <UserShell>
       <div className="mx-auto max-w-4xl">
-        <button onClick={back} className="mb-2 inline-flex items-center gap-1 text-sm font-extrabold text-brown-soft"><ArrowLeft className="size-4" />Quay lại</button>
+        <Btn variant="ghost" size="sm" onClick={back} icon={<ArrowLeft className="size-4" />} className="mb-2">Quay lại</Btn>
         <h1 className="bubble mb-5 font-display text-4xl font-extrabold">Cập nhật vị trí mới</h1>
         <div className="grid gap-5 lg:grid-cols-2">
           <div>
@@ -341,8 +341,8 @@ export function RescueProgress({ id }: { id: string }) {
                   )
                   const cls = 'flex min-h-[56px] w-full items-center gap-3 rounded-2xl border-2 px-3 py-2 text-left'
                   if (current && i < 3) return (
-                    <li key={l}><button type="button" onClick={() => setProofProgress(i + 1)} className={cx(cls, 'border-brown bg-butter shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none')}>
-                      {circle}<span className="flex-1 text-[15px] font-extrabold">{l}</span><span className="rounded-full border-2 border-brown bg-white px-2.5 py-1 text-xs font-extrabold">Bấm khi xong</span></button></li>
+                    <li key={l}><Btn type="button" variant="ghost" onClick={() => setProofProgress(i + 1)} className={cx(cls, 'border-brown bg-butter shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none')}>
+                      {circle}<span className="flex-1 text-[15px] font-extrabold">{l}</span><span className="rounded-full border-2 border-brown bg-white px-2.5 py-1 text-xs font-extrabold">Bấm khi xong</span></Btn></li>
                   )
                   return (
                     <li key={l}><div aria-current={current ? 'step' : undefined} className={cx(cls, done ? 'border-sage bg-sage-soft' : current ? 'border-brown bg-butter' : 'border-line bg-cream-2/60 opacity-60')}>
@@ -414,14 +414,14 @@ export function Proof({ id }: { id: string }) {
   return (
     <UserShell hideFab>
       <div className="mx-auto max-w-2xl">
-        <button onClick={() => go(`/case/${c.id}/rescue`)} className="mb-2 inline-flex h-10 items-center gap-1 text-sm font-extrabold text-brown-soft"><ArrowLeft className="size-4" />Quay lại</button>
+        <Btn variant="ghost" size="sm" onClick={() => go(`/case/${c.id}/rescue`)} icon={<ArrowLeft className="size-4" />} className="mb-2">Quay lại</Btn>
         <h1 className="mb-1 font-display text-3xl font-extrabold md:text-4xl">Gửi xác nhận cứu hộ</h1>
         <p className="mb-5 font-semibold text-brown-soft">Cảm ơn bạn đã giúp bé. Tải 3 ảnh để Happy Paw xác minh nhanh hơn.</p>
         <Card className="space-y-5 p-4 md:p-7">
           <Field label="Điểm bàn giao">
             {hp ? <PlaceRow place={hp.place} trailing={<Badge tone="cream">{kindLabel(hp.kind)}</Badge>} />
-              : <Note tone="butter" icon={<TriangleAlert className="size-5 shrink-0" />}>Bạn chưa chọn điểm bàn giao. <button className="underline" onClick={() => go(`/case/${c.id}/rescue`)}>Chọn ngay</button></Note>}
-            {hp && <button onClick={() => go(`/case/${c.id}/rescue`)} className="mt-1 h-10 text-sm font-extrabold text-brown-soft underline">Đổi điểm bàn giao</button>}
+              : <Note tone="butter" icon={<TriangleAlert className="size-5 shrink-0" />}>Bạn chưa chọn điểm bàn giao. <Btn variant="ghost" size="sm" className="inline h-auto p-0 font-extrabold underline" onClick={() => go(`/case/${c.id}/rescue`)}>Chọn ngay</Btn></Note>}
+            {hp && <Btn variant="ghost" size="sm" onClick={() => go(`/case/${c.id}/rescue`)} className="mt-1 h-10 text-sm font-extrabold text-brown-soft underline">Đổi điểm bàn giao</Btn>}
           </Field>
           {slots.map((s, i) => (
             <Field key={s.label} label={`${i + 1}. ${s.label}`} required>
@@ -509,7 +509,7 @@ export function Flyer({ id }: { id: string }) {
   return (
     <UserShell>
       <div className="mx-auto max-w-5xl">
-        <button onClick={back} className="mb-2 inline-flex items-center gap-1 text-sm font-extrabold text-brown-soft"><ArrowLeft className="size-4" />Quay lại</button>
+        <Btn variant="ghost" size="sm" onClick={back} icon={<ArrowLeft className="size-4" />} className="mb-2">Quay lại</Btn>
         <h1 className="bubble mb-5 font-display text-4xl font-extrabold">Tạo tờ rơi tìm boss</h1>
         <div className="grid gap-6 md:grid-cols-[1fr_380px]">
           <Card className="order-2 space-y-4 p-5 md:order-1">
@@ -538,7 +538,7 @@ export function Flyer({ id }: { id: string }) {
       <Modal open={share} onClose={() => setShare(false)} title="Chia sẻ tờ rơi">
         <div className="grid grid-cols-2 gap-3">
           {[['Facebook Group', Facebook], ['Messenger', MessageCircle], ['Copy link', Copy], ['Tải xuống', Download]].map(([l, I]: any) => (
-            <button key={l} onClick={() => { toast(l === 'Copy link' ? 'Đã sao chép liên kết' : `Đã chia sẻ qua ${l} (demo)`); setShare(false) }} className="flex flex-col items-center gap-2 rounded-3xl border-2 border-brown bg-cream-2 p-5 font-extrabold transition hover:bg-butter"><I className="size-7" />{l}</button>
+            <Btn key={l} variant="ghost" onClick={() => { toast(l === 'Copy link' ? 'Đã sao chép liên kết' : `Đã chia sẻ qua ${l} (demo)`); setShare(false) }} className="flex h-auto flex-col items-center gap-2 rounded-3xl border-2 border-brown bg-cream-2 p-5 font-extrabold transition hover:bg-butter"><I className="size-7" />{l}</Btn>
           ))}
         </div>
       </Modal>
