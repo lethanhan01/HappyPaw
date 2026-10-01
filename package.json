@@ -1,14 +1,15 @@
 {
-  "name": "figma-make-app",
+  "name": "happy-paws-website",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "packageManager": "pnpm@10.34.3",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run check:conventions && vite build",
     "preview": "vite preview",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "check:conventions": "node scripts/check-conventions.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.49.0",

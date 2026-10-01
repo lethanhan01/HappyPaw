@@ -1,0 +1,18 @@
+import type { Report } from '@/types/report'
+
+export const REPORTS: Report[] = [
+  { id: 'RP-301', reporter: 'u2', reported: 'u14', reason: 'Đòi tiền', caseId: 'HP-1042', created: '2 giờ trước', severity: 'High', status: 'Mới', note: 'Người này nhắn tin đòi chuyển 2 triệu trước khi "trả" bé.' },
+  { id: 'RP-302', reporter: 'u7', reported: 'u14', reason: 'Giả mạo người tìm thấy', caseId: 'HP-1044', created: '3 giờ trước', severity: 'Critical', status: 'Mới', note: 'Ảnh bé trong tin đăng lấy từ bài khác.' },
+  { id: 'RP-303', reporter: 'u9', reported: 'u10', reason: 'Spam', caseId: 'HP-1047', created: '5 giờ trước', severity: 'Low', status: 'Đang xem xét', note: 'Đăng lặp lại nhiều tin giống nhau.' },
+  { id: 'RP-304', reporter: 'u5', reported: 'u10', reason: 'Khả nghi bắt trộm', caseId: 'HP-1045', created: '6 giờ trước', severity: 'Critical', status: 'Mới', note: 'Hỏi vị trí chi tiết của nhiều bé nhỏ trong cùng một khu.' },
+  { id: 'RP-305', reporter: 'u3', reported: 'u14', reason: 'Lừa đảo', caseId: 'HP-1051', created: 'Hôm qua', severity: 'High', status: 'Đang xem xét', note: 'Số điện thoại trùng với 3 tài khoản khác.' },
+  { id: 'RP-306', reporter: 'u1', reported: 'u10', reason: 'Địa điểm đáng ngờ', caseId: 'HP-1043', created: 'Hôm qua', severity: 'Medium', status: 'Mới', note: 'Yêu cầu mang bé tới một địa chỉ lạ.' },
+  { id: 'RP-307', reporter: 'u12', reported: 'u5', reason: 'Nội dung nguy hiểm', caseId: 'HP-1039', created: '2 ngày trước', severity: 'Low', status: 'Đã xử lý', note: 'Chia sẻ vị trí chính xác của bé bị thương.' },
+  { id: 'RP-308', reporter: 'u13', reported: 'u14', reason: 'Giả mạo chủ nuôi', caseId: 'HP-1050', created: '2 ngày trước', severity: 'High', status: 'Mới', note: 'Nhận là chủ bé nhưng không có ảnh gốc.' },
+  { id: 'RP-309', reporter: 'u6', reported: 'u10', reason: 'Spam', caseId: 'HP-1053', created: '3 ngày trước', severity: 'Low', status: 'Đã xử lý', note: 'Quảng cáo dịch vụ trong phần bình luận.' },
+]
+
+export const REASONS = [
+  'Khả nghi bắt trộm', 'Đòi tiền', 'Giả mạo chủ nuôi', 'Giả mạo người tìm thấy',
+  'Spam', 'Lừa đảo', 'Nội dung nguy hiểm', 'Địa điểm đáng ngờ',
+]

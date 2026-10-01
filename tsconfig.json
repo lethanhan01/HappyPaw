@@ -8,7 +8,15 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@ui": ["./src/components/ui/index.ts"],
+      "@ui/*": ["./src/components/ui/*"],
+      "@features": ["./src/features/index.ts"],
+      "@features/*": ["./src/features/*"],
+      "@store": ["./src/store/index.ts"],
+      "@store/*": ["./src/store/*"],
+      "@lib": ["./src/lib/index.ts"],
+      "@lib/*": ["./src/lib/*"]
     },
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,

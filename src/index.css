@@ -1,6 +1,17 @@
+/* ================================================================
+   HAPPY PAWS — DESIGN SYSTEM
+   Section 1: Font Imports
+   Section 2: Tailwind CSS v4 + Design Tokens (@theme)
+   Section 3: Keyframe Animations
+   Section 4: Base Reset & Typography
+   Section 5: Custom Utility Classes
+   ================================================================ */
+
+/* --- Section 1: Font Imports --- */
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
+/* --- Section 2: Design Tokens --- */
 @theme {
   --font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif;
   --font-sans: 'Nunito', system-ui, sans-serif;
@@ -32,6 +43,16 @@
   --color-ink: #2d2622;
   --color-line: #e6d3ad;
 
+  --color-coral-dark: #8f2a1c;
+  --color-coral-hover: #bd3f2f;
+  --color-sage-dark: #2f5a22;
+  --color-sage-hover: #3f6a31;
+  --color-sky-dark: #1f5873;
+  --color-orange-dark: #8a4a0c;
+  --color-pink-dark: #7d2c3f;
+  --color-plum-dark: #573578;
+  --color-map-sand: #efe5c4;
+
   --shadow-soft: 0 5px 0 rgba(107, 65, 40, 0.07), 0 14px 28px -14px rgba(107, 65, 40, 0.3);
   --shadow-pop: 0 4px 0 rgba(107, 65, 40, 0.9);
   --animate-bounce-soft: bounce-soft 1.6s ease-in-out infinite;
@@ -40,6 +61,7 @@
   --animate-pulse-ring: pulse-ring 2s ease-out infinite;
 }
 
+/* --- Section 3: Keyframe Animations --- */
 @keyframes bounce-soft {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
@@ -71,7 +93,12 @@
   100% { transform: scale(1); }
 }
 
-html, body, #root { min-height: 100%; }
+/* --- Section 4: Base Reset & Typography --- */
+html, body, #root {
+  min-height: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
 body {
   margin: 0;
   background: var(--color-cream);
@@ -91,15 +118,24 @@ button { font-family: inherit; cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 :focus-visible { outline: 3px solid var(--color-butter-2); outline-offset: 2px; }
 
+/* --- Section 5: Custom Utility Classes --- */
 .font-display { font-family: var(--font-display); }
 .bubble {
   font-family: var(--font-display);
   font-weight: 800;
   color: #fff;
-  -webkit-text-stroke: 7px var(--color-brown);
+  -webkit-text-stroke: 4px var(--color-brown);
   paint-order: stroke fill;
   letter-spacing: 0.01em;
-  line-height: 1;
+  line-height: 1.08;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+@media (min-width: 640px) {
+  .bubble {
+    -webkit-text-stroke: 7px var(--color-brown);
+    line-height: 1;
+  }
 }
 .bubble-yellow { color: var(--color-butter); }
 

@@ -28,6 +28,10 @@ react(),
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@ui': path.resolve(__dirname, './src/components/ui'),
+        '@features': path.resolve(__dirname, './src/features'),
+        '@store': path.resolve(__dirname, './src/store'),
+        '@lib': path.resolve(__dirname, './src/lib'),
       },
     },
     server: {
