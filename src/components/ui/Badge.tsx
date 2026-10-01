@@ -17,9 +17,19 @@ const tones: Record<string, string> = {
   brown: 'bg-cream-2 text-brown border-line',
 }
 
-export function Badge({ tone = 'brown', icon, children, className }: { tone?: keyof typeof tones | string; icon?: ReactNode; children: ReactNode; className?: string }) {
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  tone?: keyof typeof tones | string
+  icon?: ReactNode
+  children: ReactNode
+  className?: string
+}
+
+export function Badge({ tone = 'brown', icon, children, className, ...props }: BadgeProps) {
   return (
-    <span className={cx('inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-extrabold', tones[tone], className)}>
+    <span
+      className={cx('inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-extrabold', tones[tone], className)}
+      {...props}
+    >
       {icon}{children}
     </span>
   )
