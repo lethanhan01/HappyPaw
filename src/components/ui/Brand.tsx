@@ -24,12 +24,14 @@ export function Logo({ onClick, compact }: { onClick?: () => void; compact?: boo
       className="flex items-center gap-2.5 group cursor-pointer text-left select-none"
       aria-label="Happy Paws"
     >
-      <span className="grid size-10 place-items-center rounded-2xl border-[2.5px] border-brown bg-butter text-brown shadow-[0_3px_0_var(--color-brown)] group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_0_var(--color-brown)] transition overflow-hidden p-1">
-        <img src={logoSvg} alt="Happy Paws emblem" className="size-8 object-contain scale-[1.35]" />
-      </span>
+      <img
+        src={logoSvg}
+        alt="Happy Paws emblem"
+        className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
+      />
       {!compact && (
         <span className="whitespace-nowrap font-display text-[22px] font-extrabold leading-none tracking-tight text-brown">
-          HAPPY <span className="rounded-lg bg-butter px-1.5 py-0.5 border-2 border-brown">PAWS</span>
+          HAPPY <span className="rounded-lg bg-butter/60 px-1.5 py-0.5 text-brown">PAWS</span>
         </span>
       )}
     </button>

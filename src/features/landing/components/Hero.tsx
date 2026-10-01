@@ -94,16 +94,16 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
 
           {/* Right Column: Visual Graphic & Real Pet Showcase */}
           <div className="relative mx-auto flex w-full max-w-lg flex-col items-center justify-center lg:max-w-none">
-            {/* Background frame with real dog photo */}
-            <div className="relative size-72 sm:size-96 rounded-[44px] border-[3.5px] border-brown bg-butter p-3 sm:p-4 shadow-[0_10px_0_var(--color-brown)] flex items-center justify-center overflow-visible group">
-              {/* Main Pet Portrait (dog.jpg) */}
-              <div className="relative size-full overflow-hidden rounded-[34px] border-2 border-brown bg-butter-soft/50 shadow-inner">
+            {/* Visual Graphic & Real Pet Showcase Frame */}
+            <div className="relative size-72 sm:size-96 flex items-center justify-center">
+              {/* Main Pet Portrait (dog.jpg) Edge-to-Edge */}
+              <div className="relative size-full overflow-hidden rounded-[38px] sm:rounded-[44px] border-[3.5px] border-brown shadow-[0_10px_0_var(--color-brown)] group bg-paper">
                 <img
                   src={dogHero}
                   alt="Chú cún vui vẻ trên nền vàng"
                   className="size-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brown/60 via-transparent to-transparent p-3 pt-8 text-white">
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brown/70 via-transparent to-transparent p-3 pt-8 text-white">
                   <p className="font-display text-xs sm:text-sm font-extrabold flex items-center gap-1.5 drop-shadow">
                     🐾 Milo · Cocker Spaniel
                   </p>
