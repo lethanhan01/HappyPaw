@@ -6,7 +6,6 @@ import {
   Map as MapIcon,
   PawPrint,
   Plus,
-  Search,
   Users,
   ShieldAlert,
   User,
@@ -14,7 +13,7 @@ import {
   Settings2,
 } from 'lucide-react'
 import { useApp } from '@/store'
-import { Avatar, Btn, IconBtn, Input, Logo, cx } from '@ui'
+import { Avatar, Btn, IconBtn, Logo, cx } from '@ui'
 import { USERS } from '@/constants/mock/users'
 
 const NAV = [
@@ -63,47 +62,41 @@ export default function UserShell({
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b-2 border-brown/15 bg-cream/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-[1500px] items-center gap-2 px-3 md:gap-5 md:px-6">
-          {mobileHeaderContent ? (
-            <>
-              <div className="hidden sm:block">
-                <Logo onClick={() => go(auth === 'guest' ? '/' : '/home')} />
-              </div>
-              <div className="flex-1 min-w-0 mr-1 sm:hidden">
-                {mobileHeaderContent}
-              </div>
-            </>
-          ) : (
-            <Logo onClick={() => go(auth === 'guest' ? '/' : '/home')} />
-          )}
-          <nav className="ml-4 hidden items-center gap-1 lg:flex" aria-label="Điều hướng chính">
-            {NAV.map((n) => (
-              <Btn
-                key={n.to}
-                variant={on(path, n.match) ? 'primary' : 'ghost'}
-                size="sm"
-                onClick={() => go(n.to)}
-                aria-current={on(path, n.match) ? 'page' : undefined}
-                className={cx(
-                  '!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold',
-                  !on(path, n.match) && 'text-brown/75 hover:bg-brown/10 hover:text-brown',
-                )}
-              >
-                {n.label}
-              </Btn>
-            ))}
-          </nav>
-          <div className="relative ml-auto hidden max-w-xs flex-1 md:block">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 z-10 size-4 -translate-y-1/2 text-brown/50" />
-            <Input
-              size="sm"
-              onKeyDown={(e) => e.key === 'Enter' && go('/home')}
-              placeholder="Tìm quanh đây…"
-              aria-label="Tìm kiếm"
-              className="!h-11 !rounded-full pl-10 pr-4"
-            />
+        <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-3 px-3 md:px-6">
+          <div className="flex shrink-0 items-center">
+            {mobileHeaderContent ? (
+              <>
+                <div className="hidden sm:block">
+                  <Logo onClick={() => go(auth === 'guest' ? '/' : '/home')} />
+                </div>
+                <div className="flex-1 min-w-0 mr-1 sm:hidden">
+                  {mobileHeaderContent}
+                </div>
+              </>
+            ) : (
+              <Logo onClick={() => go(auth === 'guest' ? '/' : '/home')} />
+            )}
           </div>
-          <div className="ml-auto flex items-center gap-2 md:ml-0">
+          <div className="hidden lg:flex flex-1 items-center justify-center">
+            <nav className="flex items-center gap-1.5" aria-label="Điều hướng chính">
+              {NAV.map((n) => (
+                <Btn
+                  key={n.to}
+                  variant={on(path, n.match) ? 'primary' : 'ghost'}
+                  size="sm"
+                  onClick={() => go(n.to)}
+                  aria-current={on(path, n.match) ? 'page' : undefined}
+                  className={cx(
+                    '!rounded-2xl !px-4 !py-2 text-[15px] font-extrabold transition-all',
+                    !on(path, n.match) && 'text-brown/75 hover:bg-brown/10 hover:text-brown',
+                  )}
+                >
+                  {n.label}
+                </Btn>
+              ))}
+            </nav>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
             {auth === 'guest' ? (
               <div className="flex items-center gap-2">
                 <Btn size="sm" variant="ghost" onClick={() => go('/login')}>

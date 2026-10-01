@@ -3,11 +3,6 @@ import {
   SlidersHorizontal,
   Map as MapIcon,
   List,
-  PawPrint,
-  Siren,
-  Home as HomeIcon,
-  Stethoscope,
-  Search as SearchIcon,
   Plus,
   Minus,
   LocateFixed,
@@ -48,13 +43,6 @@ import { CaseCard, CaseCardSkeleton } from '@/components/common'
 
 export { approxLoc } from '@/features/map'
 
-const QUICK = [
-  { label: 'Tìm pet lạc', short: 'Tìm pet', icon: SearchIcon, to: '/report/lost', tone: 'bg-orange-soft' },
-  { label: 'Báo thấy pet', short: 'Báo pet', icon: PawPrint, to: '/report/found', tone: 'bg-butter/70' },
-  { label: 'Cần cứu hộ', short: 'Cứu hộ', icon: Siren, to: '/report/rescue', tone: 'bg-coral-soft' },
-  { label: 'Tìm mái ấm', short: 'Mái ấm', icon: HomeIcon, to: '/shelters', tone: 'bg-sage-soft' },
-  { label: 'Tìm phòng khám', short: 'Phòng khám', icon: Stethoscope, to: '/clinics', tone: 'bg-sky-soft' },
-]
 const TYPES: PinType[] = ['rescue', 'lost', 'shelter', 'clinic', 'warning']
 const STATUSES: [StatusKey, string][] = [
   ['active', 'Đang cần hỗ trợ'],
@@ -201,7 +189,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
     setDraft(f)
     setOpen(true)
   }
-  const mobileFilterBtn = (
+  const filterActionBtn = (
     <IconBtn
       label={`Bộ lọc${n ? ` · ${n}` : ''}`}
       size="sm"
@@ -233,7 +221,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
       onCommit={commit}
       onClearRecent={() => setRecent([])}
       size="md"
-      rightAction={mobileFilterBtn}
+      rightAction={filterActionBtn}
     />
   )
 
@@ -245,31 +233,15 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
       recent={recent}
       onCommit={commit}
       onClearRecent={() => setRecent([])}
-      size={desktop ? 'md' : 'lg'}
+      size="md"
+      rightAction={filterActionBtn}
     />
   )
 
-  const filterBtn = (
-    <Btn
-      variant={n ? 'primary' : 'secondary'}
-      size={desktop ? 'md' : 'lg'}
-      pill
-      onClick={openFilter}
-      aria-label={`Bộ lọc${n ? ` · ${n}` : ''}`}
-      className={cx(
-        'relative inline-flex shrink-0 items-center justify-center gap-2 border-2 border-brown font-extrabold',
-        desktop ? 'h-11 px-4 text-sm' : '!size-12 !p-0 shadow-soft',
-      )}
-    >
-      <SlidersHorizontal className="size-5" />
-      {desktop && <>Bộ lọc{n > 0 && ` · ${n}`}</>}
-      {!desktop && n > 0 && (
-        <span className="absolute -right-1 -top-1 grid size-5 place-items-center rounded-full bg-coral text-[11px] font-extrabold text-white">
-          {n}
-        </span>
-      )}
-    </Btn>
-  )
+  const handleSelectCase = (c: (typeof cases)[number]) => {
+    select({ kind: 'case', id: c.id })
+    api.current?.focus(c.x, c.y, 1.5)
+  }
 
   const resultList = loading ? (
     <div className="space-y-3">
@@ -290,37 +262,14 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
         .filter((c) => desktop || sel?.id !== c.id)
         .map((c) => (
           <div key={c.id} onMouseEnter={() => setHoverId(c.id)} onMouseLeave={() => setHoverId(null)}>
-            <CaseCard c={c} compact selected={sel?.id === c.id} onSelect={() => select({ kind: 'case', id: c.id })} />
+            <CaseCard
+              c={c}
+              compact
+              selected={sel?.id === c.id}
+              onSelect={() => handleSelectCase(c)}
+            />
           </div>
         ))}
-    </div>
-  )
-
-  const summary = (
-    <div className="rounded-3xl border-2 border-brown bg-butter/60 p-3.5">
-      <p className="font-display text-xl font-extrabold leading-tight">
-        {list.filter((c) => c.status !== 'resolved').length} case đang hoạt động gần bạn
-      </p>
-      {examples.length > 0 && (
-        <ul className="mt-1 space-y-0.5 text-sm font-bold">
-          {examples.map((c) => (
-            <li key={c.id}>
-              <Btn
-                variant="ghost"
-                size="sm"
-                className="!p-0 !h-auto !border-0 text-left hover:underline font-bold"
-                onClick={() => select({ kind: 'case', id: c.id })}
-              >
-                {c.district} —{' '}
-                {c.type === 'rescue'
-                  ? 'cần cứu hộ'
-                  : `${c.species.toLowerCase()} ${c.color.toLowerCase()} ${c.type === 'found' ? 'được báo thấy' : 'bị lạc'}`}
-                .
-              </Btn>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   )
 
@@ -343,71 +292,46 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
       predicted={selLost ? { x: selCase.x, y: selCase.y, r: 0.5 * KM } : null}
       trail={selLost ? selCase.trail?.map((t) => ({ x: t.x, y: t.y, t: t.t })) : undefined}
       controlsClass="bottom-6"
-      focusKey={selCase ? selCase.id : undefined}
+      focusKey={sel ? sel.id : undefined}
     />
   )
 
   return (
     <UserShell fullBleed hideFab mobileHeaderContent={mobileSearch}>
       <div className="relative h-[calc(100dvh-64px-68px)] overflow-hidden lg:h-[calc(100dvh-64px)] lg:flex lg:flex-row">
-        {/* AREA 1: Desktop Left Control Sidebar */}
+        {/* AREA 1: Desktop Left Control & Case List Sidebar */}
         {desktop && (
-          <aside className="flex w-[320px] xl:w-[350px] shrink-0 min-h-0 flex-col border-r-2 border-brown/15 bg-cream">
-            <div className="px-4 pt-4">
-              <p className="font-display text-2xl font-extrabold leading-tight">
-                Chào Linh
-              </p>
-              <p className="text-sm text-brown-soft">Cùng tìm lại những chiếc đuôi nhỏ.</p>
-              <div className="mt-3 grid grid-cols-5 gap-1.5">
-                {QUICK.map((a) => (
-                  <Btn
-                    key={a.label}
-                    onClick={() => go(a.to)}
-                    variant="ghost"
-                    className={cx(
-                      'flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl border-2 border-brown/20 !px-1 !py-1.5 text-center text-[10.5px] font-extrabold !whitespace-normal transition hover:-translate-y-0.5 hover:border-brown',
-                      a.tone,
-                    )}
-                    title={a.label}
-                  >
-                    <a.icon className="size-5 shrink-0" />
-                    <span className="leading-tight text-brown line-clamp-2">{a.label}</span>
-                  </Btn>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-3 p-4">
+          <aside className="flex w-[380px] xl:w-[410px] shrink-0 min-h-0 flex-col border-r-2 border-brown/15 bg-cream">
+            {/* Header SearchBar with integrated Filter button */}
+            <div className="p-3.5 border-b-2 border-brown/10 bg-cream shrink-0">
               {search}
-              <div className="flex items-center gap-2">
-                {filterBtn}
-                <Segmented
-                  className="min-w-0 flex-1 justify-between [&>button]:px-2.5"
-                  value={String(f.radius)}
-                  onChange={(v) => setF({ ...f, radius: Number(v) })}
-                  options={[1, 3, 5, 10].map((r) => ({ v: String(r), label: `${r} km` }))}
-                />
-              </div>
             </div>
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 pb-4">
-              {summary}
-              <div className="rounded-3xl border-2 border-line bg-paper/85 p-3.5 space-y-2">
-                <p className="text-xs font-extrabold uppercase tracking-wide text-brown-soft">Lọc nhanh loài</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {['Tất cả', 'Chó', 'Mèo', 'Khác'].map((s) => {
-                    const isAll = s === 'Tất cả'
-                    const active = isAll ? !f.species : f.species === s
-                    return (
-                      <Chip
-                        key={s}
-                        active={active}
-                        onClick={() => setF({ ...f, species: isAll ? '' : f.species === s ? '' : s })}
-                      >
-                        {s}
-                      </Chip>
-                    )
-                  })}
-                </div>
+
+            {/* Section Header: Danh sách lân cận */}
+            <div className="flex items-center justify-between px-4 py-3 border-b-2 border-line bg-cream/40 shrink-0">
+              <div>
+                <h3 className="font-display text-base font-extrabold text-brown">
+                  Danh sách lân cận
+                </h3>
+                <p className="text-xs font-bold text-brown-soft">
+                  {list.length} ca trong khu vực
+                </p>
               </div>
+              {n > 0 && (
+                <Badge
+                  tone="butter"
+                  className="cursor-pointer transition hover:bg-butter"
+                  onClick={openFilter}
+                  title="Nhấn để chỉnh sửa bộ lọc"
+                >
+                  Đang lọc · {n}
+                </Badge>
+              )}
+            </div>
+
+            {/* Scrollable list of CaseCards */}
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3.5">
+              {resultList}
             </div>
           </aside>
         )}
@@ -591,53 +515,34 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
           )}
         </section>
 
-        {/* AREA 3: Desktop Right Contextual Case Panel */}
-        {desktop && view === 'map' && (
-          <aside className="w-[370px] xl:w-[410px] shrink-0 min-h-0 flex flex-col border-l-2 border-brown/15 bg-paper z-20 shadow-soft animate-[rise_.2s_both]">
-            {sel ? (
-              <div className="flex h-full flex-col min-h-0">
-                <div className="flex items-center justify-between border-b-2 border-line bg-cream/40 px-4 py-3">
-                  <Btn
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSel(null)}
-                    icon={<ArrowLeft className="size-4" />}
-                    className="!h-auto !px-2.5 !py-1.5 text-xs font-extrabold text-brown"
-                  >
-                    Quay lại danh sách
-                  </Btn>
-                  <IconBtn
-                    label="Đóng chi tiết ca"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSel(null)}
-                    className="!size-8 !rounded-full hover:!bg-brown/10"
-                  >
-                    <X className="size-4" />
-                  </IconBtn>
-                </div>
-                <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                  <MapPreview sel={sel} onClose={() => setSel(null)} />
-                </div>
+        {/* AREA 3: Desktop Right Contextual Case Panel (Docked Sidebar) */}
+        {desktop && view === 'map' && sel && (
+          <aside className="w-[380px] xl:w-[410px] shrink-0 min-h-0 flex flex-col border-l-2 border-brown/15 bg-paper z-20 shadow-soft animate-[rise_.2s_both]">
+            <div className="flex h-full flex-col min-h-0">
+              <div className="flex items-center justify-between border-b-2 border-line bg-cream/40 px-4 py-3 shrink-0">
+                <Btn
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSel(null)}
+                  icon={<ArrowLeft className="size-4" />}
+                  className="!h-auto !px-2.5 !py-1.5 text-xs font-extrabold text-brown hover:bg-brown/10"
+                >
+                  Đóng chi tiết
+                </Btn>
+                <IconBtn
+                  label="Đóng chi tiết ca"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSel(null)}
+                  className="!size-8 !rounded-full hover:!bg-brown/10"
+                >
+                  <X className="size-4" />
+                </IconBtn>
               </div>
-            ) : (
-              <div className="flex h-full flex-col min-h-0">
-                <div className="flex items-center justify-between border-b-2 border-line bg-cream/30 px-4 py-3">
-                  <div>
-                    <h3 className="font-display text-base font-extrabold text-brown">
-                      Danh sách lân cận
-                    </h3>
-                    <p className="text-xs font-bold text-brown-soft">
-                      {list.length} ca trong bán kính {f.radius} km
-                    </p>
-                  </div>
-                  {n > 0 && <Badge tone="butter">Đang lọc · {n}</Badge>}
-                </div>
-                <div className="min-h-0 flex-1 overflow-y-auto p-3.5 space-y-3">
-                  {resultList}
-                </div>
+              <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                <MapPreview sel={sel} onClose={() => setSel(null)} />
               </div>
-            )}
+            </div>
           </aside>
         )}
       </div>
