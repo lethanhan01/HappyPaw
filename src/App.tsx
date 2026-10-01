@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { AppProvider, useApp, parsePath } from './store'
-import { ToastHost, Empty } from './ui'
-import { userRoute } from './screens/user'
-import { communityRoute } from './screens/community'
-import LandingPage from './screens/landing'
-import AdminApp from './screens/admin'
-import UserShell from './shell'
+import { AppProvider, useApp } from '@/store'
+import { parsePath } from '@/lib'
+import { ToastHost, Empty } from '@ui'
+import { userRoute } from '@/features/user'
+import { communityRoute } from '@/features/community'
+import LandingPage from '@/features/landing'
+import AdminApp from '@/features/admin'
+import UserShell from '@/layouts/UserShell'
 
 function Router() {
   const { path, auth, go } = useApp()

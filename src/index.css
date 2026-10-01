@@ -1,6 +1,17 @@
+/* ================================================================
+   HAPPY PAW — DESIGN SYSTEM
+   Section 1: Font Imports
+   Section 2: Tailwind CSS v4 + Design Tokens (@theme)
+   Section 3: Keyframe Animations
+   Section 4: Base Reset & Typography
+   Section 5: Custom Utility Classes
+   ================================================================ */
+
+/* --- Section 1: Font Imports --- */
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
+/* --- Section 2: Design Tokens --- */
 @theme {
   --font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif;
   --font-sans: 'Nunito', system-ui, sans-serif;
@@ -40,6 +51,7 @@
   --animate-pulse-ring: pulse-ring 2s ease-out infinite;
 }
 
+/* --- Section 3: Keyframe Animations --- */
 @keyframes bounce-soft {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
@@ -71,6 +83,7 @@
   100% { transform: scale(1); }
 }
 
+/* --- Section 4: Base Reset & Typography --- */
 html, body, #root { min-height: 100%; }
 body {
   margin: 0;
@@ -91,6 +104,7 @@ button { font-family: inherit; cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 :focus-visible { outline: 3px solid var(--color-butter-2); outline-offset: 2px; }
 
+/* --- Section 5: Custom Utility Classes --- */
 .font-display { font-family: var(--font-display); }
 .bubble {
   font-family: var(--font-display);
