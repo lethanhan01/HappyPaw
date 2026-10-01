@@ -6,7 +6,7 @@ export interface User {
   cases: number
   rescues: number
   reports: number
-  status: 'Hoạt động' | 'Cảnh báo' | 'Bị khóa'
+  status: "Hoạt động" | "Cảnh báo" | "Bị khóa"
   verified: boolean
   phone: string
   bio: string
@@ -15,7 +15,7 @@ export interface User {
 
 export interface Notif {
   id: string
-  kind: 'rescue' | 'match' | 'community' | 'safety'
+  kind: "rescue" | "match" | "community" | "safety"
   title: string
   body: string
   ago: string

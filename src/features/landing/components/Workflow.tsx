@@ -1,5 +1,11 @@
-import { Camera, Radio, HeartHandshake, ArrowRight, ShieldCheck } from 'lucide-react'
-import { Btn, Badge } from '@/components/ui'
+import {
+  Camera,
+  Radio,
+  HeartHandshake,
+  ArrowRight,
+  ShieldCheck,
+} from "lucide-react"
+import { Btn, Badge } from "@/components/ui"
 
 interface RescueWorkflowProps {
   onReportClick: () => void
@@ -7,34 +13,37 @@ interface RescueWorkflowProps {
 
 const STEPS = [
   {
-    step: '01',
-    title: 'Chụp ảnh & Định vị',
-    desc: 'Khi bạn bắt gặp một bé đi lạc hoặc bị thương, chỉ cần bật vị trí và tải ảnh lên. Hệ thống tự động ghi nhận tọa độ phố và quận trong vòng 30 giây.',
+    step: "01",
+    title: "Chụp ảnh & Định vị",
+    desc: "Khi bạn bắt gặp một bé đi lạc hoặc bị thương, chỉ cần bật vị trí và tải ảnh lên. Hệ thống tự động ghi nhận tọa độ phố và quận trong vòng 30 giây.",
     icon: Camera,
-    tone: 'bg-butter text-brown',
-    tag: '30 GIÂY THAO TÁC',
+    tone: "bg-butter text-brown",
+    tag: "30 GIÂY THAO TÁC",
   },
   {
-    step: '02',
-    title: 'AI & Cộng đồng Kết nối',
-    desc: 'Công nghệ AI phân tích đặc điểm nhận diện, đồng thời gửi thông báo khẩn tới các tình nguyện viên và mái ấm gần nhất trong bán kính 3km.',
+    step: "02",
+    title: "AI & Cộng đồng Kết nối",
+    desc: "Công nghệ AI phân tích đặc điểm nhận diện, đồng thời gửi thông báo khẩn tới các tình nguyện viên và mái ấm gần nhất trong bán kính 3km.",
     icon: Radio,
-    tone: 'bg-coral-soft text-coral-dark',
-    tag: 'PHẢN HỒI TỰ ĐỘNG',
+    tone: "bg-coral-soft text-coral-dark",
+    tag: "PHẢN HỒI TỰ ĐỘNG",
   },
   {
-    step: '03',
-    title: 'Tiếp nhận Y tế & Đoàn tụ',
-    desc: 'Đội cứu trợ tiếp cận hiện trường, sơ cứu và đưa bé tới phòng khám đối tác 24/7 để chữa trị hoặc đối soát thông tin đưa bé về với chủ nhân.',
+    step: "03",
+    title: "Tiếp nhận Y tế & Đoàn tụ",
+    desc: "Đội cứu trợ tiếp cận hiện trường, sơ cứu và đưa bé tới phòng khám đối tác 24/7 để chữa trị hoặc đối soát thông tin đưa bé về với chủ nhân.",
     icon: HeartHandshake,
-    tone: 'bg-sage-soft text-sage-dark',
-    tag: 'AN TOÀN TUYỆT ĐỐI',
+    tone: "bg-sage-soft text-sage-dark",
+    tag: "AN TOÀN TUYỆT ĐỐI",
   },
 ]
 
 export default function RescueWorkflow({ onReportClick }: RescueWorkflowProps) {
   return (
-    <section id="workflow" className="w-full max-w-full overflow-hidden py-12 sm:py-20 md:py-24 bg-cream">
+    <section
+      id="workflow"
+      className="w-full max-w-full overflow-hidden py-12 sm:py-20 md:py-24 bg-cream"
+    >
       <div className="mx-auto max-w-[1440px] px-3.5 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto">
@@ -44,7 +53,8 @@ export default function RescueWorkflow({ onReportClick }: RescueWorkflowProps) {
             <span className="bubble-yellow">cứu sống một sinh mệnh</span>
           </h2>
           <p className="mt-2.5 sm:mt-3 text-sm sm:text-base md:text-lg font-bold text-brown-soft leading-relaxed">
-            Bất kỳ ai cũng có thể trở thành người hùng cứu trợ chỉ với một chiếc điện thoại thông minh.
+            Bất kỳ ai cũng có thể trở thành người hùng cứu trợ chỉ với một chiếc
+            điện thoại thông minh.
           </p>
         </div>
 
@@ -60,7 +70,9 @@ export default function RescueWorkflow({ onReportClick }: RescueWorkflowProps) {
                   <span className="font-display text-3xl sm:text-4xl font-extrabold text-brown/25">
                     {s.step}
                   </span>
-                  <span className={`inline-grid size-11 sm:size-12 place-items-center rounded-2xl border-2 border-brown ${s.tone} shadow-soft`}>
+                  <span
+                    className={`inline-grid size-11 sm:size-12 place-items-center rounded-2xl border-2 border-brown ${s.tone} shadow-soft`}
+                  >
                     <s.icon className="size-5 sm:size-6" />
                   </span>
                 </div>
@@ -92,7 +104,8 @@ export default function RescueWorkflow({ onReportClick }: RescueWorkflowProps) {
             Bạn vừa nhìn thấy một bé chó mèo cần trợ giúp?
           </h3>
           <p className="mt-2 text-sm sm:text-base font-bold text-brown-soft max-w-lg mx-auto leading-relaxed">
-            Đừng chần chừ! Mỗi phút giây đều vô cùng quý giá đối với các bé bị thương nặng.
+            Đừng chần chừ! Mỗi phút giây đều vô cùng quý giá đối với các bé bị
+            thương nặng.
           </p>
           <div className="mt-5 sm:mt-6 flex justify-center">
             <Btn

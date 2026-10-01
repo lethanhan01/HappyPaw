@@ -1,15 +1,16 @@
-import type { ReactNode } from 'react'
-import { Check } from 'lucide-react'
-import { cx } from '@/lib/cn'
-import { Btn } from './Button'
-import { CatIllo, PetIllo } from './Media'
+import type { ReactNode } from "react"
+import { Check } from "lucide-react"
+import { cx } from "@/lib/cn"
+import { Btn } from "./Button"
+import { CatIllo, PetIllo } from "./Media"
+import { Paw } from "./Brand"
 
 export function Empty({
   title,
   body,
   cta,
   onCta,
-  species = 'Chó',
+  species = "Chó",
 }: {
   title: string
   body?: string
@@ -24,18 +25,22 @@ export function Empty({
       </div>
       <h3 className="font-display text-xl font-extrabold">{title}</h3>
       {body && <p className="text-sm text-brown-soft">{body}</p>}
-      {cta && <Btn variant="secondary" onClick={onCta}>{cta}</Btn>}
+      {cta && (
+        <Btn variant="secondary" onClick={onCta}>
+          {cta}
+        </Btn>
+      )}
     </div>
   )
 }
 
 export const Skeleton = ({ className }: { className?: string }) => (
-  <div className={cx('animate-pulse rounded-2xl bg-cream-2', className)} />
+  <div className={cx("animate-pulse rounded-2xl bg-cream-2", className)} />
 )
 
 export function ErrorState({
   onRetry,
-  title = 'Ôi, có chút trục trặc rồi',
+  title = "Ôi, có chút trục trặc rồi",
 }: {
   onRetry: () => void
   title?: string
@@ -44,16 +49,23 @@ export function ErrorState({
     <div className="mx-auto flex max-w-sm flex-col items-center gap-3 px-6 py-10 text-center">
       <CatIllo className="size-24 opacity-90" />
       <h3 className="font-display text-xl font-extrabold">{title}</h3>
-      <p className="text-sm text-brown-soft">Không tải được dữ liệu. Bạn kiểm tra kết nối rồi thử lại nhé.</p>
-      <Btn onClick={onRetry} variant="secondary">Thử lại</Btn>
+      <p className="text-sm text-brown-soft">
+        Không tải được dữ liệu. Bạn kiểm tra kết nối rồi thử lại nhé.
+      </p>
+      <Btn onClick={onRetry} variant="secondary">
+        Thử lại
+      </Btn>
     </div>
   )
 }
 
 export function Confetti() {
-  const colors = ['#fff27a', '#f5cfd6', '#a9cc94', '#f6d4a6', '#b9dcec']
+  const colors = ["#fff27a", "#f5cfd6", "#a9cc94", "#f6d4a6", "#b9dcec"]
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 h-full overflow-hidden" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-x-0 top-0 h-full overflow-hidden"
+      aria-hidden
+    >
       {Array.from({ length: 28 }).map((_, i) => (
         <span
           key={i}
@@ -62,7 +74,7 @@ export function Confetti() {
             left: `${(i * 37) % 100}%`,
             background: colors[i % 5],
             animation: `confetti ${1.8 + (i % 5) * 0.3}s ease-in ${(i % 7) * 0.12}s both`,
-            border: '1px solid #6b4128',
+            border: "1px solid #6b4128",
           }}
         />
       ))}
@@ -73,7 +85,7 @@ export function Confetti() {
 export function SuccessScreen({
   title,
   children,
-  species = 'Chó',
+  species = "Chó",
   calm,
 }: {
   title: string
@@ -92,6 +104,22 @@ export function SuccessScreen({
       </div>
       <h2 className="font-display text-3xl font-extrabold">{title}</h2>
       {children}
+    </div>
+  )
+}
+
+export function PageLoader() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
+      <div className="relative flex items-center justify-center">
+        <div className="size-16 animate-ping rounded-full bg-butter/40 absolute" />
+        <div className="size-14 animate-pulse rounded-full bg-butter/60 flex items-center justify-center border-2 border-brown">
+          <Paw className="size-7 text-brown animate-bounce-soft" />
+        </div>
+      </div>
+      <p className="font-display text-sm font-extrabold text-brown animate-pulse">
+        Đang tải...
+      </p>
     </div>
   )
 }

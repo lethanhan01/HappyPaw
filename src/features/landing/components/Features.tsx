@@ -1,67 +1,74 @@
-import { Map, Cpu, ShieldCheck, HeartHandshake, CheckCircle2, ArrowRight } from 'lucide-react'
-import { useApp } from '@/store'
-import { Btn, Badge } from '@/components/ui'
+import {
+  Map,
+  Cpu,
+  ShieldCheck,
+  HeartHandshake,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react"
+import { useApp } from "@/store"
+import { Btn, Badge } from "@/components/ui"
 
 const FEATURES = [
   {
-    id: 'radar',
-    title: 'Bản đồ Radar Cứu trợ Thời gian thực',
-    desc: 'Hệ thống bản đồ định vị các ca nguy kịch và thú cưng lạc tại 12 quận Hà Nội. Tích hợp cảnh báo khu vực có bẫy bả và điểm đen trộm cắp.',
-    badge: 'BẢN ĐỒ SỐ HÀ NỘI',
-    tone: 'sky',
+    id: "radar",
+    title: "Bản đồ Radar Cứu trợ Thời gian thực",
+    desc: "Hệ thống bản đồ định vị các ca nguy kịch và thú cưng lạc tại 12 quận Hà Nội. Tích hợp cảnh báo khu vực có bẫy bả và điểm đen trộm cắp.",
+    badge: "BẢN ĐỒ SỐ HÀ NỘI",
+    tone: "sky",
     icon: Map,
     highlights: [
-      'Lọc bán kính từ 1km đến 10km quanh vị trí bạn',
-      'Định vị điểm đen nguy hiểm (bẫy bả, trộm chó mèo)',
-      'Xem thông tin phòng khám 24/7 gần nhất',
+      "Lọc bán kính từ 1km đến 10km quanh vị trí bạn",
+      "Định vị điểm đen nguy hiểm (bẫy bả, trộm chó mèo)",
+      "Xem thông tin phòng khám 24/7 gần nhất",
     ],
-    action: 'Xem bản đồ radar',
-    route: '/home',
+    action: "Xem bản đồ radar",
+    route: "/home",
   },
   {
-    id: 'ai-match',
-    title: 'Công nghệ AI Image Matching',
-    desc: 'Thuật toán thị giác máy tính đối soát ảnh chụp bé đi lạc và tin báo thấy, nhận diện hoa văn lông, dáng tai, đốm mắt với độ chuẩn xác cao.',
-    badge: 'AI CỨU HỘ ĐỘC QUYỀN',
-    tone: 'plum',
+    id: "ai-match",
+    title: "Công nghệ AI Image Matching",
+    desc: "Thuật toán thị giác máy tính đối soát ảnh chụp bé đi lạc và tin báo thấy, nhận diện hoa văn lông, dáng tai, đốm mắt với độ chuẩn xác cao.",
+    badge: "AI CỨU HỘ ĐỘC QUYỀN",
+    tone: "plum",
     icon: Cpu,
     highlights: [
-      'Tự động so khớp tin báo mất và tin tìm thấy',
-      'Độ tin cậy hiển thị trực quan (AI Match %)',
-      'Phát hiện vết bớt, đốm ngực, dáng tai đặc biệt',
+      "Tự động so khớp tin báo mất và tin tìm thấy",
+      "Độ tin cậy hiển thị trực quan (AI Match %)",
+      "Phát hiện vết bớt, đốm ngực, dáng tai đặc biệt",
     ],
-    action: 'Tìm hiểu AI Match',
-    route: '/ai-match',
+    action: "Tìm hiểu AI Match",
+    route: "/ai-match",
   },
   {
-    id: 'shelters',
-    title: 'Mạng lưới Mái ấm & Thú y 24/7',
-    desc: 'Liên kết hơn 42 trạm cứu trợ tình nguyện và phòng khám thú y được xác minh uy tín. Sẵn sàng tiếp nhận điều trị nội trú và cứu chữa khẩn.',
-    badge: 'ĐỐI TÁC XÁC MINH',
-    tone: 'butter',
+    id: "shelters",
+    title: "Mạng lưới Mái ấm & Thú y 24/7",
+    desc: "Liên kết hơn 42 trạm cứu trợ tình nguyện và phòng khám thú y được xác minh uy tín. Sẵn sàng tiếp nhận điều trị nội trú và cứu chữa khẩn.",
+    badge: "ĐỐI TÁC XÁC MINH",
+    tone: "butter",
     icon: ShieldCheck,
     highlights: [
-      'Phòng khám có bác sĩ trực cấp cứu xuyên đêm',
-      'Minh bạch nhu cầu quyên góp (thức ăn, thuốc, chăn)',
-      'Xe cứu thương thú y hỗ trợ các ca tai nạn nặng',
+      "Phòng khám có bác sĩ trực cấp cứu xuyên đêm",
+      "Minh bạch nhu cầu quyên góp (thức ăn, thuốc, chăn)",
+      "Xe cứu thương thú y hỗ trợ các ca tai nạn nặng",
     ],
-    action: 'Khám phá mạng lưới',
-    route: '/shelters',
+    action: "Khám phá mạng lưới",
+    route: "/shelters",
   },
   {
-    id: 'adoption',
-    title: 'Nhận nuôi Văn minh & Chống Gian lận',
-    desc: 'Xây dựng quy trình nhận nuôi an toàn, yêu cầu phỏng vấn cam kết và lưu trữ nhật ký sức khỏe, ngăn chặn tình trạng trục lợi thương mại.',
-    badge: 'VÌ PHÚC LỢI ĐỘNG VẬT',
-    tone: 'sage',
+    id: "adoption",
+    title: "Nhận nuôi Văn minh & Chống Gian lận",
+    desc: "Xây dựng quy trình nhận nuôi an toàn, yêu cầu phỏng vấn cam kết và lưu trữ nhật ký sức khỏe, ngăn chặn tình trạng trục lợi thương mại.",
+    badge: "VÌ PHÚC LỢI ĐỘNG VẬT",
+    tone: "sage",
     icon: HeartHandshake,
     highlights: [
-      'Xác minh danh tính người nhận nuôi nghiêm ngặt',
-      'Theo dõi phục hồi sức khỏe sau khi về nhà mới',
-      'Hệ thống báo cáo tài khoản có dấu hiệu gian lận',
+      "Xác minh danh tính người nhận nuôi nghiêm ngặt",
+      "Theo dõi phục hồi sức khỏe sau khi về nhà mới",
+      "Hệ thống báo cáo tài khoản có dấu hiệu gian lận",
     ],
-    action: 'Tìm hiểu nhận nuôi',
-    route: '/community',
+    action: "Tìm hiểu nhận nuôi",
+    route: "/community",
   },
 ]
 
@@ -69,8 +76,8 @@ export default function CoreFeatures() {
   const { auth, go, toast } = useApp()
 
   const handleNavigate = (route: string) => {
-    if (auth === 'guest') {
-      toast('Vui lòng đăng nhập để sử dụng tính năng này.', 'warn')
+    if (auth === "guest") {
+      toast("Vui lòng đăng nhập để sử dụng tính năng này.", "warn")
       go(`/login?redirect=${encodeURIComponent(route)}`)
     } else {
       go(route)
@@ -78,7 +85,10 @@ export default function CoreFeatures() {
   }
 
   return (
-    <section id="features" className="w-full max-w-full overflow-hidden py-12 sm:py-20 md:py-24 bg-paper/60 border-y-2 border-line">
+    <section
+      id="features"
+      className="w-full max-w-full overflow-hidden py-12 sm:py-20 md:py-24 bg-paper/60 border-y-2 border-line"
+    >
       <div className="mx-auto max-w-[1440px] px-3.5 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto">
@@ -88,8 +98,9 @@ export default function CoreFeatures() {
             <span className="bubble-yellow">bảo vệ những chiếc đuôi nhỏ</span>
           </h2>
           <p className="mt-2.5 sm:mt-3 text-sm sm:text-base md:text-lg font-bold text-brown-soft leading-relaxed">
-            Happy Paws ứng dụng công nghệ định vị và trí tuệ nhân tạo để số hóa quy trình cứu nạn động vật,
-            rút ngắn thời gian tìm kiếm từ vài tuần xuống chỉ còn vài giờ.
+            Happy Paws ứng dụng công nghệ định vị và trí tuệ nhân tạo để số hóa
+            quy trình cứu nạn động vật, rút ngắn thời gian tìm kiếm từ vài tuần
+            xuống chỉ còn vài giờ.
           </p>
         </div>
 
@@ -104,13 +115,13 @@ export default function CoreFeatures() {
                 <div className="flex items-center justify-between gap-3">
                   <span
                     className={`inline-grid size-14 place-items-center rounded-2xl border-2 border-brown shadow-soft ${
-                      f.tone === 'sky'
-                        ? 'bg-sky-soft text-sky-2'
-                        : f.tone === 'plum'
-                        ? 'bg-plum-soft text-plum'
-                        : f.tone === 'butter'
-                        ? 'bg-butter text-brown'
-                        : 'bg-sage-soft text-sage-2'
+                      f.tone === "sky"
+                        ? "bg-sky-soft text-sky-2"
+                        : f.tone === "plum"
+                          ? "bg-plum-soft text-plum"
+                          : f.tone === "butter"
+                            ? "bg-butter text-brown"
+                            : "bg-sage-soft text-sage-2"
                     }`}
                   >
                     <f.icon className="size-7" />
@@ -128,7 +139,10 @@ export default function CoreFeatures() {
                 {/* Highlight Checkpoints */}
                 <div className="mt-5 space-y-2.5 rounded-2xl border-2 border-line bg-cream/40 p-4">
                   {f.highlights.map((h, i) => (
-                    <div key={i} className="flex items-start gap-2.5 text-sm font-bold text-brown">
+                    <div
+                      key={i}
+                      className="flex items-start gap-2.5 text-sm font-bold text-brown"
+                    >
                       <CheckCircle2 className="size-4 shrink-0 text-sage-2 mt-0.5" />
                       <span>{h}</span>
                     </div>

@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { Menu, X, ArrowRight, LayoutDashboard, Home } from 'lucide-react'
-import { useApp } from '@/store'
-import { Logo, Btn, IconBtn, Avatar } from '@/components/ui'
-import { USERS } from '@/constants/mock/users'
+import { useState } from "react"
+import { Menu, X, ArrowRight, LayoutDashboard, Home } from "lucide-react"
+import { useApp } from "@/store"
+import { Logo, Btn, IconBtn, Avatar } from "@/components/ui"
+import { USERS } from "@/constants/mock/users"
 
 interface LandingNavProps {
   onOpenSos?: () => void
@@ -17,7 +17,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
     setMobileMenuOpen(false)
     const el = document.getElementById(id)
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
+      el.scrollIntoView({ behavior: "smooth" })
     }
   }
 
@@ -26,15 +26,18 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
       <div className="mx-auto flex h-16 sm:h-20 max-w-[1500px] items-center justify-between px-3.5 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <div className="flex items-center lg:flex-1 shrink-0">
-          <Logo onClick={() => go('/')} />
+          <Logo onClick={() => go("/")} />
         </div>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden items-center justify-center gap-1 xl:gap-2 lg:flex" aria-label="Điều hướng chính">
+        <nav
+          className="hidden items-center justify-center gap-1 xl:gap-2 lg:flex"
+          aria-label="Điều hướng chính"
+        >
           <Btn
             variant="ghost"
             size="sm"
-            onClick={() => scrollToSection('recent-cases')}
+            onClick={() => scrollToSection("recent-cases")}
             className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Ca cứu trợ
@@ -42,7 +45,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
           <Btn
             variant="ghost"
             size="sm"
-            onClick={() => scrollToSection('features')}
+            onClick={() => scrollToSection("features")}
             className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Tính năng
@@ -50,7 +53,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
           <Btn
             variant="ghost"
             size="sm"
-            onClick={() => scrollToSection('workflow')}
+            onClick={() => scrollToSection("workflow")}
             className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Quy trình
@@ -58,7 +61,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
           <Btn
             variant="ghost"
             size="sm"
-            onClick={() => scrollToSection('shelters')}
+            onClick={() => scrollToSection("shelters")}
             className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Mạng lưới trạm
@@ -66,7 +69,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
           <Btn
             variant="ghost"
             size="sm"
-            onClick={() => scrollToSection('stories')}
+            onClick={() => scrollToSection("stories")}
             className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Câu chuyện
@@ -75,12 +78,23 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
 
         {/* Action Controls */}
         <div className="flex items-center justify-end gap-2 lg:flex-1 shrink-0">
-          {auth === 'guest' ? (
+          {auth === "guest" ? (
             <div className="hidden md:flex items-center gap-2">
-              <Btn variant="ghost" size="sm" onClick={() => go('/login')} className="whitespace-nowrap">
+              <Btn
+                variant="ghost"
+                size="sm"
+                onClick={() => go("/login")}
+                className="whitespace-nowrap"
+              >
                 Đăng nhập
               </Btn>
-              <Btn pill variant="primary" size="sm" onClick={() => go('/register')} className="whitespace-nowrap">
+              <Btn
+                pill
+                variant="primary"
+                size="sm"
+                onClick={() => go("/register")}
+                className="whitespace-nowrap"
+              >
                 Tham gia ngay
               </Btn>
             </div>
@@ -91,24 +105,36 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
                 pill
                 variant="primary"
                 size="sm"
-                icon={auth === 'admin' ? <LayoutDashboard className="size-4" /> : <Home className="size-4" />}
-                onClick={() => go(auth === 'admin' ? '/admin/dashboard' : '/home')}
+                icon={
+                  auth === "admin" ? (
+                    <LayoutDashboard className="size-4" />
+                  ) : (
+                    <Home className="size-4" />
+                  )
+                }
+                onClick={() =>
+                  go(auth === "admin" ? "/admin/dashboard" : "/home")
+                }
                 className="whitespace-nowrap"
               >
-                {auth === 'admin' ? 'Bảng điều khiển' : 'Vào ứng dụng'}
+                {auth === "admin" ? "Bảng điều khiển" : "Vào ứng dụng"}
               </Btn>
             </div>
           )}
 
           {/* Mobile Menu Toggle Button */}
           <IconBtn
-            label={mobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
+            label={mobileMenuOpen ? "Đóng menu" : "Mở menu"}
             size="md"
             variant="default"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden !size-10 sm:!size-11"
           >
-            {mobileMenuOpen ? <X className="size-5 sm:size-6" /> : <Menu className="size-5 sm:size-6" />}
+            {mobileMenuOpen ? (
+              <X className="size-5 sm:size-6" />
+            ) : (
+              <Menu className="size-5 sm:size-6" />
+            )}
           </IconBtn>
         </div>
       </div>
@@ -121,7 +147,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
               variant="ghost"
               size="md"
               full
-              onClick={() => scrollToSection('recent-cases')}
+              onClick={() => scrollToSection("recent-cases")}
               className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Ca cứu trợ & Thú cưng đi lạc</span>
@@ -131,7 +157,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
               variant="ghost"
               size="md"
               full
-              onClick={() => scrollToSection('features')}
+              onClick={() => scrollToSection("features")}
               className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Tính năng cốt lõi (Bản đồ & AI Match)</span>
@@ -141,7 +167,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
               variant="ghost"
               size="md"
               full
-              onClick={() => scrollToSection('workflow')}
+              onClick={() => scrollToSection("workflow")}
               className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Quy trình 3 bước cứu hộ</span>
@@ -151,7 +177,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
               variant="ghost"
               size="md"
               full
-              onClick={() => scrollToSection('shelters')}
+              onClick={() => scrollToSection("shelters")}
               className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Mạng lưới trạm & phòng khám</span>
@@ -161,7 +187,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
               variant="ghost"
               size="md"
               full
-              onClick={() => scrollToSection('stories')}
+              onClick={() => scrollToSection("stories")}
               className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
             >
               <span>Câu chuyện đoàn tụ</span>
@@ -169,12 +195,25 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
             </Btn>
 
             <div className="mt-3 border-t-2 border-line pt-3 flex flex-col gap-2">
-              {auth === 'guest' ? (
+              {auth === "guest" ? (
                 <div className="grid grid-cols-2 gap-2 mt-1">
-                  <Btn variant="secondary" onClick={() => { setMobileMenuOpen(false); go('/login') }}>
+                  <Btn
+                    variant="secondary"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      go("/login")
+                    }}
+                  >
                     Đăng nhập
                   </Btn>
-                  <Btn pill variant="primary" onClick={() => { setMobileMenuOpen(false); go('/register') }}>
+                  <Btn
+                    pill
+                    variant="primary"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      go("/register")
+                    }}
+                  >
                     Đăng ký ngay
                   </Btn>
                 </div>
@@ -182,9 +221,14 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
                 <Btn
                   variant="primary"
                   full
-                  onClick={() => { setMobileMenuOpen(false); go(auth === 'admin' ? '/admin/dashboard' : '/home') }}
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    go(auth === "admin" ? "/admin/dashboard" : "/home")
+                  }}
                 >
-                  {auth === 'admin' ? 'Bảng điều khiển Admin' : 'Vào ứng dụng Happy Paws'}
+                  {auth === "admin"
+                    ? "Bảng điều khiển Admin"
+                    : "Vào ứng dụng Happy Paws"}
                 </Btn>
               )}
             </div>

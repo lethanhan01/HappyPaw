@@ -1,14 +1,14 @@
-export type Status = 'active' | 'progress' | 'pending' | 'resolved'
-export type CaseType = 'lost' | 'found' | 'rescue'
+export type Status = "active" | "progress" | "pending" | "resolved"
+export type CaseType = "lost" | "found" | "rescue"
 
 export interface Case {
   id: string
   name: string
   type: CaseType
-  species: 'Chó' | 'Mèo' | 'Khác'
+  species: "Chó" | "Mèo" | "Khác"
   breed: string
   color: string
-  gender: 'Đực' | 'Cái'
+  gender: "Đực" | "Cái"
   status: Status
   district: string
   street: string
@@ -28,5 +28,5 @@ export interface Case {
   weight?: string
   age?: string
   shelterId?: string
-  trail?: { x: number; y: number; t: string; note: string }[]
+  trail?: { x: number y: number t: string note: string }[]
 }

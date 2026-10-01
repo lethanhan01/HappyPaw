@@ -5,6 +5,7 @@
    Section 3: Keyframe Animations
    Section 4: Base Reset & Typography
    Section 5: Custom Utility Classes
+   Section 6: Performance & Motion
    ================================================================ */
 
 /* --- Section 1: Font Imports --- */
@@ -144,3 +145,21 @@ button:disabled { cursor: not-allowed; }
 
 .map-grab { cursor: grab; touch-action: none; }
 .map-grab:active { cursor: grabbing; }
+
+/* --- Section 6: Performance & Motion --- */
+.animate-bounce-soft,
+[class*='animate-pop'],
+[class*='animate-rise'] {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,7 +1,12 @@
 {
-  "description": "A community platform connecting pet owners in Hanoi to help find lost pets, report sightings, and facilitate rescues, fostering a supportive network.",
+  "title": "Happy Paws — Nền tảng cứu trợ & tìm kiếm thú cưng thời gian thực",
+  "description": "Nền tảng cộng đồng kết nối người nuôi thú cưng tại Hà Nội: bản đồ rada cứu trợ thời gian thực, AI so khớp ảnh thất lạc, mạng lưới trạm cứu hộ và phòng khám thú y 24/7.",
+  "language": "vi",
   "robots": {
-    "index": false
+    "index": true
+  },
+  "openGraph": {
+    "image": "https://happy-paw-nine.vercel.app/og-image.jpg"
   },
   "accessibility": {
     "addBypassLinks": false,
