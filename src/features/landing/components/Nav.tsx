@@ -22,10 +22,10 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-brown/15 bg-cream/95 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b-2 border-brown/15 bg-cream/95 backdrop-blur-md w-full max-w-full">
+      <div className="mx-auto flex h-16 sm:h-20 max-w-[1500px] items-center justify-between px-3.5 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <div className="flex items-center lg:flex-1">
+        <div className="flex items-center lg:flex-1 shrink-0">
           <Logo onClick={() => go('/')} />
         </div>
 
@@ -74,9 +74,9 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
         </nav>
 
         {/* Action Controls */}
-        <div className="flex items-center justify-end gap-2.5 lg:flex-1">
+        <div className="flex items-center justify-end gap-2 lg:flex-1 shrink-0">
           {auth === 'guest' ? (
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <Btn variant="ghost" size="sm" onClick={() => go('/login')} className="whitespace-nowrap">
                 Đăng nhập
               </Btn>
@@ -85,7 +85,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
               </Btn>
             </div>
           ) : (
-            <div className="flex items-center gap-2.5">
+            <div className="hidden md:flex items-center gap-2.5">
               <Avatar name={me.name} tone={me.avatar} size={38} />
               <Btn
                 pill
@@ -106,9 +106,9 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
             size="md"
             variant="default"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden"
+            className="lg:hidden !size-10 sm:!size-11"
           >
-            {mobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+            {mobileMenuOpen ? <X className="size-5 sm:size-6" /> : <Menu className="size-5 sm:size-6" />}
           </IconBtn>
         </div>
       </div>

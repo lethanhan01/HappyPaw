@@ -15,9 +15,9 @@ export default function LandingFooter() {
   }
 
   return (
-    <footer className="border-t-2 border-brown/20 bg-paper py-14 text-brown">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
+    <footer className="w-full max-w-full overflow-hidden border-t-2 border-brown/20 bg-paper py-10 sm:py-14 text-brown">
+      <div className="mx-auto max-w-[1440px] px-3.5 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand & Mission Col (Span 2) */}
           <div className="space-y-4 lg:col-span-2">
             <Logo onClick={() => go('/')} />

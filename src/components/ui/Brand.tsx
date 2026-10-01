@@ -1,10 +1,12 @@
 import logoSvg from '@/assets/logo.svg'
 import logoTextSvg from '@/assets/logo-text.svg'
 import logoFull from '@/assets/logo-full.png'
+import logoFullSvg from '@/assets/logo-full.svg'
 import pawsImg from '@/assets/paws.png'
 import { cx } from '@/lib'
 
-export { logoSvg, logoTextSvg, logoFull, pawsImg }
+export { logoSvg, logoTextSvg, logoFull, logoFullSvg, pawsImg }
+
 
 /* ---------- Paw + brand ---------- */
 export function Paw({ className = 'size-5', fill = 'currentColor' }: { className?: string; fill?: string }) {
@@ -23,27 +25,44 @@ export function Logo({ onClick, compact, className }: { onClick?: () => void; co
   return (
     <button
       onClick={onClick}
-      className={cx('flex items-center gap-2 sm:gap-2.5 group cursor-pointer text-left select-none', className)}
+      className={cx('flex items-center gap-1.5 sm:gap-2.5 group cursor-pointer text-left select-none shrink-0', className)}
       aria-label="Happy Paws"
     >
       <img
         src={logoSvg}
         alt="Happy Paws icon"
-        className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
+        className="h-8 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
       />
       {!compact && (
         <img
           src={logoTextSvg}
           alt="Happy Paws"
-          className="h-7 sm:h-8 w-auto object-contain transition-transform group-hover:scale-[1.02] shrink-0 hidden sm:block"
+          className="h-5 sm:h-8 w-auto object-contain transition-transform group-hover:scale-[1.02] shrink-0 block"
         />
       )}
     </button>
   )
 }
 
-export function BrandImage({ className = 'w-64' }: { className?: string }) {
-  return <img src={logoSvg} alt="Happy Paws logo" className={className} />
+export function BrandImage({
+  className = 'w-52',
+  onClick,
+}: {
+  className?: string
+  onClick?: () => void
+}) {
+  return (
+    <img
+      src={logoFullSvg}
+      alt="Happy Paws logo"
+      onClick={onClick}
+      className={cx(
+        'object-contain select-none',
+        onClick && 'cursor-pointer transition-transform hover:scale-105 active:scale-95',
+        className,
+      )}
+    />
+  )
 }
 
 export function PawsBanner({ className = 'h-12 w-auto' }: { className?: string }) {

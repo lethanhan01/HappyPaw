@@ -95,7 +95,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
       <aside className="relative hidden overflow-hidden bg-butter lg:block">
         <img src={pawsImg} alt="" aria-hidden="true" className="absolute -right-24 -top-10 w-[420px] rotate-12 opacity-30" />
         <div className="relative flex h-full flex-col justify-between p-12">
-          <BrandImage className="w-56 rounded-2xl" />
+          <BrandImage className="w-48 xl:w-52" onClick={() => go('/')} />
           <div>
             <h2 className="bubble font-display text-6xl font-extrabold leading-[1.05]">Cùng tìm lại<br />những chiếc đuôi nhỏ.</h2>
             <p className="mt-4 max-w-md text-lg font-semibold">Cộng đồng Hà Nội kết nối để tìm thú cưng thất lạc và cứu hộ chó mèo, nhanh và an toàn hơn.</p>
@@ -123,7 +123,9 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
 
       <main className="flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-md">
-          <div className="mb-6 text-center lg:hidden"><BrandImage className="mx-auto w-56" /></div>
+          <div className="mb-5 text-center lg:hidden">
+            <BrandImage className="mx-auto w-36 sm:w-44" onClick={() => go('/')} />
+          </div>
           <Btn
             variant="ghost"
             size="sm"

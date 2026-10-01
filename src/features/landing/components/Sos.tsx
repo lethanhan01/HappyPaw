@@ -119,24 +119,20 @@ export function EmergencySosModal({ open, onClose, onReportClick }: EmergencySos
 
 export function FloatingSosButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="fixed bottom-6 right-6 z-40">
-      {/* Pulse wave ring */}
-      <span className="absolute inset-0 size-full rounded-full bg-coral animate-ping opacity-35 pointer-events-none" />
+    <div className="fixed bottom-3.5 right-3.5 sm:bottom-6 sm:right-6 z-40">
+      {/* Soft pulse glow ring (contained within button radius to prevent viewport overflow) */}
+      <span className="absolute inset-0 size-full rounded-full bg-coral/30 animate-pulse pointer-events-none" />
 
       <Btn
         variant="danger"
-        size="lg"
         pill
         onClick={onClick}
         aria-label="Cứu hộ khẩn cấp 24/7"
-        className="relative !h-auto !py-3.5 !px-5 gap-2.5 shadow-[0_5px_0_var(--color-brown)] hover:shadow-[0_8px_0_var(--color-brown)]"
+        className="relative !size-12 sm:!size-auto sm:!h-auto sm:!py-3.5 sm:!px-5 sm:!gap-2.5 !p-0 shadow-[0_4px_0_var(--color-brown)] hover:shadow-[0_6px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"
       >
-        <Siren className="size-6 animate-bounce-soft" />
-        <span className="hidden sm:inline font-display text-base tracking-wide">
+        <Siren className="size-6 shrink-0 animate-bounce-soft" />
+        <span className="hidden sm:inline font-display text-base tracking-wide font-extrabold whitespace-nowrap">
           SOS CỨU HỘ 24/7
-        </span>
-        <span className="sm:hidden font-display text-sm tracking-wide">
-          SOS
         </span>
       </Btn>
     </div>

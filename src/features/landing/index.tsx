@@ -36,12 +36,12 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream text-brown font-sans flex flex-col scroll-smooth selection:bg-butter selection:text-brown">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-cream text-brown font-sans flex flex-col scroll-smooth selection:bg-butter selection:text-brown">
       {/* 1. Header Navigation Bar */}
       <LandingNav onOpenSos={() => setSosOpen(true)} />
 
       {/* Main Content Area */}
-      <main className="flex-1">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">
         {/* 2. Hero Section */}
         <HeroSection onReportClick={handleReportAction} />
 
@@ -64,24 +64,24 @@ export default function LandingPage() {
         <SuccessStories />
 
         {/* 9. Final Call-to-Action Community Banner */}
-        <section className="py-16 md:py-20 bg-cream">
-          <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-            <div className="relative overflow-hidden rounded-[36px] border-[3px] border-brown bg-butter p-8 sm:p-14 shadow-[0_8px_0_var(--color-brown)] text-center">
+        <section className="py-12 sm:py-16 md:py-20 bg-cream w-full max-w-full overflow-hidden">
+          <div className="mx-auto max-w-[1200px] px-3.5 sm:px-6 lg:px-8 w-full">
+            <div className="relative overflow-hidden rounded-[28px] sm:rounded-[36px] border-[2.5px] sm:border-[3px] border-brown bg-butter p-6 sm:p-12 md:p-14 shadow-[0_6px_0_var(--color-brown)] sm:shadow-[0_8px_0_var(--color-brown)] text-center">
               <Badge tone="coral" icon={<Sparkles className="size-3.5" />}>
                 MỖI HÀNH ĐỘNG ĐỀU CÓ Ý NGHĨA
               </Badge>
 
-              <h2 className="bubble mt-4 text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
+              <h2 className="bubble mt-4 text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight break-words">
                 Sẵn sàng đồng hành cùng <br />
                 <span className="text-white drop-shadow">3.800+ Tình nguyện viên</span>?
               </h2>
 
-              <p className="mt-4 text-base sm:text-xl font-bold text-brown max-w-2xl mx-auto leading-relaxed">
+              <p className="mt-3 sm:mt-4 text-sm sm:text-lg md:text-xl font-bold text-brown max-w-2xl mx-auto leading-relaxed">
                 Tạo tài khoản chỉ trong 1 phút để cùng nhận thông báo cứu trợ quanh khu vực của bạn,
                 bảo vệ thú cưng và lan tỏa yêu thương tới những chiếc đuôi nhỏ.
               </p>
 
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
                 {auth === 'guest' ? (
                   <>
                     <Btn
@@ -89,7 +89,7 @@ export default function LandingPage() {
                       variant="danger"
                       icon={<UserPlus className="size-5" />}
                       onClick={() => go('/register')}
-                      className="shadow-[0_4px_0_var(--color-brown)] hover:shadow-[0_6px_0_var(--color-brown)]"
+                      className="w-full sm:w-auto shadow-[0_4px_0_var(--color-brown)] hover:shadow-[0_6px_0_var(--color-brown)]"
                     >
                       Đăng ký tham gia ngay
                     </Btn>
@@ -97,7 +97,7 @@ export default function LandingPage() {
                       size="lg"
                       variant="secondary"
                       onClick={() => navigateWithAuth('/map')}
-                      className="hover:bg-white"
+                      className="w-full sm:w-auto hover:bg-white"
                     >
                       Xem bản đồ cứu hộ
                     </Btn>
@@ -108,6 +108,7 @@ export default function LandingPage() {
                     variant="danger"
                     icon={<ArrowRight className="size-5" />}
                     onClick={() => go(auth === 'admin' ? '/admin/dashboard' : '/home')}
+                    className="w-full sm:w-auto"
                   >
                     Vào trang chủ ứng dụng ngay
                   </Btn>

@@ -22,54 +22,54 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
   }
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-cream via-cream to-cream-2/50 py-12 md:py-20 lg:py-24">
-      {/* Decorative Paws Background Pattern */}
+    <section className="relative w-full max-w-full overflow-hidden bg-gradient-to-b from-cream via-cream to-cream-2/50 py-8 sm:py-14 md:py-20 lg:py-24">
+      {/* Decorative Paws Background Pattern (desktop/tablet only to prevent horizontal overflow on mobile) */}
       <img
         src={pawsImg}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -right-20 -top-16 w-[480px] rotate-12 opacity-20 lg:opacity-25"
+        className="pointer-events-none absolute -right-20 -top-16 w-[480px] rotate-12 opacity-20 lg:opacity-25 hidden sm:block"
       />
       <img
         src={pawsImg}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-24 -left-28 w-[400px] -rotate-45 opacity-15"
+        className="pointer-events-none absolute -bottom-24 -left-28 w-[400px] -rotate-45 opacity-15 hidden sm:block"
       />
 
-      <div className="relative mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="relative mx-auto max-w-[1440px] px-3.5 sm:px-6 lg:px-8 w-full">
+        <div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-[1.15fr_0.85fr]">
           {/* Left Column: Heading, Value Proposition & CTAs */}
-          <div className="flex flex-col items-start space-y-6 text-left">
+          <div className="flex flex-col items-start space-y-4 sm:space-y-6 text-left">
             {/* Top pill badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border-2 border-brown bg-butter px-4 py-1.5 shadow-[0_2px_0_var(--color-brown)]">
-              <Paw className="size-4 text-brown" />
-              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-brown">
+            <div className="inline-flex items-center gap-2 rounded-full border-2 border-brown bg-butter px-3 sm:px-4 py-1 sm:py-1.5 shadow-[0_2px_0_var(--color-brown)]">
+              <Paw className="size-3.5 sm:size-4 text-brown" />
+              <span className="text-[11px] sm:text-sm font-extrabold uppercase tracking-wide text-brown">
                 Mạng lưới cứu trợ thú cưng số 1 Hà Nội
               </span>
             </div>
 
             {/* Main Bubble Typography */}
-            <h1 className="bubble text-[40px] sm:text-6xl xl:text-7xl font-extrabold leading-[1.08] tracking-tight">
+            <h1 className="bubble text-[28px] sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] sm:leading-[1.08] tracking-tight break-words">
               Cùng tìm lại <br className="hidden sm:inline" />
               <span className="bubble-yellow">những chiếc đuôi nhỏ</span> <br />
               & trao yêu thương.
             </h1>
 
             {/* Subtitle description */}
-            <p className="max-w-2xl text-lg sm:text-xl font-bold leading-relaxed text-brown/85">
+            <p className="max-w-2xl text-base sm:text-xl font-bold leading-relaxed text-brown/85">
               Hệ thống kết nối cộng đồng thông minh đầu tiên tại Hà Nội giúp định vị thú cưng đi lạc,
               báo cáo ca nguy kịch thời gian thực và liên kết với hơn 42 trạm cứu hộ & phòng khám thú y 24/7.
             </p>
 
             {/* Main Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2 sm:pt-4 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 sm:pt-4 w-full sm:w-auto">
               <Btn
                 size="lg"
                 variant="danger"
-                icon={<Siren className="size-6 animate-pulse" />}
+                icon={<Siren className="size-5 sm:size-6 animate-pulse" />}
                 onClick={onReportClick}
-                className="w-full sm:w-auto shadow-[0_5px_0_var(--color-brown)] hover:shadow-[0_7px_0_var(--color-brown)]"
+                className="w-full sm:w-auto shadow-[0_4px_0_var(--color-brown)] hover:shadow-[0_7px_0_var(--color-brown)]"
               >
                 Báo ca khẩn cấp ngay
               </Btn>
@@ -85,7 +85,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
             </div>
 
             {/* Quick trust metrics under buttons */}
-            <div className="pt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-extrabold text-brown-soft">
+            <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm font-extrabold text-brown-soft">
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="size-4 text-sage-2" />
                 100% trạm & phòng khám được thẩm định
@@ -102,11 +102,11 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
           </div>
 
           {/* Right Column: Visual Graphic & Real Pet Showcase */}
-          <div className="relative mx-auto flex w-full max-w-lg flex-col items-center justify-center lg:max-w-none">
+          <div className="relative mx-auto flex w-full max-w-full flex-col items-center justify-center">
             {/* Visual Graphic & Real Pet Showcase Frame */}
-            <div className="relative size-72 sm:size-96 flex items-center justify-center">
+            <div className="relative size-60 sm:size-80 lg:size-96 max-w-full flex items-center justify-center">
               {/* Main Pet Portrait (dog.jpg) Edge-to-Edge */}
-              <div className="relative size-full overflow-hidden rounded-[38px] sm:rounded-[44px] border-[3.5px] border-brown shadow-[0_10px_0_var(--color-brown)] group bg-paper">
+              <div className="relative size-full overflow-hidden rounded-[32px] sm:rounded-[44px] border-[3px] sm:border-[3.5px] border-brown shadow-[0_8px_0_var(--color-brown)] group bg-paper">
                 <img
                   src={dogHero}
                   alt="Chú cún vui vẻ trên nền vàng"
@@ -120,43 +120,43 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
               </div>
 
               {/* Floating Top-Left Badge: 1.240+ ca đoàn tụ */}
-              <div className="absolute -top-5 -left-5 z-20 rounded-3xl border-2 border-brown bg-paper px-4 py-2.5 shadow-soft animate-bounce-soft">
-                <p className="font-display text-xs sm:text-sm font-extrabold text-brown flex items-center gap-1.5">
-                  <PawPrint className="size-3.5 text-coral" /> 1.240+ ca đoàn tụ
+              <div className="absolute -top-2 -left-2 sm:-top-5 sm:-left-5 z-20 rounded-2xl sm:rounded-3xl border-2 border-brown bg-paper px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-soft">
+                <p className="font-display text-[11px] sm:text-sm font-extrabold text-brown flex items-center gap-1.5">
+                  <PawPrint className="size-3 sm:size-3.5 text-coral" /> 1.240+ ca đoàn tụ
                 </p>
               </div>
 
               {/* Floating Mini Pet Card: Bé Bơ (Poodle vàng mơ) */}
-              <div className="absolute -bottom-6 -left-6 z-20 flex items-center gap-2.5 rounded-2xl border-2 border-brown bg-paper p-2 shadow-soft hover:-translate-y-1 transition duration-200">
+              <div className="absolute -bottom-3 -left-2 sm:-bottom-6 sm:-left-6 z-20 flex items-center gap-2 rounded-xl sm:rounded-2xl border-2 border-brown bg-paper p-1.5 sm:p-2 shadow-soft hover:-translate-y-1 transition duration-200">
                 <img
                   src={puddleApricot}
                   alt="Bé Bơ Poodle"
-                  className="size-11 sm:size-12 rounded-xl object-cover border border-brown"
+                  className="size-9 sm:size-12 rounded-lg sm:rounded-xl object-cover border border-brown"
                 />
-                <div className="pr-2">
-                  <p className="font-display text-xs font-extrabold text-brown">Bé Bơ (Poodle)</p>
-                  <p className="text-[11px] font-bold text-sage-2">Đoàn tụ sau 4h</p>
+                <div className="pr-1 sm:pr-2">
+                  <p className="font-display text-[11px] sm:text-xs font-extrabold text-brown">Bé Bơ (Poodle)</p>
+                  <p className="text-[10px] sm:text-[11px] font-bold text-sage-2">Đoàn tụ sau 4h</p>
                 </div>
               </div>
 
               {/* Floating Bottom-Right Badge: Live Radar */}
-              <div className="absolute -bottom-4 -right-4 z-20 rounded-3xl border-2 border-brown bg-paper px-4 py-2.5 shadow-soft">
-                <p className="flex items-center gap-1.5 font-display text-xs sm:text-sm font-extrabold text-brown">
-                  <span className="size-2 rounded-full bg-sage-2 animate-ping" />
-                  Live Radar: 12 Quận Hà Nội
+              <div className="absolute -bottom-2 -right-2 sm:-bottom-4 sm:-right-4 z-20 rounded-2xl sm:rounded-3xl border-2 border-brown bg-paper px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-soft">
+                <p className="flex items-center gap-1.5 font-display text-[11px] sm:text-sm font-extrabold text-brown">
+                  <span className="size-1.5 sm:size-2 rounded-full bg-sage-2 animate-ping" />
+                  Live Radar: Hà Nội
                 </p>
               </div>
             </div>
 
             {/* Floating Live Alert Card */}
-            <div className="mt-8 flex w-full max-w-md items-center justify-between rounded-3xl border-2 border-brown bg-paper p-4 shadow-soft">
+            <div className="mt-6 sm:mt-8 flex w-full max-w-md items-center justify-between rounded-2xl sm:rounded-3xl border-2 border-brown bg-paper p-3 sm:p-4 shadow-soft">
               <div className="flex items-center gap-3">
-                <span className="grid size-11 place-items-center rounded-2xl border-2 border-brown bg-coral text-white font-extrabold text-lg">
-                  <Siren className="size-6 text-white" />
+                <span className="grid size-10 sm:size-11 place-items-center rounded-2xl border-2 border-brown bg-coral text-white font-extrabold text-lg shrink-0">
+                  <Siren className="size-5 sm:size-6 text-white" />
                 </span>
                 <div>
-                  <p className="font-display text-base font-extrabold text-brown">Ca mới cần hỗ trợ tại Cầu Giấy</p>
-                  <p className="text-xs font-bold text-brown-soft">Phát hiện 8 phút trước · Mèo bị thương ở chân</p>
+                  <p className="font-display text-sm sm:text-base font-extrabold text-brown">Ca mới cần hỗ trợ tại Cầu Giấy</p>
+                  <p className="text-[11px] sm:text-xs font-bold text-brown-soft">Phát hiện 8 phút trước · Mèo bị thương</p>
                 </div>
               </div>
               <IconBtn
@@ -164,7 +164,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                 variant="primary"
                 size="sm"
                 onClick={handleMapClick}
-                className="!rounded-full hover:scale-105"
+                className="!rounded-full hover:scale-105 shrink-0"
               >
                 <ArrowRight className="size-4" />
               </IconBtn>

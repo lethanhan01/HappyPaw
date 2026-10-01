@@ -78,27 +78,27 @@ export default function CoreFeatures() {
   }
 
   return (
-    <section id="features" className="py-16 md:py-24 bg-paper/60 border-y-2 border-line">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+    <section id="features" className="w-full max-w-full overflow-hidden py-12 sm:py-20 md:py-24 bg-paper/60 border-y-2 border-line">
+      <div className="mx-auto max-w-[1440px] px-3.5 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto">
           <Badge tone="butter">CÔNG NGHỆ & CỘNG ĐỒNG</Badge>
-          <h2 className="bubble mt-4 text-3xl sm:text-5xl font-extrabold tracking-tight">
+          <h2 className="bubble mt-4 text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight break-words">
             4 Trụ cột Công nghệ <br />
             <span className="bubble-yellow">bảo vệ những chiếc đuôi nhỏ</span>
           </h2>
-          <p className="mt-3 text-base sm:text-lg font-bold text-brown-soft">
+          <p className="mt-2.5 sm:mt-3 text-sm sm:text-base md:text-lg font-bold text-brown-soft leading-relaxed">
             Happy Paws ứng dụng công nghệ định vị và trí tuệ nhân tạo để số hóa quy trình cứu nạn động vật,
             rút ngắn thời gian tìm kiếm từ vài tuần xuống chỉ còn vài giờ.
           </p>
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-2">
           {FEATURES.map((f) => (
             <div
               key={f.id}
-              className="flex flex-col justify-between rounded-[32px] border-2 border-brown bg-paper p-6 sm:p-8 shadow-[0_5px_0_var(--color-brown)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_var(--color-brown)]"
+              className="flex flex-col justify-between rounded-[24px] sm:rounded-[32px] border-2 border-brown bg-paper p-5 sm:p-8 shadow-[0_4px_0_var(--color-brown)] sm:shadow-[0_5px_0_var(--color-brown)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_var(--color-brown)]"
             >
               <div>
                 <div className="flex items-center justify-between gap-3">

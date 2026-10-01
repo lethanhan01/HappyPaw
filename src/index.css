@@ -94,7 +94,11 @@
 }
 
 /* --- Section 4: Base Reset & Typography --- */
-html, body, #root { min-height: 100%; }
+html, body, #root {
+  min-height: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
 body {
   margin: 0;
   background: var(--color-cream);
@@ -120,10 +124,18 @@ button:disabled { cursor: not-allowed; }
   font-family: var(--font-display);
   font-weight: 800;
   color: #fff;
-  -webkit-text-stroke: 7px var(--color-brown);
+  -webkit-text-stroke: 4px var(--color-brown);
   paint-order: stroke fill;
   letter-spacing: 0.01em;
-  line-height: 1;
+  line-height: 1.08;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+@media (min-width: 640px) {
+  .bubble {
+    -webkit-text-stroke: 7px var(--color-brown);
+    line-height: 1;
+  }
 }
 .bubble-yellow { color: var(--color-butter); }
 

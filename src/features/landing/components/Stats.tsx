@@ -33,8 +33,8 @@ const STATS = [
 
 export default function ImpactStats() {
   return (
-    <section className="relative z-10 -mt-6 sm:-mt-10 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1440px]">
+    <section className="relative z-10 -mt-6 sm:-mt-10 px-3.5 sm:px-6 lg:px-8 w-full max-w-full overflow-hidden">
+      <div className="mx-auto max-w-[1440px] w-full">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STATS.map((s) => (
             <div

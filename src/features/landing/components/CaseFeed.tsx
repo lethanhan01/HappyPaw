@@ -51,20 +51,20 @@ export default function RecentCasesFeed() {
   const displayedCases = filteredCases.slice(0, 6)
 
   return (
-    <section id="recent-cases" className="py-16 md:py-24 bg-cream">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+    <section id="recent-cases" className="py-12 sm:py-20 md:py-24 bg-cream w-full max-w-full overflow-hidden">
+      <div className="mx-auto max-w-[1440px] px-3.5 sm:px-6 lg:px-8 w-full">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 sm:pb-8">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-brown bg-butter px-3.5 py-1 text-xs font-extrabold text-brown shadow-[0_2px_0_var(--color-brown)]">
+            <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-brown bg-butter px-3 sm:px-3.5 py-1 text-xs font-extrabold text-brown shadow-[0_2px_0_var(--color-brown)]">
               <Sparkles className="size-3.5" />
               CẬP NHẬT THỜI GIAN THỰC
             </div>
-            <h2 className="bubble mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight">
+            <h2 className="bubble mt-3 text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight break-words">
               Các ca cứu trợ & <br className="hidden sm:inline" />
               <span className="bubble-yellow">Thú cưng cần giúp đỡ</span>
             </h2>
-            <p className="mt-2 text-base sm:text-lg font-bold text-brown-soft max-w-xl">
+            <p className="mt-2 text-sm sm:text-base md:text-lg font-bold text-brown-soft max-w-xl">
               Danh sách trực tiếp được cộng đồng và các mái ấm cập nhật liên tục trên toàn địa bàn Hà Nội.
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function RecentCasesFeed() {
             size="md"
             icon={<MapPin className="size-4 text-coral" />}
             onClick={handleViewMap}
-            className="self-start md:self-auto hover:bg-white"
+            className="self-start md:self-auto hover:bg-white w-full sm:w-auto"
           >
             Mở Bản đồ cứu trợ toàn cảnh
           </Btn>
@@ -134,8 +134,8 @@ export default function RecentCasesFeed() {
           </div>
 
           {/* District Chips (Horizontal scrollable) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar pt-1">
-            <span className="flex items-center gap-1 text-xs font-black text-brown-soft uppercase whitespace-nowrap pl-1 pr-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar pt-1 w-full max-w-full min-w-0">
+            <span className="flex items-center gap-1 text-xs font-black text-brown-soft uppercase whitespace-nowrap pl-1 pr-2 shrink-0">
               <Filter className="size-3.5" /> Khu vực:
             </span>
             <Chip active={district === ''} onClick={() => setDistrict('')}>
@@ -152,9 +152,9 @@ export default function RecentCasesFeed() {
         {/* Cards Grid */}
         <div className="mt-8">
           {displayedCases.length === 0 ? (
-            <div className="rounded-[28px] border-2 border-dashed border-brown/30 bg-paper/50 py-16 text-center">
-              <p className="font-display text-2xl font-extrabold text-brown">Chưa có ca nào trong danh mục này</p>
-              <p className="mt-1 text-sm font-semibold text-brown-soft">Hãy thử đổi quận huyện hoặc chọn danh mục khác nhé.</p>
+            <div className="rounded-[28px] border-2 border-dashed border-brown/30 bg-paper/50 py-12 sm:py-16 text-center px-4">
+              <p className="font-display text-xl sm:text-2xl font-extrabold text-brown">Chưa có ca nào trong danh mục này</p>
+              <p className="mt-1 text-xs sm:text-sm font-semibold text-brown-soft">Hãy thử đổi quận huyện hoặc chọn danh mục khác nhé.</p>
               <div className="mt-4">
                 <Btn variant="soft" size="sm" onClick={() => { setCategory('all'); setDistrict('') }}>
                   Xem tất cả các ca
@@ -162,7 +162,7 @@ export default function RecentCasesFeed() {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {displayedCases.map((c: Case) => (
                 <CaseCard key={c.id} c={c} onSelect={() => handleCaseSelect(c.id)} />
               ))}
@@ -171,15 +171,14 @@ export default function RecentCasesFeed() {
         </div>
 
         {/* Bottom CTA to View More on Map */}
-        <div className="mt-12 text-center">
+        <div className="mt-10 sm:mt-12 text-center">
           <Btn
             size="lg"
             variant="primary"
-            icon={<ArrowRight className="size-5" />}
             onClick={handleViewMap}
-            className="shadow-[0_5px_0_var(--color-brown)] hover:shadow-[0_7px_0_var(--color-brown)]"
+            className="w-full sm:w-auto shadow-[0_4px_0_var(--color-brown)] hover:shadow-[0_6px_0_var(--color-brown)]"
           >
-            Xem tất cả {cases.length} ca trên Bản đồ Rada Cứu trợ
+            Xem tất cả
           </Btn>
         </div>
       </div>
