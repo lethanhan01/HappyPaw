@@ -1,0 +1,10 @@
+{
+  "description": "A community platform connecting pet owners in Hanoi to help find lost pets, report sightings, and facilitate rescues, fostering a supportive network.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
