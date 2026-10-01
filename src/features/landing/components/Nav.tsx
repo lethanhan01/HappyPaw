@@ -224,7 +224,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
                   full
                   onClick={() => { setMobileMenuOpen(false); go(auth === 'admin' ? '/admin/dashboard' : '/home') }}
                 >
-                  {auth === 'admin' ? 'Bảng điều khiển Admin' : 'Vào ứng dụng Happy Paw'}
+                  {auth === 'admin' ? 'Bảng điều khiển Admin' : 'Vào ứng dụng Happy Paws'}
                 </Btn>
               )}
             </div>

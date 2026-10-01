@@ -19,7 +19,7 @@ export function CommunityHub() {
   return (
     <div className="space-y-8">
       <div className="rounded-[28px] border-2 border-brown bg-butter/60 p-6 shadow-soft md:p-8">
-        <h1 className="font-display text-3xl font-extrabold leading-tight md:text-5xl">Những người tạo nên Happy Paw</h1>
+        <h1 className="font-display text-3xl font-extrabold leading-tight md:text-5xl">Những người tạo nên Happy Paws</h1>
         <p className="mt-2 max-w-2xl text-lg text-brown-2">Mỗi bé được về nhà là nhờ một cộng đồng nhỏ nhưng ấm: tình nguyện viên, mái ấm, bác sĩ thú y và cả những người chỉ kịp chia sẻ một bài viết.</p>
       </div>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -101,7 +101,7 @@ export function DonateHome() {
   ]
   return (
     <div className="space-y-8">
-      <PageHead title="Bạn muốn giúp theo cách nào?" sub="Mọi khoản hỗ trợ đều đến thẳng tay mái ấm, Happy Paw không đứng giữa." />
+      <PageHead title="Bạn muốn giúp theo cách nào?" sub="Mọi khoản hỗ trợ đều đến thẳng tay mái ấm, Happy Paws không đứng giữa." />
       <div className="grid gap-5 md:grid-cols-2">
         {opts.map((o) => (
           <Card key={o.to} hover onClick={() => go(o.to)} className={cx('flex flex-col gap-3 p-7', o.bg)}>
@@ -142,7 +142,7 @@ export function DonateMoney({ shelterId }: { shelterId?: string }) {
             </div>
           </div>
         </div>
-        {!s.verified && <Note tone="coral" icon={<TriangleAlert className="size-5 shrink-0" />}>Đơn vị này chưa được Happy Paw xác minh. Hãy tìm hiểu kỹ trước khi chuyển tiền.</Note>}
+        {!s.verified && <Note tone="coral" icon={<TriangleAlert className="size-5 shrink-0" />}>Đơn vị này chưa được Happy Paws xác minh. Hãy tìm hiểu kỹ trước khi chuyển tiền.</Note>}
         <div className="grid items-center gap-5 sm:grid-cols-[auto_1fr]">
           <div className="mx-auto"><PseudoQR seed={s.id + s.bank} /></div>
           <dl className="space-y-3">
@@ -151,7 +151,7 @@ export function DonateMoney({ shelterId }: { shelterId?: string }) {
             <div><dt className="text-xs font-extrabold uppercase tracking-wide text-brown-soft">Website</dt><dd className="flex items-center gap-1.5 font-bold"><Globe className="size-4" />{s.website}</dd></div>
           </dl>
         </div>
-        <Note tone="butter" icon={<TriangleAlert className="size-5 shrink-0" />}><b>Happy Paw không trực tiếp giữ tiền donate.</b> Bạn chuyển khoản thẳng đến mái ấm qua kênh chính thức ở trên.</Note>
+        <Note tone="butter" icon={<TriangleAlert className="size-5 shrink-0" />}><b>Happy Paws không trực tiếp giữ tiền donate.</b> Bạn chuyển khoản thẳng đến mái ấm qua kênh chính thức ở trên.</Note>
         <Btn full size="lg" icon={<ExternalLink className="size-5" />} onClick={() => toast(`Đang mở kênh quyên góp của ${s.name}`)}>Mở kênh quyên góp chính thức</Btn>
       </Card>
     </div>
@@ -223,7 +223,7 @@ export function Leaderboard() {
   const style = ['bg-butter md:-translate-y-3', 'bg-sky-soft', 'bg-peach/70']
   return (
     <div className="space-y-6">
-      <PageHead title="Những người hùng của Happy Paw" sub="Xếp hạng theo số ca cứu hộ thành công (Successful Rescue Cases)." right={
+      <PageHead title="Những người hùng của Happy Paws" sub="Xếp hạng theo số ca cứu hộ thành công (Successful Rescue Cases)." right={
         <Segmented value={tab} onChange={setTab} options={[{ v: 'city', label: 'Hà Nội' }, { v: 'mine', label: `Quận của tôi (${MY_DISTRICT})` }]} />} />
       <Note tone="sage" icon={<Heart className="size-5 shrink-0" />}>Bảng xếp hạng <b>không bao giờ</b> dựa trên số tiền donate. Chỉ những ca cứu hộ thành công được xác nhận mới được tính.</Note>
       <div className="grid gap-4 md:grid-cols-3 md:pt-3">

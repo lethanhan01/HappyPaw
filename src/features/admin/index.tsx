@@ -253,7 +253,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
           <IconBtn variant="ghost" onClick={() => { setMenu(!menu); setBell(false) }} aria-label="Menu quản trị viên" className="grid size-11 shrink-0 place-items-center rounded-full border border-brown bg-ink font-display text-sm font-bold text-butter md:size-9">AD</IconBtn>
           {menu && (
             <div className="absolute right-0 top-11 z-50 w-56 rounded-xl border border-brown/40 bg-paper p-2 shadow-lg">
-              <div className="border-b border-line px-2 pb-2"><p className="text-sm font-extrabold">Quản trị viên</p><p className="text-xs text-brown-soft">admin@happypaw.vn</p></div>
+              <div className="border-b border-line px-2 pb-2"><p className="text-sm font-extrabold">Quản trị viên</p><p className="text-xs text-brown-soft">admin@happypaws.vn</p></div>
               <Btn variant="ghost" size="sm" onClick={() => { login('user'); setMenu(false) }} className="mt-1 flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold hover:bg-butter/40 sm:hidden"><PawPrint className="size-4" />Về giao diện User</Btn>
               <Btn variant="ghost" size="sm" onClick={() => { logout(); setMenu(false) }} className="flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold text-coral hover:bg-coral-soft"><LogOut className="size-4" />Đăng xuất</Btn>
             </div>

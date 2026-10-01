@@ -416,7 +416,7 @@ export function Proof({ id }: { id: string }) {
       <div className="mx-auto max-w-2xl">
         <Btn variant="ghost" size="sm" onClick={() => go(`/case/${c.id}/rescue`)} icon={<ArrowLeft className="size-4" />} className="mb-2">Quay lại</Btn>
         <h1 className="mb-1 font-display text-3xl font-extrabold md:text-4xl">Gửi xác nhận cứu hộ</h1>
-        <p className="mb-5 font-semibold text-brown-soft">Cảm ơn bạn đã giúp bé. Tải 3 ảnh để Happy Paw xác minh nhanh hơn.</p>
+        <p className="mb-5 font-semibold text-brown-soft">Cảm ơn bạn đã giúp bé. Tải 3 ảnh để Happy Paws xác minh nhanh hơn.</p>
         <Card className="space-y-5 p-4 md:p-7">
           <Field label="Điểm bàn giao">
             {hp ? <PlaceRow place={hp.place} trailing={<Badge tone="cream">{kindLabel(hp.kind)}</Badge>} />
@@ -530,7 +530,7 @@ export function Flyer({ id }: { id: string }) {
               <p className="mt-2 rounded-2xl bg-paper/80 p-2 text-sm font-semibold">{msg}</p>
               {reward && <p className="mt-2 inline-block rounded-full bg-coral px-4 py-1 font-extrabold text-white">CÓ HẬU TẠ</p>}
               <p className="mt-3 flex items-center justify-center gap-2 font-display text-2xl font-extrabold"><Phone className="size-5" />{phone}</p>
-              <p className="mt-1 text-xs font-bold opacity-70">Mã case {c.id} · happypaw.vn</p>
+              <p className="mt-1 text-xs font-bold opacity-70">Mã case {c.id} · happypaws.vn</p>
             </div>
           </div>
         </div>

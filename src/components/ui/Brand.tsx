@@ -1,4 +1,8 @@
+import logoSvg from '@/assets/logo.svg'
 import logoFull from '@/assets/logo-full.png'
+import pawsImg from '@/assets/paws.png'
+
+export { logoSvg, logoFull, pawsImg }
 
 /* ---------- Paw + brand ---------- */
 export function Paw({ className = 'size-5', fill = 'currentColor' }: { className?: string; fill?: string }) {
@@ -15,13 +19,17 @@ export function Paw({ className = 'size-5', fill = 'currentColor' }: { className
 
 export function Logo({ onClick, compact }: { onClick?: () => void; compact?: boolean }) {
   return (
-    <button onClick={onClick} className="flex items-center gap-2 group" aria-label="Happy Paw">
-      <span className="grid size-9 place-items-center rounded-2xl border-[2.5px] border-brown bg-butter text-brown shadow-[0_3px_0_var(--color-brown)] group-hover:-translate-y-0.5 transition">
-        <Paw className="size-5" />
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2.5 group cursor-pointer text-left select-none"
+      aria-label="Happy Paws"
+    >
+      <span className="grid size-10 place-items-center rounded-2xl border-[2.5px] border-brown bg-butter text-brown shadow-[0_3px_0_var(--color-brown)] group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_0_var(--color-brown)] transition overflow-hidden p-1">
+        <img src={logoSvg} alt="Happy Paws emblem" className="size-8 object-contain scale-[1.35]" />
       </span>
       {!compact && (
         <span className="whitespace-nowrap font-display text-[22px] font-extrabold leading-none tracking-tight text-brown">
-          HAPPY <span className="rounded-lg bg-butter px-1.5 py-0.5 border-2 border-brown">PAW</span>
+          HAPPY <span className="rounded-lg bg-butter px-1.5 py-0.5 border-2 border-brown">PAWS</span>
         </span>
       )}
     </button>
@@ -29,5 +37,9 @@ export function Logo({ onClick, compact }: { onClick?: () => void; compact?: boo
 }
 
 export function BrandImage({ className = 'w-64' }: { className?: string }) {
-  return <img src={logoFull} alt="Happy Paws logo" className={className} />
+  return <img src={logoSvg} alt="Happy Paws logo" className={className} />
+}
+
+export function PawsBanner({ className = 'h-12 w-auto' }: { className?: string }) {
+  return <img src={pawsImg} alt="Happy Paws banner" className={className} />
 }

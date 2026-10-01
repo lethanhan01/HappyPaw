@@ -13,7 +13,7 @@ const TIPS = [
   'Không chuyển tiền trước khi xác minh danh tính và nhìn thấy bé.',
   'Không chia sẻ vị trí chính xác của bé đang bị thương trên mạng xã hội.',
   'Cảnh giác với thức ăn lạ bỏ sẵn ở công viên, bãi đất trống.',
-  'Thấy điều gì bất thường, hãy báo ngay để đội ngũ Happy Paw xem xét.',
+  'Thấy điều gì bất thường, hãy báo ngay để đội ngũ Happy Paws xem xét.',
 ]
 const ORDER = ['Khu vực nghi có trộm chó mèo', 'Khu vực có bẫy/bả', 'Người dùng bị report nhiều', 'Điểm đến đáng ngờ']
 const sevTone = (s: Risk['severity']) => (s === 'Cao' ? 'coral' : s === 'Trung bình' ? 'orange' : 'butter')
@@ -96,7 +96,7 @@ export function SafetyReport({ caseId, userId }: { caseId?: string; userId?: str
 
   if (ok) {
     return (
-      <SuccessScreen calm title="Báo cáo đã được gửi tới đội ngũ Happy Paw.">
+      <SuccessScreen calm title="Báo cáo đã được gửi tới đội ngũ Happy Paws.">
         <p className="text-brown-2">Chúng tôi sẽ xem xét và xử lý trong thời gian sớm nhất. Danh tính của bạn được giữ kín với người bị báo cáo.</p>
         <div className="mt-2 flex flex-wrap justify-center gap-3">
           <Btn onClick={() => go('/home')}>Về trang chủ</Btn><Btn variant="secondary" onClick={() => go('/safety')}>Xem cảnh báo an toàn</Btn>

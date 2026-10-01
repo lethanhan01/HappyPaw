@@ -28,7 +28,7 @@ export default function LandingFooter() {
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="size-4 text-coral shrink-0" />
-                <span>Email hỗ trợ: hotro@happypaw.vn</span>
+                <span>Email hỗ trợ: hotro@happypaws.vn</span>
               </p>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function LandingFooter() {
                 <span className="cursor-default">Bảo mật thông tin người báo</span>
               </li>
               <li>
-                <span className="cursor-default">Chính sách cộng đồng Happy Paw</span>
+                <span className="cursor-default">Chính sách cộng đồng Happy Paws</span>
               </li>
             </ul>
           </div>
@@ -111,7 +111,7 @@ export default function LandingFooter() {
 
         {/* Bottom Bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t-2 border-line pt-6 text-center text-xs font-bold text-brown-soft sm:flex-row">
-          <p>© 2026 Happy Paw Hanoi. Dự án cộng đồng phi lợi nhuận vì phúc lợi động vật.</p>
+          <p>© 2026 Happy Paws Hanoi. Dự án cộng đồng phi lợi nhuận vì phúc lợi động vật.</p>
           <p className="flex items-center gap-1">
             Được xây dựng với tất cả tình yêu dành cho các bé bốn chân
             <Heart className="size-3.5 fill-coral text-coral inline" />

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { cx } from '@/lib/cn'
+import { Paw } from './Brand'
 
 /* ---------- Illustrations ---------- */
 export function DogIllo({ className = 'size-32' }: { className?: string }) {
@@ -59,8 +60,9 @@ export function PetPhoto({
   return (
     <div className={cx('relative overflow-hidden bg-cream-2', className)}>
       {bad ? (
-        <div role="img" aria-label={alt} className="grid size-full place-items-center bg-peach/50">
-          <PetIllo species={species} className="size-[55%] max-h-28 max-w-28" />
+        <div role="img" aria-label={alt} className="flex flex-col items-center justify-center size-full bg-butter/30 text-brown/60 p-3 select-none">
+          <Paw className="size-8 text-brown/40 mb-1" />
+          <span className="text-xs font-extrabold">{species || 'Thú cưng'}</span>
         </div>
       ) : (
         <img src={src} alt={alt} loading="lazy" onError={() => setBad(true)} className="size-full object-cover" />

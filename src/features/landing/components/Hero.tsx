@@ -1,7 +1,9 @@
 import { Siren, MapPin, Sparkles, HeartHandshake, ShieldCheck, ArrowRight } from 'lucide-react'
 import { useApp } from '@/store'
-import { Btn, IconBtn, DogIllo, CatIllo, Paw } from '@ui'
+import { Btn, IconBtn, Paw } from '@ui'
 import pawsImg from '@/assets/paws.png'
+import dogHero from '@/assets/dog.jpg'
+import puddleApricot from '@/assets/puddle_vang_mo.jpg'
 
 interface HeroSectionProps {
   onReportClick: () => void
@@ -65,7 +67,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
               <Btn
                 size="lg"
                 variant="secondary"
-                icon={<MapPin className="size-6 text-coral" />}
+                icon={<MapPin className="size-5 text-coral" />}
                 onClick={() => go('/map')}
                 className="w-full sm:w-auto hover:bg-white"
               >
@@ -90,30 +92,53 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
             </div>
           </div>
 
-          {/* Right Column: Visual Graphic & Interactive Mascot Showcase */}
+          {/* Right Column: Visual Graphic & Real Pet Showcase */}
           <div className="relative mx-auto flex w-full max-w-lg flex-col items-center justify-center lg:max-w-none">
-            {/* Background circular frame */}
-            <div className="relative grid size-72 sm:size-96 place-items-center rounded-[48px] border-[3px] border-brown bg-butter/60 p-6 shadow-[0_8px_0_var(--color-brown)]">
-              <div className="absolute -top-5 -left-4 rounded-3xl border-2 border-brown bg-paper px-4 py-2.5 shadow-soft animate-bounce-soft">
-                <p className="font-display text-sm font-extrabold text-brown">🐾 1.240+ ca đoàn tụ</p>
+            {/* Background frame with real dog photo */}
+            <div className="relative size-72 sm:size-96 rounded-[44px] border-[3.5px] border-brown bg-butter p-3 sm:p-4 shadow-[0_10px_0_var(--color-brown)] flex items-center justify-center overflow-visible group">
+              {/* Main Pet Portrait (dog.jpg) */}
+              <div className="relative size-full overflow-hidden rounded-[34px] border-2 border-brown bg-butter-soft/50 shadow-inner">
+                <img
+                  src={dogHero}
+                  alt="Chú cún vui vẻ trên nền vàng"
+                  className="size-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brown/60 via-transparent to-transparent p-3 pt-8 text-white">
+                  <p className="font-display text-xs sm:text-sm font-extrabold flex items-center gap-1.5 drop-shadow">
+                    🐾 Milo · Cocker Spaniel
+                  </p>
+                </div>
               </div>
 
-              <div className="absolute -bottom-4 -right-4 rounded-3xl border-2 border-brown bg-paper px-4 py-2.5 shadow-soft">
-                <p className="flex items-center gap-1.5 font-display text-sm font-extrabold text-brown">
+              {/* Floating Top-Left Badge: 1.240+ ca đoàn tụ */}
+              <div className="absolute -top-5 -left-5 z-20 rounded-3xl border-2 border-brown bg-paper px-4 py-2.5 shadow-soft animate-bounce-soft">
+                <p className="font-display text-xs sm:text-sm font-extrabold text-brown">🐾 1.240+ ca đoàn tụ</p>
+              </div>
+
+              {/* Floating Mini Pet Card: Bé Bơ (Poodle vàng mơ) */}
+              <div className="absolute -bottom-6 -left-6 z-20 flex items-center gap-2.5 rounded-2xl border-2 border-brown bg-paper p-2 shadow-soft hover:-translate-y-1 transition duration-200">
+                <img
+                  src={puddleApricot}
+                  alt="Bé Bơ Poodle"
+                  className="size-11 sm:size-12 rounded-xl object-cover border border-brown"
+                />
+                <div className="pr-2">
+                  <p className="font-display text-xs font-extrabold text-brown">Bé Bơ (Poodle)</p>
+                  <p className="text-[11px] font-bold text-sage-2">Đoàn tụ sau 4h 💚</p>
+                </div>
+              </div>
+
+              {/* Floating Bottom-Right Badge: Live Radar */}
+              <div className="absolute -bottom-4 -right-4 z-20 rounded-3xl border-2 border-brown bg-paper px-4 py-2.5 shadow-soft">
+                <p className="flex items-center gap-1.5 font-display text-xs sm:text-sm font-extrabold text-brown">
                   <span className="size-2 rounded-full bg-sage-2 animate-ping" />
                   Live Radar: 12 Quận Hà Nội
                 </p>
               </div>
-
-              {/* Mascots */}
-              <div className="flex items-end justify-center gap-4">
-                <DogIllo className="size-40 sm:size-52 drop-shadow-md" />
-                <CatIllo className="size-36 sm:size-48 drop-shadow-md" />
-              </div>
             </div>
 
             {/* Floating Live Alert Card */}
-            <div className="mt-6 flex w-full max-w-md items-center justify-between rounded-3xl border-2 border-brown bg-paper p-4 shadow-soft">
+            <div className="mt-8 flex w-full max-w-md items-center justify-between rounded-3xl border-2 border-brown bg-paper p-4 shadow-soft">
               <div className="flex items-center gap-3">
                 <span className="grid size-11 place-items-center rounded-2xl border-2 border-brown bg-coral text-white font-extrabold text-lg">
                   🚨
@@ -139,3 +164,4 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
     </section>
   )
 }
+

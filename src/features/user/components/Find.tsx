@@ -41,7 +41,7 @@ export function FindHub() {
           <Badge tone="plum" icon={<Sparkles className="size-3.5" />}>
             AI Matching
           </Badge>
-          <h2 className="mt-2 font-display text-2xl font-extrabold">Tải ảnh lên, để Happy Paw tìm bé giúp bạn</h2>
+          <h2 className="mt-2 font-display text-2xl font-extrabold">Tải ảnh lên, để Happy Paws tìm bé giúp bạn</h2>
           <p className="mt-1 max-w-lg text-sm font-semibold text-brown-soft">
             So sánh ảnh với hàng trăm báo cáo trong khu vực dựa trên màu lông, kích thước, vòng cổ và vị trí.
           </p>
@@ -281,7 +281,7 @@ export function AiMatch() {
           </div>
         )}
       </div>
-      <Modal open={!!why} onClose={() => setWhy(null)} title="Vì sao Happy Paw gợi ý bé này?">
+      <Modal open={!!why} onClose={() => setWhy(null)} title="Vì sao Happy Paws gợi ý bé này?">
         <ul className="space-y-2">
           {REASONS_MATCH.map((r) => (
             <li key={r} className="flex items-center gap-2 rounded-2xl bg-sage-soft p-3 text-sm font-bold">

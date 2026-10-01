@@ -72,7 +72,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-w-0">
-      <Title title="Dashboard" sub="Tổng quan hoạt động cứu hộ Happy Paw tại Hà Nội" />
+      <Title title="Dashboard" sub="Tổng quan hoạt động cứu hộ Happy Paws tại Hà Nội" />
 
       <section aria-label="Cần xử lý ngay" className="mb-4 rounded-2xl border border-coral/40 bg-coral-soft/40">
         <header className="flex items-center justify-between gap-2 px-3 pt-3 md:px-4">

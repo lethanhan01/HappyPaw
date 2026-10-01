@@ -79,7 +79,7 @@ export default function CoreFeatures() {
             <span className="bubble-yellow">bảo vệ những chiếc đuôi nhỏ</span>
           </h2>
           <p className="mt-3 text-base sm:text-lg font-bold text-brown-soft">
-            Happy Paw ứng dụng công nghệ định vị và trí tuệ nhân tạo để số hóa quy trình cứu nạn động vật,
+            Happy Paws ứng dụng công nghệ định vị và trí tuệ nhân tạo để số hóa quy trình cứu nạn động vật,
             rút ngắn thời gian tìm kiếm từ vài tuần xuống chỉ còn vài giờ.
           </p>
         </div>

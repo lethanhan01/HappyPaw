@@ -1,4 +1,4 @@
-# HappyPaw
+# Happy Paws
 
 Hệ thống kết nối và hỗ trợ cứu trợ thú cưng thời gian thực (React 19 + Vite 8 + Tailwind CSS v4).
 

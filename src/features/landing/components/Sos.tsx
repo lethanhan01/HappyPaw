@@ -92,7 +92,7 @@ export function EmergencySosModal({ open, onClose, onReportClick }: EmergencySos
               <span className="grid size-5 shrink-0 place-items-center rounded-full bg-butter text-xs font-black text-brown border border-brown">
                 4
               </span>
-              <span><strong>Báo ca lên Happy Paw:</strong> Tải ảnh và vị trí lên để tình nguyện viên có chuyên môn mang nẹp và lồng vận chuyển tới hỗ trợ.</span>
+              <span><strong>Báo ca lên Happy Paws:</strong> Tải ảnh và vị trí lên để tình nguyện viên có chuyên môn mang nẹp và lồng vận chuyển tới hỗ trợ.</span>
             </li>
           </ul>
         </div>

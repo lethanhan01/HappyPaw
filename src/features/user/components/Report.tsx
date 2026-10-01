@@ -11,8 +11,6 @@ import {
   Card,
   Check2,
   Chip,
-  DogIllo,
-  CatIllo,
   Field,
   Input,
   Note,
@@ -24,14 +22,42 @@ import {
   UploadBox,
 } from '@ui'
 import { cx } from '@/lib'
+import dogHero from '@/assets/dog.jpg'
+import puddleApricot from '@/assets/puddle_vang_mo.jpg'
+import { photo } from '@/constants/photos'
 
 /* ---------- Chooser ---------- */
 export function ReportChooser() {
   const { go } = useApp()
   const opts = [
-    { to: '/report/lost', dot: '🔴', title: 'Tìm thú cưng của tôi bị lạc', sub: 'Đăng tin, thông báo người quanh khu vực và tạo tờ rơi.', tone: 'bg-orange-soft', ill: <DogIllo className="size-36" /> },
-    { to: '/report/found', dot: '🟠', title: 'Tôi vừa thấy một thú cưng bị lạc', sub: 'Giúp chủ nhân tìm lại bé nhanh hơn.', tone: 'bg-butter/70', ill: <CatIllo className="size-36" /> },
-    { to: '/report/rescue', dot: '🔴', title: 'Thú cưng đang cần cứu hộ', sub: 'Bị thương, mắc kẹt hoặc gặp nguy hiểm. Gửi yêu cầu ngay.', tone: 'bg-coral-soft', ill: <DogIllo className="size-36" />, urgent: true },
+    {
+      to: '/report/lost',
+      dot: '🔴',
+      title: 'Tìm thú cưng của tôi bị lạc',
+      sub: 'Đăng tin, thông báo người quanh khu vực và tạo tờ rơi.',
+      tone: 'bg-orange-soft',
+      img: puddleApricot,
+      badge: 'Tìm kiếm',
+    },
+    {
+      to: '/report/found',
+      dot: '🟠',
+      title: 'Tôi vừa thấy một thú cưng bị lạc',
+      sub: 'Giúp chủ nhân tìm lại bé nhanh hơn.',
+      tone: 'bg-butter/70',
+      img: photo('cat2'),
+      badge: 'Đã tìm thấy',
+    },
+    {
+      to: '/report/rescue',
+      dot: '🚨',
+      title: 'Thú cưng đang cần cứu hộ',
+      sub: 'Bị thương, mắc kẹt hoặc gặp nguy hiểm. Gửi yêu cầu ngay.',
+      tone: 'bg-coral-soft',
+      img: dogHero,
+      urgent: true,
+      badge: 'Cứu hộ khẩn',
+    },
   ]
   return (
     <UserShell>
@@ -41,8 +67,13 @@ export function ReportChooser() {
         <div className="grid gap-5 md:grid-cols-3">
           {opts.map((o) => (
             <Card key={o.to} hover onClick={() => go(o.to)} className={cx('group flex flex-col items-center !rounded-[32px] border-2 border-brown p-6 text-center shadow-soft transition hover:-translate-y-1.5 hover:shadow-pop cursor-pointer', o.tone)}>
-              <div className="transition group-hover:scale-105">{o.ill}</div>
-              <span className="mt-3 text-2xl">{o.dot}</span>
+              <div className="relative mb-3 size-32 overflow-hidden rounded-2xl border-2 border-brown shadow-sm group-hover:scale-105 transition">
+                <img src={o.img} alt={o.title} className="size-full object-cover" />
+                <span className="absolute bottom-1 right-1 rounded-full bg-paper/95 px-2 py-0.5 text-[10px] font-extrabold text-brown border border-brown">
+                  {o.badge}
+                </span>
+              </div>
+              <span className="mt-1 text-2xl">{o.dot}</span>
               <h2 className="font-display text-2xl font-extrabold leading-tight">{o.title}</h2>
               <p className="mt-2 text-sm font-semibold text-brown-soft">{o.sub}</p>
               <span className={cx('mt-5 inline-flex items-center gap-2 rounded-full border-2 border-brown px-5 py-2 font-extrabold', o.urgent ? 'bg-coral text-white' : 'bg-paper')}>Bắt đầu <ArrowRight className="size-4" /></span>
@@ -107,15 +138,43 @@ function Wizard({ steps, step, setStep, title, children, canNext, onSubmit, subm
   )
 }
 
-const newId = (n: number) => `HP-${1056 + n}`
-const STOCK = { Chó: 'https://images.unsplash.com/photo-1587402092301-725e37c70fd8?w=600&h=600&fit=crop&auto=format&q=75', Mèo: 'https://images.unsplash.com/photo-1631307495039-3f9e947c2070?w=600&h=600&fit=crop&auto=format&q=75', Khác: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=600&h=600&fit=crop&auto=format&q=75' } as const
+const newId = (n: number) => `HP-${1060 + n}`
+const STOCK = {
+  Chó: dogHero,
+  Mèo: photo('cat1'),
+  Khác: photo('pup'),
+} as const
 
 function Species({ v, set }: { v: string; set: (s: any) => void }) {
+  const avatars = {
+    Chó: puddleApricot,
+    Mèo: photo('cat1'),
+    Khác: null,
+  }
   return (
     <div className="grid grid-cols-3 gap-3">
       {(['Chó', 'Mèo', 'Khác'] as const).map((s) => (
-        <Btn key={s} type="button" variant="ghost" size="md" full onClick={() => set(s)} aria-pressed={v === s} className={cx('!flex !h-auto !flex-col !items-center !gap-1 !rounded-3xl !border-2 !p-3 font-extrabold transition', v === s ? '!border-brown !bg-butter shadow-[0_4px_0_var(--color-brown)]' : '!border-line !bg-white hover:!border-brown')}>
-          {s === 'Chó' ? <DogIllo className="size-16" /> : s === 'Mèo' ? <CatIllo className="size-16" /> : <PawPrint className="size-12" />}{s}
+        <Btn
+          key={s}
+          type="button"
+          variant="ghost"
+          size="md"
+          full
+          onClick={() => set(s)}
+          aria-pressed={v === s}
+          className={cx(
+            '!flex !h-auto !flex-col !items-center !gap-2 !rounded-3xl !border-2 !p-3 font-extrabold transition',
+            v === s ? '!border-brown !bg-butter shadow-[0_4px_0_var(--color-brown)]' : '!border-line !bg-white hover:!border-brown'
+          )}
+        >
+          {avatars[s] ? (
+            <img src={avatars[s]} alt={s} className="size-14 rounded-2xl object-cover border border-brown shadow-sm" />
+          ) : (
+            <div className="size-14 rounded-2xl border border-brown bg-peach/40 flex items-center justify-center">
+              <PawPrint className="size-7 text-brown" />
+            </div>
+          )}
+          <span>{s}</span>
         </Btn>
       ))}
     </div>

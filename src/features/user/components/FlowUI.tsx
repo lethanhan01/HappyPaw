@@ -135,7 +135,7 @@ export function MismatchCard({ onView }: { onView: () => void }) {
   return (
     <div className="space-y-3 rounded-2xl border-2 border-butter-2 bg-butter/60 p-4" role="status">
       <p className="font-display text-lg font-extrabold">⚠️ Cần kiểm tra</p>
-      <p className="text-sm font-semibold">Thông tin cứu hộ chưa khớp. Đội ngũ Happy Paw đang kiểm tra case này.</p>
+      <p className="text-sm font-semibold">Thông tin cứu hộ chưa khớp. Đội ngũ Happy Paws đang kiểm tra case này.</p>
       <Btn variant="secondary" onClick={onView}>
         Xem trạng thái
       </Btn>

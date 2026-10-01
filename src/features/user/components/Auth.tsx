@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Eye, EyeOff, ShieldCheck, Loader2 } from 'lucide-react'
 import pawsImg from '@/assets/paws.png'
+import puddleApricot from '@/assets/puddle_vang_mo.jpg'
 import { useApp } from '@/store'
-import { BrandImage, Btn, IconBtn, Check2, Field, Input, DogIllo, CatIllo, Note } from '@ui'
+import { BrandImage, Btn, IconBtn, Check2, Field, Input, Note } from '@ui'
 
 const Google = () => (
   <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
@@ -36,7 +37,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
     setBusy(true)
     setTimeout(() => {
       setBusy(false)
-      toast(reg ? 'Chào mừng bạn đến với Happy Paw 🐾' : 'Đăng nhập thành công')
+      toast(reg ? 'Chào mừng bạn đến với Happy Paws 🐾' : 'Đăng nhập thành công')
       login('user')
     }, 700)
   }
@@ -53,7 +54,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
       <aside className="relative hidden overflow-hidden bg-butter lg:block">
         <img src={pawsImg} alt="" aria-hidden="true" className="absolute -right-24 -top-10 w-[420px] rotate-12 opacity-30" />
         <div className="relative flex h-full flex-col justify-between p-12">
-          <BrandImage className="w-64 rounded-[32px] border-2 border-brown shadow-soft" />
+          <BrandImage className="w-56 rounded-2xl" />
           <div>
             <h2 className="bubble font-display text-6xl font-extrabold leading-[1.05]">Cùng tìm lại<br />những chiếc đuôi nhỏ.</h2>
             <p className="mt-4 max-w-md text-lg font-semibold">Cộng đồng Hà Nội kết nối để tìm thú cưng thất lạc và cứu hộ chó mèo, nhanh và an toàn hơn.</p>
@@ -63,7 +64,19 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
               ))}
             </div>
           </div>
-          <div className="flex items-end gap-4"><DogIllo className="size-40" /><CatIllo className="size-36" /></div>
+          <div className="flex items-center gap-4 rounded-3xl border-2 border-brown bg-paper/90 p-4 shadow-soft">
+            <img
+              src={puddleApricot}
+              alt="Bé Bơ Poodle"
+              className="size-20 rounded-2xl border-2 border-brown object-cover shadow-sm shrink-0"
+            />
+            <div>
+              <p className="text-xs font-black uppercase tracking-wider text-coral">Cứu hộ & Đoàn tụ</p>
+              <p className="font-display text-base font-extrabold text-brown leading-snug">
+                “Mỗi chiếc đuôi nhỏ đều xứng đáng được an toàn và trở về nhà.”
+              </p>
+            </div>
+          </div>
         </div>
       </aside>
 
@@ -121,7 +134,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
           </p>
 
           <div className="mt-6 space-y-2">
-            <Note tone="sky" icon={<ShieldCheck className="size-5 shrink-0" />}>Happy Paw không yêu cầu xác thực khuôn mặt. Chúng tôi chỉ dùng email hoặc tài khoản Google.</Note>
+            <Note tone="sky" icon={<ShieldCheck className="size-5 shrink-0" />}>Happy Paws không yêu cầu xác thực khuôn mặt. Chúng tôi chỉ dùng email hoặc tài khoản Google.</Note>
             <div className="rounded-2xl border-2 border-dashed border-brown/40 p-3 text-center">
               <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-brown-soft">Demo prototype</p>
               <div className="flex gap-2"><Btn size="sm" variant="secondary" className="flex-1" onClick={() => login('user')}>Vào với User</Btn><Btn size="sm" variant="dark" className="flex-1" onClick={() => login('admin')}>Vào với Admin</Btn></div>
