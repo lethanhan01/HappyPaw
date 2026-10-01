@@ -4,6 +4,8 @@ build/
 .cache/
 .env*
 .vite/
+.vercel/
+.pnpm-store/
 vite.config.*.timestamp-*
 *.tsbuildinfo
 *-debug.log*
