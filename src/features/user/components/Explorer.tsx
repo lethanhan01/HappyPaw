@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import {
   SlidersHorizontal,
   Map as MapIcon,
@@ -9,7 +9,7 @@ import {
   ChevronRight,
   ArrowLeft,
   X,
-} from 'lucide-react'
+} from "lucide-react"
 import CityMap, {
   LegendSwatch,
   MapLegend,
@@ -31,27 +31,48 @@ import CityMap, {
   type SearchHit,
   type StatusKey,
   approxLoc,
-} from '@/features/map'
-import UserShell from '@/layouts/UserShell'
-import { useApp } from '@/store'
-import { CLINICS, SHELTERS } from '@/constants/mock/places'
-import { RISKS } from '@/constants/mock/risks'
-import { DISTRICTS } from '@/constants/districts'
-import { BottomSheet, Btn, IconBtn, Chip, Empty, Field, Input, Modal, Segmented, Select, Badge, StatusBadge, cx } from '@ui'
-import { useMedia } from '@/hooks/useMedia'
-import { CaseCard, CaseCardSkeleton } from '@/components/common'
+} from "@/features/map"
+import UserShell from "@/layouts/UserShell"
+import { useApp } from "@/store"
+import { CLINICS, SHELTERS } from "@/constants/mock/places"
+import { RISKS } from "@/constants/mock/risks"
+import { DISTRICTS } from "@/constants/districts"
+import {
+  BottomSheet,
+  Btn,
+  IconBtn,
+  Chip,
+  Empty,
+  Field,
+  Input,
+  Modal,
+  Segmented,
+  Select,
+  Badge,
+  StatusBadge,
+  cx,
+} from "@ui"
+import { useMedia } from "@/hooks/useMedia"
+import { CaseCard, CaseCardSkeleton } from "@/components/common"
 
-export { approxLoc } from '@/features/map'
+export { approxLoc } from "@/features/map"
 
-const TYPES: PinType[] = ['rescue', 'lost', 'shelter', 'clinic', 'warning']
+const TYPES: PinType[] = ["rescue", "lost", "shelter", "clinic", "warning"]
 const STATUSES: [StatusKey, string][] = [
-  ['active', 'Đang cần hỗ trợ'],
-  ['progress', 'Đang xử lý'],
-  ['resolved', 'Đã giải quyết'],
+  ["active", "Đang cần hỗ trợ"],
+  ["progress", "Đang xử lý"],
+  ["resolved", "Đã giải quyết"],
 ]
-const toggle = <T,>(a: T[], v: T) => (a.includes(v) ? a.filter((x) => x !== v) : [...a, v])
+const toggle = <T,>(a: T[], v: T) =>
+  a.includes(v) ? a.filter((x) => x !== v) : [...a, v]
 
-function FilterSection({ title, children }: { title: string; children: ReactNode }) {
+function FilterSection({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
   return (
     <div>
       <p className="mb-2 text-sm font-extrabold">{title}</p>
@@ -60,25 +81,33 @@ function FilterSection({ title, children }: { title: string; children: ReactNode
   )
 }
 
-export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map' }) {
+export default function Explorer({
+  variant = "home",
+}: {
+  variant?: "home" | "map"
+}) {
   const { cases, go } = useApp()
-  const desktop = useMedia('(min-width: 1024px)')
+  const desktop = useMedia("(min-width: 1024px)")
   const [loading, setLoading] = useState(true)
   const [sel, setSel] = useState<Sel | null>(null)
   const [hoverId, setHoverId] = useState<string | null>(null)
-  const [q, setQ] = useState('')
-  const [recent, setRecent] = useState(['Cầu Giấy', 'Golden Retriever', 'Trần Thái Tông'])
+  const [q, setQ] = useState("")
+  const [recent, setRecent] = useState([
+    "Cầu Giấy",
+    "Golden Retriever",
+    "Trần Thái Tông",
+  ])
   const [f, setF] = useState<Filters>(F0)
   const [draft, setDraft] = useState<Filters>(F0)
   const [open, setOpen] = useState(false)
-  const [view, setView] = useState<'map' | 'list'>('map')
+  const [view, setView] = useState<"map" | "list">("map")
   const [snap, setSnap] = useState<0 | 1 | 2>(0)
   const [hiddenKinds, setHiddenKinds] = useState<PinType[]>([])
   const api = useRef<MapApi | null>(null)
 
   useEffect(() => {
-    if (variant === 'map') {
-      go('/home', { replace: true })
+    if (variant === "map") {
+      go("/home", { replace: true })
     }
   }, [variant, go])
 
@@ -87,26 +116,33 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
     return () => clearTimeout(t)
   }, [])
 
-  const list = useMemo(() => cases.filter((c) => matchCase(c, f, q)), [cases, f, q])
+  const list = useMemo(
+    () => cases.filter((c) => matchCase(c, f, q)),
+    [cases, f, q],
+  )
   const mapCases = useMemo(
     () =>
-      (hiddenKinds.includes('rescue') || hiddenKinds.includes('lost')
-        ? list.filter((c) => !hiddenKinds.includes(c.type === 'rescue' ? 'rescue' : 'lost'))
+      (hiddenKinds.includes("rescue") || hiddenKinds.includes("lost")
+        ? list.filter(
+            (c) =>
+              !hiddenKinds.includes(c.type === "rescue" ? "rescue" : "lost"),
+          )
         : list
-      ).filter((c) => c.status !== 'resolved'),
+      ).filter((c) => c.status !== "resolved"),
     [list, hiddenKinds],
   )
   const n = countFilters(f)
   const shown = (t: PinType) => placeAllowed(f, t) && !hiddenKinds.includes(t)
-  const selCase = sel?.kind === 'case' ? cases.find((c) => c.id === sel.id) : undefined
-  const examples = list.filter((c) => c.status !== 'resolved').slice(0, 3)
+  const selCase =
+    sel?.kind === "case" ? cases.find((c) => c.id === sel.id) : undefined
+  const examples = list.filter((c) => c.status !== "resolved").slice(0, 3)
   const draftCount = cases.filter((c) => matchCase(c, draft, q)).length
 
   const select = (s: Sel | null) => {
     setSel(s)
     if (s) {
       setSnap(1)
-      setView('map')
+      setView("map")
     }
   }
   const commit = (v: string) => {
@@ -116,7 +152,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
   const clearAll = () => {
     setF(F0)
     setDraft(F0)
-    setQ('')
+    setQ("")
     setHiddenKinds([])
   }
 
@@ -127,52 +163,59 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
     cases
       .filter(
         (c) =>
-          c.status !== 'resolved' &&
-          [c.name, c.district, c.street, c.breed, c.color, c.species].join(' ').toLowerCase().includes(t),
+          c.status !== "resolved" &&
+          [c.name, c.district, c.street, c.breed, c.color, c.species]
+            .join(" ")
+            .toLowerCase()
+            .includes(t),
       )
       .slice(0, 4)
       .forEach((c) =>
         out.push({
           key: c.id,
           label: `${c.name} · ${c.species} ${c.color.toLowerCase()}`,
-          sub: `${c.street}, ${c.district} · ${c.type === 'rescue' ? 'Cần cứu hộ' : 'Thất lạc'}`,
-          type: c.type === 'rescue' ? 'rescue' : 'lost',
+          sub: `${c.street}, ${c.district} · ${
+            c.type === "rescue" ? "Cần cứu hộ" : "Thất lạc"
+          }`,
+          type: c.type === "rescue" ? "rescue" : "lost",
           onPick: () => {
-            setQ('')
-            select({ kind: 'case', id: c.id })
+            setQ("")
+            select({ kind: "case", id: c.id })
           },
         }),
       )
-      ;[
-        ...SHELTERS.map((p) => ({ p, kind: 'shelter' as const })),
-        ...CLINICS.map((p) => ({ p, kind: 'clinic' as const })),
-      ]
-        .filter(({ p }) => `${p.name} ${p.district}`.toLowerCase().includes(t))
-        .slice(0, 3)
-        .forEach(({ p, kind }) =>
-          out.push({
-            key: p.id,
-            label: p.name,
-            sub: `${kind === 'shelter' ? 'Mái ấm' : 'Phòng khám'} · ${p.district}`,
-            type: kind,
-            onPick: () => {
-              setQ('')
-              setHiddenKinds((h) => h.filter((x) => x !== kind))
-              select({ kind, id: p.id })
-              api.current?.focus(p.x, p.y, 1.6)
-            },
-          }),
-        )
+    ;[
+      ...SHELTERS.map((p) => ({ p, kind: "shelter" as const })),
+      ...CLINICS.map((p) => ({ p, kind: "clinic" as const })),
+    ]
+      .filter(({ p }) => `${p.name} ${p.district}`.toLowerCase().includes(t))
+      .slice(0, 3)
+      .forEach(({ p, kind }) =>
+        out.push({
+          key: p.id,
+          label: p.name,
+          sub: `${
+            kind === "shelter" ? "Mái ấm" : "Phòng khám"
+          } · ${p.district}`,
+          type: kind,
+          onPick: () => {
+            setQ("")
+            setHiddenKinds((h) => h.filter((x) => x !== kind))
+            select({ kind, id: p.id })
+            api.current?.focus(p.x, p.y, 1.6)
+          },
+        }),
+      )
     DISTRICTS.filter((d) => d.toLowerCase().includes(t))
       .slice(0, 1)
       .forEach((d) =>
         out.push({
           key: `d-${d}`,
           label: `Quận ${d}`,
-          sub: 'Lọc theo khu vực',
-          type: 'warning',
+          sub: "Lọc theo khu vực",
+          type: "warning",
           onPick: () => {
-            setQ('')
+            setQ("")
             setF((o) => ({ ...o, district: d }))
           },
         }),
@@ -183,7 +226,8 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
   const center = selCase
     ? { x: selCase.x, y: selCase.y + (desktop ? 0 : 40), k: 1.5 }
     : { x: 445, y: 350, k: desktop ? 1 : 0.95 }
-  const selLost = selCase && selCase.type === 'lost' && selCase.status !== 'resolved'
+  const selLost =
+    selCase && selCase.type === "lost" && selCase.status !== "resolved"
 
   const openFilter = () => {
     setDraft(f)
@@ -191,7 +235,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
   }
   const filterActionBtn = (
     <IconBtn
-      label={`Bộ lọc${n ? ` · ${n}` : ''}`}
+      label={`Bộ lọc${n ? ` · ${n}` : ""}`}
       size="sm"
       variant="ghost"
       onClick={(e) => {
@@ -199,8 +243,10 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
         openFilter()
       }}
       className={cx(
-        'relative !size-8 !rounded-full !border transition active:scale-90',
-        n > 0 ? '!bg-butter !border-brown !text-brown shadow-xs' : '!bg-cream-2/70 !border-brown/20 !text-brown hover:!bg-white',
+        "relative !size-8 !rounded-full !border transition active:scale-90",
+        n > 0
+          ? "!bg-butter !border-brown !text-brown shadow-xs"
+          : "!bg-cream-2/70 !border-brown/20 !text-brown hover:!bg-white",
       )}
     >
       <SlidersHorizontal className="size-3.5" />
@@ -238,8 +284,8 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
     />
   )
 
-  const handleSelectCase = (c: (typeof cases)[number]) => {
-    select({ kind: 'case', id: c.id })
+  const handleSelectCase = (c: typeof cases[number]) => {
+    select({ kind: "case", id: c.id })
     api.current?.focus(c.x, c.y, 1.5)
   }
 
@@ -261,7 +307,11 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
       {list
         .filter((c) => desktop || sel?.id !== c.id)
         .map((c) => (
-          <div key={c.id} onMouseEnter={() => setHoverId(c.id)} onMouseLeave={() => setHoverId(null)}>
+          <div
+            key={c.id}
+            onMouseEnter={() => setHoverId(c.id)}
+            onMouseLeave={() => setHoverId(null)}
+          >
             <CaseCard
               c={c}
               compact
@@ -277,9 +327,9 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
     <CityMap
       className="size-full"
       cases={mapCases}
-      shelters={shown('shelter') ? SHELTERS : []}
-      clinics={shown('clinic') ? CLINICS : []}
-      risks={shown('warning') ? RISKS : []}
+      shelters={shown("shelter") ? SHELTERS : []}
+      clinics={shown("clinic") ? CLINICS : []}
+      risks={shown("warning") ? RISKS : []}
       selected={sel}
       onSelect={select}
       radius={{ ...ME_POS, km: f.radius }}
@@ -290,7 +340,11 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
       apiRef={api}
       hoverId={hoverId}
       predicted={selLost ? { x: selCase.x, y: selCase.y, r: 0.5 * KM } : null}
-      trail={selLost ? selCase.trail?.map((t) => ({ x: t.x, y: t.y, t: t.t })) : undefined}
+      trail={
+        selLost
+          ? selCase.trail?.map((t) => ({ x: t.x, y: t.y, t: t.t }))
+          : undefined
+      }
       controlsClass="bottom-6"
       focusKey={sel ? sel.id : undefined}
     />
@@ -338,7 +392,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
 
         {/* AREA 2: Center Interactive Map */}
         <section className="relative flex-1 min-w-0 h-full overflow-hidden bg-map-sand">
-          {desktop && view === 'list' ? (
+          {desktop && view === "list" ? (
             <div className="size-full overflow-y-auto bg-cream p-6">
               {list.length ? (
                 <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
@@ -347,7 +401,11 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                   ))}
                 </div>
               ) : (
-                <Empty title="Chưa có case nào trong khu vực này" cta="Xóa bộ lọc" onCta={clearAll} />
+                <Empty
+                  title="Chưa có case nào trong khu vực này"
+                  cta="Xóa bộ lọc"
+                  onCta={clearAll}
+                />
               )}
             </div>
           ) : (
@@ -362,7 +420,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                 onChange={setView}
                 options={[
                   {
-                    v: 'map',
+                    v: "map",
                     label: (
                       <span className="flex items-center gap-1.5 px-1">
                         <MapIcon className="size-4" />
@@ -371,7 +429,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                     ),
                   },
                   {
-                    v: 'list',
+                    v: "list",
                     label: (
                       <span className="flex items-center gap-1.5 px-1">
                         <List className="size-4" />
@@ -383,7 +441,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
               />
             </div>
           )}
-          {desktop && view === 'map' && (
+          {desktop && view === "map" && (
             <div className="absolute left-4 top-4 z-10">
               <MapLegend
                 defaultOpen
@@ -434,15 +492,24 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                           <span className="truncate font-display text-[15px] font-extrabold">
                             {selCase.name.toUpperCase()}
                           </span>
-                          <StatusBadge status={selCase.status} critical={selCase.critical} type={selCase.type} />
+                          <StatusBadge
+                            status={selCase.status}
+                            critical={selCase.critical}
+                            type={selCase.type}
+                          />
                         </div>
                         <p className="truncate text-xs font-bold text-brown-soft">
-                          {approxLoc(selCase)} · cách bạn {kmFrom(selCase.x, selCase.y)} km
+                          {approxLoc(selCase)} · cách bạn{" "}
+                          {kmFrom(selCase.x, selCase.y)} km
                         </p>
                       </div>
                       <Btn
                         size="sm"
-                        variant={selCase.critical || selCase.type === 'rescue' ? 'danger' : 'primary'}
+                        variant={
+                          selCase.critical || selCase.type === "rescue"
+                            ? "danger"
+                            : "primary"
+                        }
                         pill
                         className="h-10 shrink-0 px-3 text-xs font-extrabold shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"
                         onClick={(e) => {
@@ -450,7 +517,9 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                           go(`/case/${sel.id}?help=1`)
                         }}
                       >
-                        {selCase.critical || selCase.type === 'rescue' ? 'CỨU NGAY' : 'Giúp bé'}
+                        {selCase.critical || selCase.type === "rescue"
+                          ? "CỨU NGAY"
+                          : "Giúp bé"}
                       </Btn>
                       <IconBtn
                         label="Bỏ chọn ghim"
@@ -470,10 +539,12 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                     <div className="flex items-center gap-3 px-4 pb-3">
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-display text-[15px] font-extrabold leading-tight">
-                          {list.filter((c) => c.status !== 'resolved').length} case đang hoạt động
+                          {list.filter((c) => c.status !== "resolved").length}{" "}
+                          case đang hoạt động
                         </p>
                         <p className="truncate text-xs font-bold text-brown-soft">
-                          {examples.map((c) => c.district).join(' · ') || 'Kéo lên để xem danh sách'}
+                          {examples.map((c) => c.district).join(" · ") ||
+                            "Kéo lên để xem danh sách"}
                         </p>
                       </div>
                       <IconBtn
@@ -483,7 +554,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                         className="!size-10 !rounded-full shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none shrink-0"
                         onClick={(e) => {
                           e.stopPropagation()
-                          go('/report')
+                          go("/report")
                         }}
                         onPointerDown={(e) => e.stopPropagation()}
                       >
@@ -516,7 +587,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
         </section>
 
         {/* AREA 3: Desktop Right Contextual Case Panel (Docked Sidebar) */}
-        {desktop && view === 'map' && sel && (
+        {desktop && view === "map" && sel && (
           <aside className="w-[380px] xl:w-[410px] shrink-0 min-h-0 flex flex-col border-l-2 border-brown/15 bg-paper z-20 shadow-soft animate-[rise_.2s_both]">
             <div className="flex h-full flex-col min-h-0">
               <div className="flex items-center justify-between border-b-2 border-line bg-cream/40 px-4 py-3 shrink-0">
@@ -547,7 +618,14 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
         )}
       </div>
 
-      <Modal open={open} onClose={() => setOpen(false)} title={`Bộ lọc${countFilters(draft) ? ` · ${countFilters(draft)}` : ''}`} wide>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title={`Bộ lọc${
+          countFilters(draft) ? ` · ${countFilters(draft)}` : ""
+        }`}
+        wide
+      >
         <div className="space-y-5">
           <FilterSection title="Loại">
             <div className="flex flex-wrap gap-2">
@@ -556,7 +634,9 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                   key={t}
                   active={draft.types.includes(t)}
                   icon={<LegendSwatch type={t} />}
-                  onClick={() => setDraft({ ...draft, types: toggle(draft.types, t) })}
+                  onClick={() =>
+                    setDraft({ ...draft, types: toggle(draft.types, t) })
+                  }
                 >
                   {PIN_META[t].label}
                 </Chip>
@@ -565,11 +645,16 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
           </FilterSection>
           <FilterSection title="Loài">
             <div className="flex flex-wrap gap-2">
-              {['Chó', 'Mèo', 'Khác'].map((s) => (
+              {["Chó", "Mèo", "Khác"].map((s) => (
                 <Chip
                   key={s}
                   active={draft.species === s}
-                  onClick={() => setDraft({ ...draft, species: draft.species === s ? '' : s })}
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      species: draft.species === s ? "" : s,
+                    })
+                  }
                 >
                   {s}
                 </Chip>
@@ -581,7 +666,9 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
               <Select
                 aria-label="Quận / huyện"
                 value={draft.district}
-                onChange={(e) => setDraft({ ...draft, district: e.target.value })}
+                onChange={(e) =>
+                  setDraft({ ...draft, district: e.target.value })
+                }
               >
                 <option value="">Quận / huyện</option>
                 {DISTRICTS.map((d) => (
@@ -634,39 +721,54 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
                 <Chip
                   key={v}
                   active={draft.status.includes(v)}
-                  onClick={() => setDraft({ ...draft, status: toggle(draft.status, v) })}
+                  onClick={() =>
+                    setDraft({ ...draft, status: toggle(draft.status, v) })
+                  }
                 >
-                  <span className={cx(
-                    'mr-1.5 inline-block size-2 rounded-full',
-                    v === 'active' ? 'bg-coral' : v === 'progress' ? 'bg-amber-500' : 'bg-emerald-500'
-                  )} />
+                  <span
+                    className={cx(
+                      "mr-1.5 inline-block size-2 rounded-full",
+                      v === "active"
+                        ? "bg-coral"
+                        : v === "progress"
+                          ? "bg-amber-500"
+                          : "bg-emerald-500",
+                    )}
+                  />
                   {l}
                 </Chip>
               ))}
             </div>
-            {draft.status.includes('resolved') && (
+            {draft.status.includes("resolved") && (
               <p className="mt-1.5 text-xs font-semibold text-brown-soft">
-                Case đã giải quyết chỉ hiện trong danh sách (lịch sử), không hiện trên bản đồ trực tiếp.
+                Case đã giải quyết chỉ hiện trong danh sách (lịch sử), không
+                hiện trên bản đồ trực tiếp.
               </p>
             )}
           </FilterSection>
           <details className="rounded-2xl border-2 border-line px-3 py-2">
-            <summary className="cursor-pointer text-sm font-extrabold">Nâng cao: giống & màu lông</summary>
+            <summary className="cursor-pointer text-sm font-extrabold">
+              Nâng cao: giống & màu lông
+            </summary>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
               <Field label="Giống">
                 <Input
                   value={draft.breed}
-                  onChange={(e) => setDraft({ ...draft, breed: e.target.value })}
+                  onChange={(e) =>
+                    setDraft({ ...draft, breed: e.target.value })
+                  }
                   placeholder="VD: Golden, Poodle…"
                 />
               </Field>
               <Field label="Màu lông">
                 <Select
                   value={draft.color}
-                  onChange={(e) => setDraft({ ...draft, color: e.target.value })}
+                  onChange={(e) =>
+                    setDraft({ ...draft, color: e.target.value })
+                  }
                 >
                   <option value="">Tất cả</option>
-                  {['Vàng', 'Trắng', 'Xám', 'Đen', 'Nâu', 'Kem'].map((c) => (
+                  {["Vàng", "Trắng", "Xám", "Đen", "Nâu", "Kem"].map((c) => (
                     <option key={c}>{c}</option>
                   ))}
                 </Select>
@@ -677,7 +779,13 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
             <Btn variant="soft" className="flex-1" onClick={() => setDraft(F0)}>
               Xóa bộ lọc
             </Btn>
-            <Btn className="flex-[1.4]" onClick={() => { setF(draft); setOpen(false) }}>
+            <Btn
+              className="flex-[1.4]"
+              onClick={() => {
+                setF(draft)
+                setOpen(false)
+              }}
+            >
               Áp dụng · {draftCount} kết quả
             </Btn>
           </div>

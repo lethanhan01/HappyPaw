@@ -1,5 +1,5 @@
-import { useRef, useState, type ReactNode } from 'react'
-import { cx } from '@/lib/cn'
+import { useRef, useState, type ReactNode } from "react"
+import { cx } from "@/lib/cn"
 
 /** Draggable sheet with three snap points (peek / half / full) inside a relatively positioned parent. */
 export function BottomSheet({
@@ -18,7 +18,7 @@ export function BottomSheet({
   className?: string
 }) {
   const box = useRef<HTMLDivElement>(null)
-  const start = useRef<{ y: number; h: number; moved: boolean } | null>(null)
+  const start = useRef<{ y: number h: number moved: boolean } | null>(null)
   const [drag, setDrag] = useState<number | null>(null)
 
   const heights = () => {
@@ -33,8 +33,8 @@ export function BottomSheet({
       ref={box}
       style={{ height: h }}
       className={cx(
-        'absolute inset-x-0 bottom-0 z-20 flex flex-col rounded-t-[28px] border-2 border-b-0 border-brown bg-cream shadow-[0_-8px_30px_-12px_rgba(107,65,40,.45)]',
-        drag === null && 'transition-[height] duration-300',
+        "absolute inset-x-0 bottom-0 z-20 flex flex-col rounded-t-[28px] border-2 border-b-0 border-brown bg-cream shadow-[0_-8px_30px_-12px_rgba(107,65,40,.45)]",
+        drag === null && "transition-[height] duration-300",
         className,
       )}
     >
@@ -69,7 +69,10 @@ export function BottomSheet({
             .map((v, i) => [Math.abs(v - cur), i] as const)
             .sort((a, b) => a[0] - b[0])[0][1] as 0 | 1 | 2
           if (Math.abs(cur - s.h) > 40 && next === snap) {
-            next = Math.max(0, Math.min(2, snap + (dirUp ? 1 : -1))) as 0 | 1 | 2
+            next = (Math.max(
+              0,
+              Math.min(2, snap + (dirUp ? 1 : -1)),
+            ) as 0 | 1 | 2)
           }
           setDrag(null)
           onSnap(next)
@@ -79,15 +82,19 @@ export function BottomSheet({
           setDrag(null)
         }}
       >
-        <div role="button" aria-label="Kéo để mở rộng hoặc thu gọn" className="flex justify-center pb-1 pt-2.5">
+        <div
+          role="button"
+          aria-label="Kéo để mở rộng hoặc thu gọn"
+          className="flex justify-center pb-1 pt-2.5"
+        >
           <span className="h-1.5 w-11 rounded-full bg-brown/30" />
         </div>
         {header}
       </div>
       <div
         className={cx(
-          'min-h-0 flex-1 overflow-y-auto overscroll-contain',
-          snap === 0 && drag === null && 'overflow-hidden',
+          "min-h-0 flex-1 overflow-y-auto overscroll-contain",
+          snap === 0 && drag === null && "overflow-hidden",
         )}
       >
         {children}

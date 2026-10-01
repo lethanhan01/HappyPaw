@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
+import { useApp } from "@/store"
 import { parsePath } from "@/lib"
+import { Empty } from "@ui"
 import UserShell from "@/layouts/UserShell"
 import Notifications from "./components/Notifications"
 import Saved from "./components/Saved"
@@ -14,12 +16,13 @@ import {
 import Profile from "./components/Profile"
 import { Safety, SafetyReport } from "./components/Safety"
 
-export { RatingModal } from "./components/Shared"
-
-export function communityRoute(path: string): ReactNode | null {
+export default function CommunityApp(): ReactNode {
+  const { path, auth, go } = useApp()
   const { seg, query } = parsePath(path)
   const [a, b] = seg
+
   let page: ReactNode = null
+
   switch (a) {
     case "notifications":
       if (seg.length === 1) page = <Notifications />
@@ -60,13 +63,17 @@ export function communityRoute(path: string): ReactNode | null {
         )
       break
   }
-  return page ? <UserShell>{page}</UserShell> : null
-}
 
-export * from "./components/Shared"
-export * from "./components/Hub"
-export * from "./components/Directory"
-export * from "./components/Safety"
-export * from "./components/Notifications"
-export * from "./components/Profile"
-export * from "./components/Saved"
+  if (page) return <UserShell>{page}</UserShell>
+
+  return (
+    <UserShell>
+      <Empty
+        title="Không tìm thấy trang này"
+        body="Đường dẫn có thể đã thay đổi."
+        cta="Về trang chủ"
+        onCta={() => go(auth === "guest" ? "/" : "/home")}
+      />
+    </UserShell>
+  )
+}

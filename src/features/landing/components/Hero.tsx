@@ -1,9 +1,19 @@
-import { Siren, MapPin, Sparkles, HeartHandshake, ShieldCheck, ArrowRight, PawPrint } from 'lucide-react'
-import { useApp } from '@/store'
-import { Btn, IconBtn, Paw } from '@ui'
-import pawsImg from '@/assets/paws.png'
-import dogHero from '@/assets/dog.jpg'
-import puddleApricot from '@/assets/puddle_vang_mo.jpg'
+import {
+  Siren,
+  MapPin,
+  Sparkles,
+  HeartHandshake,
+  ShieldCheck,
+  ArrowRight,
+  PawPrint,
+} from "lucide-react"
+import { useApp } from "@/store"
+import { Btn, IconBtn, Paw } from "@ui"
+import pawsImg from "@/assets/paws.png"
+import dogHero from "@/assets/dog.jpg"
+import dogHeroWebp from "@/assets/dog.webp"
+import puddleApricot from "@/assets/puddle_vang_mo.jpg"
+import puddleApricotWebp from "@/assets/puddle_vang_mo.webp"
 
 interface HeroSectionProps {
   onReportClick: () => void
@@ -13,11 +23,11 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
   const { auth, go, toast } = useApp()
 
   const handleMapClick = () => {
-    if (auth === 'guest') {
-      toast('Vui lòng đăng nhập để xem Bản đồ rada cứu trợ.', 'warn')
-      go('/login?redirect=%2Fhome')
+    if (auth === "guest") {
+      toast("Vui lòng đăng nhập để xem Bản đồ rada cứu trợ.", "warn")
+      go("/login?redirect=%2Fhome")
     } else {
-      go('/home')
+      go("/home")
     }
   }
 
@@ -58,8 +68,9 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
 
             {/* Subtitle description */}
             <p className="max-w-2xl text-base sm:text-xl font-bold leading-relaxed text-brown/85">
-              Hệ thống kết nối cộng đồng thông minh đầu tiên tại Hà Nội giúp định vị thú cưng đi lạc,
-              báo cáo ca nguy kịch thời gian thực và liên kết với hơn 42 trạm cứu hộ & phòng khám thú y 24/7.
+              Hệ thống kết nối cộng đồng thông minh đầu tiên tại Hà Nội giúp
+              định vị thú cưng đi lạc, báo cáo ca nguy kịch thời gian thực và
+              liên kết với hơn 42 trạm cứu hộ & phòng khám thú y 24/7.
             </p>
 
             {/* Main Action Buttons */}
@@ -107,11 +118,19 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
             <div className="relative size-60 sm:size-80 lg:size-96 max-w-full flex items-center justify-center">
               {/* Main Pet Portrait (dog.jpg) Edge-to-Edge */}
               <div className="relative size-full overflow-hidden rounded-[32px] sm:rounded-[44px] border-[3px] sm:border-[3.5px] border-brown shadow-[0_8px_0_var(--color-brown)] group bg-paper">
-                <img
-                  src={dogHero}
-                  alt="Chú cún vui vẻ trên nền vàng"
-                  className="size-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                />
+                <picture className="size-full">
+                  <source srcSet={dogHeroWebp} type="image/webp" />
+                  <img
+                    src={dogHero}
+                    alt="Chú cún vui vẻ trên nền vàng"
+                    width={640}
+                    height={640}
+                    fetchPriority="high"
+                    loading="eager"
+                    decoding="sync"
+                    className="size-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  />
+                </picture>
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brown/70 via-transparent to-transparent p-3 pt-8 text-white">
                   <p className="font-display text-xs sm:text-sm font-extrabold flex items-center gap-1.5 drop-shadow">
                     <PawPrint className="size-3.5" /> Milo · Cocker Spaniel
@@ -122,20 +141,32 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
               {/* Floating Top-Left Badge: 1.240+ ca đoàn tụ */}
               <div className="absolute -top-2 -left-2 sm:-top-5 sm:-left-5 z-20 rounded-2xl sm:rounded-3xl border-2 border-brown bg-paper px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-soft">
                 <p className="font-display text-[11px] sm:text-sm font-extrabold text-brown flex items-center gap-1.5">
-                  <PawPrint className="size-3 sm:size-3.5 text-coral" /> 1.240+ ca đoàn tụ
+                  <PawPrint className="size-3 sm:size-3.5 text-coral" /> 1.240+
+                  ca đoàn tụ
                 </p>
               </div>
 
               {/* Floating Mini Pet Card: Bé Bơ (Poodle vàng mơ) */}
               <div className="absolute -bottom-3 -left-2 sm:-bottom-6 sm:-left-6 z-20 flex items-center gap-2 rounded-xl sm:rounded-2xl border-2 border-brown bg-paper p-1.5 sm:p-2 shadow-soft hover:-translate-y-1 transition duration-200">
-                <img
-                  src={puddleApricot}
-                  alt="Bé Bơ Poodle"
-                  className="size-9 sm:size-12 rounded-lg sm:rounded-xl object-cover border border-brown"
-                />
+                <picture className="size-9 sm:size-12 shrink-0">
+                  <source srcSet={puddleApricotWebp} type="image/webp" />
+                  <img
+                    src={puddleApricot}
+                    alt="Bé Bơ Poodle"
+                    width={48}
+                    height={48}
+                    loading="eager"
+                    decoding="async"
+                    className="size-full rounded-lg sm:rounded-xl object-cover border border-brown"
+                  />
+                </picture>
                 <div className="pr-1 sm:pr-2">
-                  <p className="font-display text-[11px] sm:text-xs font-extrabold text-brown">Bé Bơ (Poodle)</p>
-                  <p className="text-[10px] sm:text-[11px] font-bold text-sage-2">Đoàn tụ sau 4h</p>
+                  <p className="font-display text-[11px] sm:text-xs font-extrabold text-brown">
+                    Bé Bơ (Poodle)
+                  </p>
+                  <p className="text-[10px] sm:text-[11px] font-bold text-sage-2">
+                    Đoàn tụ sau 4h
+                  </p>
                 </div>
               </div>
 
@@ -155,8 +186,12 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                   <Siren className="size-5 sm:size-6 text-white" />
                 </span>
                 <div>
-                  <p className="font-display text-sm sm:text-base font-extrabold text-brown">Ca mới cần hỗ trợ tại Cầu Giấy</p>
-                  <p className="text-[11px] sm:text-xs font-bold text-brown-soft">Phát hiện 8 phút trước · Mèo bị thương</p>
+                  <p className="font-display text-sm sm:text-base font-extrabold text-brown">
+                    Ca mới cần hỗ trợ tại Cầu Giấy
+                  </p>
+                  <p className="text-[11px] sm:text-xs font-bold text-brown-soft">
+                    Phát hiện 8 phút trước · Mèo bị thương
+                  </p>
                 </div>
               </div>
               <IconBtn
@@ -175,4 +210,3 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
     </section>
   )
 }
-

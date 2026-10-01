@@ -1,5 +1,5 @@
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
-import { useUI } from '@/store/uiStore'
+import { AlertCircle, CheckCircle2 } from "lucide-react"
+import { useUI } from "@/store/uiStore"
 
 /* ---------- Toasts ---------- */
 export function ToastHost() {
@@ -12,7 +12,7 @@ export function ToastHost() {
           role="status"
           className="pointer-events-auto flex animate-[pop_.3s_both] items-center gap-2 rounded-2xl border-2 border-brown bg-brown px-4 py-2.5 text-sm font-bold text-cream shadow-lg"
         >
-          {t.tone === 'ok' ? (
+          {t.tone === "ok" ? (
             <CheckCircle2 className="size-5 text-sage" />
           ) : (
             <AlertCircle className="size-5 text-butter" />

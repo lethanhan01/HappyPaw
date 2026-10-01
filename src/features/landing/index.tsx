@@ -1,25 +1,25 @@
-import { useState } from 'react'
-import { ArrowRight, Sparkles, UserPlus } from 'lucide-react'
-import { useApp } from '@/store'
-import { Btn, Badge } from '@ui'
-import LandingNav from './components/Nav'
-import HeroSection from './components/Hero'
-import ImpactStats from './components/Stats'
-import RecentCasesFeed from './components/CaseFeed'
-import CoreFeatures from './components/Features'
-import RescueWorkflow from './components/Workflow'
-import SheltersPartners from './components/Shelters'
-import SuccessStories from './components/Stories'
-import { EmergencySosModal, FloatingSosButton } from './components/Sos'
-import LandingFooter from './components/Footer'
+import { useState } from "react"
+import { ArrowRight, Sparkles, UserPlus } from "lucide-react"
+import { useApp } from "@/store"
+import { Btn, Badge } from "@ui"
+import LandingNav from "./components/Nav"
+import HeroSection from "./components/Hero"
+import ImpactStats from "./components/Stats"
+import RecentCasesFeed from "./components/CaseFeed"
+import CoreFeatures from "./components/Features"
+import RescueWorkflow from "./components/Workflow"
+import SheltersPartners from "./components/Shelters"
+import SuccessStories from "./components/Stories"
+import { EmergencySosModal, FloatingSosButton } from "./components/Sos"
+import LandingFooter from "./components/Footer"
 
 export default function LandingPage() {
   const { auth, go, toast } = useApp()
   const [sosOpen, setSosOpen] = useState(false)
 
   const navigateWithAuth = (targetPath: string) => {
-    if (auth === 'guest') {
-      toast('Vui lòng đăng nhập để sử dụng tính năng này.', 'warn')
+    if (auth === "guest") {
+      toast("Vui lòng đăng nhập để sử dụng tính năng này.", "warn")
       go(`/login?redirect=${encodeURIComponent(targetPath)}`)
     } else {
       go(targetPath)
@@ -27,11 +27,14 @@ export default function LandingPage() {
   }
 
   const handleReportAction = () => {
-    if (auth === 'guest') {
-      toast('Vui lòng đăng nhập để gửi báo cáo cứu hộ hoặc cập nhật thông tin bé.', 'warn')
-      go('/login?redirect=%2Freport%2Frescue')
+    if (auth === "guest") {
+      toast(
+        "Vui lòng đăng nhập để gửi báo cáo cứu hộ hoặc cập nhật thông tin bé.",
+        "warn",
+      )
+      go("/login?redirect=%2Freport%2Frescue")
     } else {
-      go('/report/rescue')
+      go("/report/rescue")
     }
   }
 
@@ -73,22 +76,26 @@ export default function LandingPage() {
 
               <h2 className="bubble mt-4 text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight break-words">
                 Sẵn sàng đồng hành cùng <br />
-                <span className="text-white drop-shadow">3.800+ Tình nguyện viên</span>?
+                <span className="text-white drop-shadow">
+                  3.800+ Tình nguyện viên
+                </span>
+                ?
               </h2>
 
               <p className="mt-3 sm:mt-4 text-sm sm:text-lg md:text-xl font-bold text-brown max-w-2xl mx-auto leading-relaxed">
-                Tạo tài khoản chỉ trong 1 phút để cùng nhận thông báo cứu trợ quanh khu vực của bạn,
-                bảo vệ thú cưng và lan tỏa yêu thương tới những chiếc đuôi nhỏ.
+                Tạo tài khoản chỉ trong 1 phút để cùng nhận thông báo cứu trợ
+                quanh khu vực của bạn, bảo vệ thú cưng và lan tỏa yêu thương tới
+                những chiếc đuôi nhỏ.
               </p>
 
               <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
-                {auth === 'guest' ? (
+                {auth === "guest" ? (
                   <>
                     <Btn
                       size="lg"
                       variant="danger"
                       icon={<UserPlus className="size-5" />}
-                      onClick={() => go('/register')}
+                      onClick={() => go("/register")}
                       className="w-full sm:w-auto shadow-[0_4px_0_var(--color-brown)] hover:shadow-[0_6px_0_var(--color-brown)]"
                     >
                       Đăng ký tham gia ngay
@@ -96,7 +103,7 @@ export default function LandingPage() {
                     <Btn
                       size="lg"
                       variant="secondary"
-                      onClick={() => navigateWithAuth('/map')}
+                      onClick={() => navigateWithAuth("/map")}
                       className="w-full sm:w-auto hover:bg-white"
                     >
                       Xem bản đồ cứu hộ
@@ -107,7 +114,9 @@ export default function LandingPage() {
                     size="lg"
                     variant="danger"
                     icon={<ArrowRight className="size-5" />}
-                    onClick={() => go(auth === 'admin' ? '/admin/dashboard' : '/home')}
+                    onClick={() =>
+                      go(auth === "admin" ? "/admin/dashboard" : "/home")
+                    }
                     className="w-full sm:w-auto"
                   >
                     Vào trang chủ ứng dụng ngay

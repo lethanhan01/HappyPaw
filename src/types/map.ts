@@ -5,7 +5,7 @@ export interface Risk {
   x: number
   y: number
   r: number
-  severity: 'Thấp' | 'Trung bình' | 'Cao'
+  severity: "Thấp" | "Trung bình" | "Cao"
   note: string
   expires: string
   reports: number
