@@ -33,7 +33,10 @@ interface Ctx {
 const AppCtx = createContext<Ctx>(null as unknown as Ctx)
 export const useApp = () => useContext(AppCtx)
 
-const readHash = () => window.location.hash.replace(/^#/, '') || '/login'
+const readHash = () => {
+  const h = window.location.hash.replace(/^#/, '')
+  return h || '/'
+}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [path, setPath] = useState(readHash())
