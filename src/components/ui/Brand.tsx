@@ -1,8 +1,10 @@
 import logoSvg from '@/assets/logo.svg'
+import logoTextSvg from '@/assets/logo-text.svg'
 import logoFull from '@/assets/logo-full.png'
 import pawsImg from '@/assets/paws.png'
+import { cx } from '@/lib'
 
-export { logoSvg, logoFull, pawsImg }
+export { logoSvg, logoTextSvg, logoFull, pawsImg }
 
 /* ---------- Paw + brand ---------- */
 export function Paw({ className = 'size-5', fill = 'currentColor' }: { className?: string; fill?: string }) {
@@ -17,22 +19,24 @@ export function Paw({ className = 'size-5', fill = 'currentColor' }: { className
   )
 }
 
-export function Logo({ onClick, compact }: { onClick?: () => void; compact?: boolean }) {
+export function Logo({ onClick, compact, className }: { onClick?: () => void; compact?: boolean; className?: string }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2.5 group cursor-pointer text-left select-none"
+      className={cx('flex items-center gap-2 sm:gap-2.5 group cursor-pointer text-left select-none', className)}
       aria-label="Happy Paws"
     >
       <img
         src={logoSvg}
-        alt="Happy Paws emblem"
-        className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
+        alt="Happy Paws icon"
+        className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
       />
       {!compact && (
-        <span className="whitespace-nowrap font-display text-[22px] font-extrabold leading-none tracking-tight text-brown">
-          HAPPY <span className="rounded-lg bg-butter/60 px-1.5 py-0.5 text-brown">PAWS</span>
-        </span>
+        <img
+          src={logoTextSvg}
+          alt="Happy Paws"
+          className="h-7 sm:h-8 w-auto object-contain transition-transform group-hover:scale-[1.02] shrink-0"
+        />
       )}
     </button>
   )

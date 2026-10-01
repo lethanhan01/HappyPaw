@@ -139,7 +139,7 @@ function Sidebar({ collapsed, onNav, onToggle, drawer }: { collapsed: boolean; o
   return (
     <div className="flex h-full flex-col bg-ink text-cream">
       <div className={cx('flex h-14 shrink-0 items-center gap-1.5 border-b border-white/10 px-3', slim && 'justify-center')}>
-        <div className="min-w-0 [&_button>span.font-display]:!text-[18px] [&_button>span.font-display]:!text-cream [&_button>span.font-display>span]:!text-brown"><Logo compact={slim} onClick={() => { go('/admin/dashboard'); onNav() }} /></div>
+        <div className="min-w-0"><Logo compact={slim} onClick={() => { go('/admin/dashboard'); onNav() }} /></div>
         {!slim && <span className="shrink-0 rounded bg-white/10 px-1.5 py-0.5 font-display text-[10px] font-bold text-butter uppercase tracking-wider">Admin</span>}
       </div>
       <nav className="flex-1 overflow-y-auto px-2 py-3" aria-label="Điều hướng admin">
