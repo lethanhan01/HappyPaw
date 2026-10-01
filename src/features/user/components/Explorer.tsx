@@ -472,7 +472,7 @@ export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map
           {!desktop && (
             <>
               {/* Nút điều khiển bản đồ bên phải */}
-              <div className="absolute right-3 top-14 z-10 flex flex-col gap-2">
+              <div className="absolute right-3 top-3 z-10 flex flex-col gap-2">
                 <IconBtn
                   variant="ghost"
                   onClick={() => api.current?.locate()}
