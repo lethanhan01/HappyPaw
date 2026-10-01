@@ -34,13 +34,13 @@ export default function Saved() {
       </div>
       {tab === 'resolved' && list.length > 0 && <p className="mb-3 text-sm font-semibold text-brown-soft">Các case đã giải quyết chỉ hiển thị ở mục lịch sử này.</p>}
       {list.length === 0 ? (
-        <Empty title={emptyTitle} body="Khám phá bản đồ để tìm những bé cần bạn giúp đỡ." cta="Khám phá bản đồ" onCta={() => go('/map')} />
+        <Empty title={emptyTitle} body="Khám phá bản đồ để tìm những bé cần bạn giúp đỡ." cta="Khám phá bản đồ" onCta={() => go('/home')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((c) => <CaseCard key={c.id} c={c} />)}
         </div>
       )}
-      {list.length > 0 && <div className="mt-6 text-center"><Btn variant="soft" icon={<Compass className="size-4" />} onClick={() => go('/map')}>Mở bản đồ</Btn></div>}
+      {list.length > 0 && <div className="mt-6 text-center"><Btn variant="soft" icon={<Compass className="size-4" />} onClick={() => go('/home')}>Mở bản đồ</Btn></div>}
     </div>
   )
 }

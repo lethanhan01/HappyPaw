@@ -12,8 +12,8 @@ export function userRoute(path: string): ReactNode | null {
   switch (a) {
     case 'login': return <Auth mode="login" />
     case 'register': return <Auth mode="register" />
-    case 'home': return <Explorer variant="home" />
-    case 'map': return <Explorer variant="map" />
+    case 'home':
+    case 'map': return <Explorer variant="home" />
     case 'find': return <FindHub />
     case 'ai-match': return <AiMatch />
     case 'states': return <StatesDemo />

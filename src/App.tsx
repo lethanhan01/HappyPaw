@@ -31,6 +31,12 @@ function Router() {
       }
     }
 
+    // Tự động chuyển hướng /map sang /home sau khi hợp nhất
+    if (seg[0] === 'map') {
+      go('/home', { replace: true })
+      return
+    }
+
     // 3. Tài khoản User: Cấm truy cập toàn bộ giao diện Admin
     if (auth === 'user') {
       if (seg[0] === 'admin') {

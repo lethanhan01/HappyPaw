@@ -15,9 +15,9 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
   const handleMapClick = () => {
     if (auth === 'guest') {
       toast('Vui lòng đăng nhập để xem Bản đồ rada cứu trợ.', 'warn')
-      go('/login?redirect=%2Fmap')
+      go('/login?redirect=%2Fhome')
     } else {
-      go('/map')
+      go('/home')
     }
   }
 

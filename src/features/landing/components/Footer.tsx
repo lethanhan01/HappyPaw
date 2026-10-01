@@ -47,7 +47,7 @@ export default function LandingFooter() {
             <h4 className="font-display text-base font-extrabold text-brown">Cứu hộ & Tìm kiếm</h4>
             <ul className="mt-3.5 space-y-2 text-sm font-bold text-brown-soft">
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/map')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/home')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Bản đồ radar cứu trợ
                 </Btn>
               </li>

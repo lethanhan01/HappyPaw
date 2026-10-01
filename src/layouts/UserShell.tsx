@@ -18,8 +18,8 @@ import { Avatar, Btn, IconBtn, Input, Logo, cx } from '@ui'
 import { USERS } from '@/constants/mock/users'
 
 const NAV = [
+  { to: '/home', label: 'Trang chủ', icon: Home, match: ['/home', '/map'] },
   { to: '/find', label: 'Tìm & Cứu Pet', icon: PawPrint, match: ['/find', '/ai-match', '/report'] },
-  { to: '/map', label: 'Bản đồ', icon: MapIcon, match: ['/map'] },
   {
     to: '/community',
     label: 'Cộng đồng',
@@ -30,8 +30,7 @@ const NAV = [
 ]
 
 const TABS = [
-  { to: '/home', label: 'Trang chủ', icon: Home, match: ['/home'] },
-  { to: '/map', label: 'Bản đồ', icon: MapIcon, match: ['/map'] },
+  { to: '/home', label: 'Trang chủ', icon: Home, match: ['/home', '/map'] },
   { to: '/find', label: 'Tìm & Cứu', icon: PawPrint, match: ['/find', '/ai-match', '/report', '/case'] },
   {
     to: '/community',
@@ -49,10 +48,12 @@ export default function UserShell({
   children,
   fullBleed,
   hideFab,
+  mobileHeaderContent,
 }: {
   children: ReactNode
   fullBleed?: boolean
   hideFab?: boolean
+  mobileHeaderContent?: ReactNode
 }) {
   const { path, go, notifs, logout, auth, saved, account } = useApp()
   const [menu, setMenu] = useState(false)
@@ -62,8 +63,19 @@ export default function UserShell({
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b-2 border-brown/15 bg-cream/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-[1500px] items-center gap-3 px-3 md:gap-5 md:px-6">
-          <Logo onClick={() => go(auth === 'guest' ? '/' : '/home')} />
+        <div className="mx-auto flex h-16 max-w-[1500px] items-center gap-2 px-3 md:gap-5 md:px-6">
+          {mobileHeaderContent ? (
+            <>
+              <div className="hidden sm:block">
+                <Logo onClick={() => go(auth === 'guest' ? '/' : '/home')} />
+              </div>
+              <div className="flex-1 min-w-0 mr-1 sm:hidden">
+                {mobileHeaderContent}
+              </div>
+            </>
+          ) : (
+            <Logo onClick={() => go(auth === 'guest' ? '/' : '/home')} />
+          )}
           <nav className="ml-4 hidden items-center gap-1 lg:flex" aria-label="Điều hướng chính">
             {NAV.map((n) => (
               <Btn
@@ -85,7 +97,7 @@ export default function UserShell({
             <Search className="pointer-events-none absolute left-3.5 top-1/2 z-10 size-4 -translate-y-1/2 text-brown/50" />
             <Input
               size="sm"
-              onKeyDown={(e) => e.key === 'Enter' && go('/map')}
+              onKeyDown={(e) => e.key === 'Enter' && go('/home')}
               placeholder="Tìm quanh đây…"
               aria-label="Tìm kiếm"
               className="!h-11 !rounded-full pl-10 pr-4"
@@ -200,23 +212,22 @@ export default function UserShell({
       </main>
 
       {!hideFab && auth !== 'guest' && (
-        <Btn
+        <IconBtn
           variant="danger"
           size="lg"
-          pill
-          icon={<Plus className="size-6" strokeWidth={3} />}
+          label="Báo case"
           onClick={() => go('/report')}
-          className="fixed bottom-24 right-4 z-40 !h-14 !px-5 shadow-[0_5px_0_var(--color-brown)] sm:hidden"
+          className="fixed bottom-20 right-4 z-40 !size-12 !rounded-full shadow-[0_4px_0_var(--color-brown)] active:translate-y-1 active:shadow-none sm:hidden"
         >
-          Báo case
-        </Btn>
+          <Plus className="size-6" strokeWidth={3} />
+        </IconBtn>
       )}
       {auth !== 'guest' && (
         <nav
           className="fixed inset-x-0 bottom-0 z-50 border-t-2 border-brown/15 bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm lg:hidden"
           aria-label="Điều hướng di động"
         >
-          <ul className="mx-auto grid max-w-xl grid-cols-5">
+          <ul className="mx-auto grid max-w-xl grid-cols-4">
             {TABS.map((t) => {
               const a = on(path, t.match)
               return (

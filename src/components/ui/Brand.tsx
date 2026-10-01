@@ -35,7 +35,7 @@ export function Logo({ onClick, compact, className }: { onClick?: () => void; co
         <img
           src={logoTextSvg}
           alt="Happy Paws"
-          className="h-7 sm:h-8 w-auto object-contain transition-transform group-hover:scale-[1.02] shrink-0"
+          className="h-7 sm:h-8 w-auto object-contain transition-transform group-hover:scale-[1.02] shrink-0 hidden sm:block"
         />
       )}
     </button>

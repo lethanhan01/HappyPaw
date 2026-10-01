@@ -49,11 +49,11 @@ import { CaseCard, CaseCardSkeleton } from '@/components/common'
 export { approxLoc } from '@/features/map'
 
 const QUICK = [
-  { label: 'Tìm pet lạc', icon: SearchIcon, to: '/report/lost', tone: 'bg-orange-soft' },
-  { label: 'Báo thấy pet', icon: PawPrint, to: '/report/found', tone: 'bg-butter/70' },
-  { label: 'Cần cứu hộ', icon: Siren, to: '/report/rescue', tone: 'bg-coral-soft' },
-  { label: 'Tìm mái ấm', icon: HomeIcon, to: '/shelters', tone: 'bg-sage-soft' },
-  { label: 'Tìm phòng khám', icon: Stethoscope, to: '/clinics', tone: 'bg-sky-soft' },
+  { label: 'Tìm pet lạc', short: 'Tìm pet', icon: SearchIcon, to: '/report/lost', tone: 'bg-orange-soft' },
+  { label: 'Báo thấy pet', short: 'Báo pet', icon: PawPrint, to: '/report/found', tone: 'bg-butter/70' },
+  { label: 'Cần cứu hộ', short: 'Cứu hộ', icon: Siren, to: '/report/rescue', tone: 'bg-coral-soft' },
+  { label: 'Tìm mái ấm', short: 'Mái ấm', icon: HomeIcon, to: '/shelters', tone: 'bg-sage-soft' },
+  { label: 'Tìm phòng khám', short: 'Phòng khám', icon: Stethoscope, to: '/clinics', tone: 'bg-sky-soft' },
 ]
 const TYPES: PinType[] = ['rescue', 'lost', 'shelter', 'clinic', 'warning']
 const STATUSES: [StatusKey, string][] = [
@@ -72,7 +72,7 @@ function FilterSection({ title, children }: { title: string; children: ReactNode
   )
 }
 
-export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
+export default function Explorer({ variant = 'home' }: { variant?: 'home' | 'map' }) {
   const { cases, go } = useApp()
   const desktop = useMedia('(min-width: 1024px)')
   const [loading, setLoading] = useState(true)
@@ -87,6 +87,12 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
   const [snap, setSnap] = useState<0 | 1 | 2>(0)
   const [hiddenKinds, setHiddenKinds] = useState<PinType[]>([])
   const api = useRef<MapApi | null>(null)
+
+  useEffect(() => {
+    if (variant === 'map') {
+      go('/home', { replace: true })
+    }
+  }, [variant, go])
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 600)
@@ -149,26 +155,26 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
           },
         }),
       )
-    ;[
-      ...SHELTERS.map((p) => ({ p, kind: 'shelter' as const })),
-      ...CLINICS.map((p) => ({ p, kind: 'clinic' as const })),
-    ]
-      .filter(({ p }) => `${p.name} ${p.district}`.toLowerCase().includes(t))
-      .slice(0, 3)
-      .forEach(({ p, kind }) =>
-        out.push({
-          key: p.id,
-          label: p.name,
-          sub: `${kind === 'shelter' ? 'Mái ấm' : 'Phòng khám'} · ${p.district}`,
-          type: kind,
-          onPick: () => {
-            setQ('')
-            setHiddenKinds((h) => h.filter((x) => x !== kind))
-            select({ kind, id: p.id })
-            api.current?.focus(p.x, p.y, 1.6)
-          },
-        }),
-      )
+      ;[
+        ...SHELTERS.map((p) => ({ p, kind: 'shelter' as const })),
+        ...CLINICS.map((p) => ({ p, kind: 'clinic' as const })),
+      ]
+        .filter(({ p }) => `${p.name} ${p.district}`.toLowerCase().includes(t))
+        .slice(0, 3)
+        .forEach(({ p, kind }) =>
+          out.push({
+            key: p.id,
+            label: p.name,
+            sub: `${kind === 'shelter' ? 'Mái ấm' : 'Phòng khám'} · ${p.district}`,
+            type: kind,
+            onPick: () => {
+              setQ('')
+              setHiddenKinds((h) => h.filter((x) => x !== kind))
+              select({ kind, id: p.id })
+              api.current?.focus(p.x, p.y, 1.6)
+            },
+          }),
+        )
     DISTRICTS.filter((d) => d.toLowerCase().includes(t))
       .slice(0, 1)
       .forEach((d) =>
@@ -195,6 +201,42 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
     setDraft(f)
     setOpen(true)
   }
+  const mobileFilterBtn = (
+    <IconBtn
+      label={`Bộ lọc${n ? ` · ${n}` : ''}`}
+      size="sm"
+      variant="ghost"
+      onClick={(e) => {
+        e.stopPropagation()
+        openFilter()
+      }}
+      className={cx(
+        'relative !size-8 !rounded-full !border transition active:scale-90',
+        n > 0 ? '!bg-butter !border-brown !text-brown shadow-xs' : '!bg-cream-2/70 !border-brown/20 !text-brown hover:!bg-white',
+      )}
+    >
+      <SlidersHorizontal className="size-3.5" />
+      {n > 0 && (
+        <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-coral text-[9px] font-extrabold text-white">
+          {n}
+        </span>
+      )}
+    </IconBtn>
+  )
+
+  const mobileSearch = (
+    <SearchBar
+      value={q}
+      onChange={setQ}
+      hits={hits}
+      recent={recent}
+      onCommit={commit}
+      onClearRecent={() => setRecent([])}
+      size="md"
+      rightAction={mobileFilterBtn}
+    />
+  )
+
   const search = (
     <SearchBar
       value={q}
@@ -306,35 +348,34 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
   )
 
   return (
-    <UserShell fullBleed hideFab>
+    <UserShell fullBleed hideFab mobileHeaderContent={mobileSearch}>
       <div className="relative h-[calc(100dvh-64px-68px)] overflow-hidden lg:h-[calc(100dvh-64px)] lg:flex lg:flex-row">
         {/* AREA 1: Desktop Left Control Sidebar */}
         {desktop && (
           <aside className="flex w-[320px] xl:w-[350px] shrink-0 min-h-0 flex-col border-r-2 border-brown/15 bg-cream">
-            {variant === 'home' && (
-              <div className="px-4 pt-4">
-                <p className="font-display text-2xl font-extrabold leading-tight">
-                  Chào Linh
-                </p>
-                <p className="text-sm text-brown-soft">Cùng tìm lại những chiếc đuôi nhỏ.</p>
-                <div className="mt-3 grid grid-cols-5 gap-2">
-                  {QUICK.map((a) => (
-                    <Btn
-                      key={a.label}
-                      onClick={() => go(a.to)}
-                      variant="ghost"
-                      className={cx(
-                        'flex h-auto flex-col items-center gap-1 rounded-2xl border-2 border-brown/20 px-1 py-2.5 text-center text-[11px] font-extrabold leading-tight transition hover:-translate-y-0.5 hover:border-brown',
-                        a.tone,
-                      )}
-                    >
-                      <a.icon className="size-5" />
-                      {a.label}
-                    </Btn>
-                  ))}
-                </div>
+            <div className="px-4 pt-4">
+              <p className="font-display text-2xl font-extrabold leading-tight">
+                Chào Linh
+              </p>
+              <p className="text-sm text-brown-soft">Cùng tìm lại những chiếc đuôi nhỏ.</p>
+              <div className="mt-3 grid grid-cols-5 gap-1.5">
+                {QUICK.map((a) => (
+                  <Btn
+                    key={a.label}
+                    onClick={() => go(a.to)}
+                    variant="ghost"
+                    className={cx(
+                      'flex h-auto min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl border-2 border-brown/20 !px-1 !py-1.5 text-center text-[10.5px] font-extrabold !whitespace-normal transition hover:-translate-y-0.5 hover:border-brown',
+                      a.tone,
+                    )}
+                    title={a.label}
+                  >
+                    <a.icon className="size-5 shrink-0" />
+                    <span className="leading-tight text-brown line-clamp-2">{a.label}</span>
+                  </Btn>
+                ))}
               </div>
-            )}
+            </div>
             <div className="space-y-3 p-4">
               {search}
               <div className="flex items-center gap-2">
@@ -421,7 +462,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
           {desktop && view === 'map' && (
             <div className="absolute left-4 top-4 z-10">
               <MapLegend
-                defaultOpen={variant === 'map'}
+                defaultOpen
                 hidden={hiddenKinds}
                 onToggle={(t) => setHiddenKinds((h) => toggle(h, t))}
               />
@@ -430,39 +471,13 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
 
           {!desktop && (
             <>
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-30 space-y-2 p-3">
-                <div className="pointer-events-auto">{search}</div>
-                {variant === 'home' && (
-                  <div className="pointer-events-auto no-scrollbar -mx-3 flex gap-2 overflow-x-auto px-3">
-                    {QUICK.map((a) => (
-                      <Btn
-                        key={a.label}
-                        onClick={() => go(a.to)}
-                        variant="ghost"
-                        className={cx(
-                          'flex h-10 shrink-0 items-center gap-1.5 rounded-full border-2 border-brown px-3.5 text-[13px] font-extrabold shadow-soft',
-                          a.tone,
-                        )}
-                      >
-                        <a.icon className="size-4" />
-                        {a.label}
-                      </Btn>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div
-                className={cx(
-                  'absolute right-3 z-10 flex flex-col gap-2',
-                  variant === 'home' ? 'top-[184px]' : 'top-[76px]',
-                )}
-              >
-                {filterBtn}
+              {/* Nút điều khiển bản đồ bên phải */}
+              <div className="absolute right-3 top-14 z-10 flex flex-col gap-2">
                 <IconBtn
                   variant="ghost"
                   onClick={() => api.current?.locate()}
                   aria-label="Vị trí hiện tại"
-                  className="size-12 rounded-full border-2 border-brown bg-paper shadow-soft"
+                  className="size-11 rounded-full border-2 border-brown bg-paper shadow-soft"
                 >
                   <LocateFixed className="size-5" />
                 </IconBtn>
@@ -470,7 +485,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                   variant="ghost"
                   onClick={() => api.current?.zoom(1.3)}
                   aria-label="Phóng to"
-                  className="size-12 rounded-full border-2 border-brown bg-paper shadow-soft"
+                  className="size-11 rounded-full border-2 border-brown bg-paper shadow-soft"
                 >
                   <Plus className="size-5" />
                 </IconBtn>
@@ -478,20 +493,11 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                   variant="ghost"
                   onClick={() => api.current?.zoom(0.77)}
                   aria-label="Thu nhỏ"
-                  className="size-12 rounded-full border-2 border-brown bg-paper shadow-soft"
+                  className="size-11 rounded-full border-2 border-brown bg-paper shadow-soft"
                 >
                   <Minus className="size-5" />
                 </IconBtn>
               </div>
-              {snap === 0 && (
-                <div className="absolute bottom-[116px] left-3 z-10">
-                  <MapLegend
-                    defaultOpen={false}
-                    hidden={hiddenKinds}
-                    onToggle={(t) => setHiddenKinds((h) => toggle(h, t))}
-                  />
-                </div>
-              )}
               <BottomSheet
                 snap={snap}
                 onSnap={setSnap}
@@ -546,20 +552,19 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                           {examples.map((c) => c.district).join(' · ') || 'Kéo lên để xem danh sách'}
                         </p>
                       </div>
-                      <Btn
+                      <IconBtn
+                        label="Báo case"
                         size="sm"
                         variant="danger"
-                        pill
-                        className="h-11 shrink-0 px-3.5"
-                        icon={<Plus className="size-4" strokeWidth={3} />}
+                        className="!size-10 !rounded-full shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none shrink-0"
                         onClick={(e) => {
                           e.stopPropagation()
                           go('/report')
                         }}
                         onPointerDown={(e) => e.stopPropagation()}
                       >
-                        Báo case
-                      </Btn>
+                        <Plus className="size-5" strokeWidth={3} />
+                      </IconBtn>
                     </div>
                   )
                 }

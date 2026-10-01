@@ -207,7 +207,7 @@ function Done({ c, kind }: { c: Case; kind: 'lost' | 'found' | 'rescue' }) {
         </div>
         {kind === 'rescue' && <Note tone="sky">Vị trí chính xác được bảo vệ để đảm bảo an toàn cho bé. Chỉ người nhận ca mới thấy vị trí chi tiết.</Note>}
         <div className="flex w-full flex-col gap-2 sm:flex-row">
-          <Btn className="flex-1" onClick={() => go(`/map`)} icon={<MapIcon className="size-5" />}>Xem trên bản đồ</Btn>
+          <Btn className="flex-1" onClick={() => go('/home')} icon={<MapIcon className="size-5" />}>Xem trên bản đồ</Btn>
           {kind === 'lost' && <Btn className="flex-1" variant="secondary" onClick={() => go(`/case/${c.id}/flyer`)} icon={<FileImage className="size-5" />}>Tạo tờ rơi</Btn>}
           <Btn className="flex-1" variant="secondary" onClick={() => { toggleFollow(c.id); toast(following.includes(c.id) ? 'Đã bỏ theo dõi' : 'Đang theo dõi case này') }} icon={<Bell className="size-5" />}>{following.includes(c.id) ? 'Đang theo dõi' : 'Theo dõi case'}</Btn>
         </div>

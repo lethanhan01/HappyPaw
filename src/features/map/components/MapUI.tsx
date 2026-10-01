@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { Search, X, Clock, History, Sparkles, Lock, MapPin, Eye, HandHeart, Star, Siren } from 'lucide-react'
 import { useApp } from '@/store'
 import { CLINICS, SHELTERS } from '@/constants/mock/places'
@@ -100,6 +100,7 @@ export function SearchBar({
   onClearRecent,
   className,
   size = 'md',
+  rightAction,
 }: {
   value: string
   onChange: (v: string) => void
@@ -109,6 +110,7 @@ export function SearchBar({
   onClearRecent: () => void
   className?: string
   size?: 'md' | 'lg'
+  rightAction?: ReactNode
 }) {
   const [open, setOpen] = useState(false)
   const box = useRef<HTMLDivElement>(null)
@@ -145,7 +147,11 @@ export function SearchBar({
         }}
         placeholder="Tìm pet, đường, quận, mái ấm, phòng khám…"
         aria-label="Tìm kiếm trên bản đồ"
-        className={cx('rounded-full pl-10 pr-10 text-sm', size === 'lg' ? 'h-12 border-brown shadow-soft' : 'h-11')}
+        className={cx(
+          'rounded-full pl-10 text-sm',
+          rightAction ? (typed ? 'pr-18' : 'pr-11') : (typed ? 'pr-10' : 'pr-4'),
+          size === 'lg' ? 'h-12 border-brown shadow-soft' : 'h-11',
+        )}
       />
       {typed && (
         <IconBtn
@@ -156,10 +162,18 @@ export function SearchBar({
             onChange('')
             setOpen(true)
           }}
-          className="!absolute right-1.5 top-1/2 -translate-y-1/2 !rounded-full"
+          className={cx(
+            '!absolute top-1/2 -translate-y-1/2 !rounded-full !size-7',
+            rightAction ? 'right-10' : 'right-1.5',
+          )}
         >
-          <X className="size-4" />
+          <X className="size-3.5" />
         </IconBtn>
+      )}
+      {rightAction && (
+        <div className="absolute right-1 top-1/2 -translate-y-1/2 z-10 flex items-center">
+          {rightAction}
+        </div>
       )}
       {open && (
         <div className="absolute inset-x-0 top-full z-40 mt-2 max-h-[55vh] animate-[rise_.18s_both] overflow-y-auto rounded-3xl border-2 border-brown bg-paper p-2 shadow-soft">

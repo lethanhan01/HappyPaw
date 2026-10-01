@@ -71,7 +71,7 @@ const typeLabel = (c: Case) => (c.type === 'rescue' ? 'Cần cứu hộ' : c.typ
 
 function NotFound() {
   const { go } = useApp()
-  return <UserShell><Empty title="Không tìm thấy case này" body="Case có thể đã bị xoá hoặc đường dẫn chưa đúng." cta="Về bản đồ" onCta={() => go('/map')} /></UserShell>
+  return <UserShell><Empty title="Không tìm thấy case này" body="Case có thể đã bị xoá hoặc đường dẫn chưa đúng." cta="Về trang chủ" onCta={() => go('/home')} /></UserShell>
 }
 
 function timeline(c: Case) {
@@ -529,7 +529,7 @@ export function Resolved({ id }: { id: string }) {
         <SuccessScreen title="Đã giải quyết thành công" species={c.species} calm>
           <p className="font-display text-xl font-extrabold">Bé đã được an toàn</p>
           <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-brown bg-butter px-4 py-1.5 font-extrabold"><Paw className="size-4" />+1 ca cứu hộ</span>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"><Btn size="lg" onClick={() => go('/profile')}>Xem thành tích</Btn><Btn size="lg" variant="secondary" onClick={() => go('/map')}>Về bản đồ</Btn></div>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"><Btn size="lg" onClick={() => go('/profile')}>Xem thành tích</Btn><Btn size="lg" variant="secondary" onClick={() => go('/home')}>Về trang chủ</Btn></div>
         </SuccessScreen>
       </div>
     </UserShell>

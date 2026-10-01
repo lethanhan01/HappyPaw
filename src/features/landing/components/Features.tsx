@@ -16,7 +16,7 @@ const FEATURES = [
       'Xem thông tin phòng khám 24/7 gần nhất',
     ],
     action: 'Xem bản đồ radar',
-    route: '/map',
+    route: '/home',
   },
   {
     id: 'ai-match',

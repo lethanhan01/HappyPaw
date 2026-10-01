@@ -16,9 +16,9 @@ export default function RecentCasesFeed() {
   const handleViewMap = () => {
     if (auth === 'guest') {
       toast('Vui lòng đăng nhập để xem Bản đồ cứu trợ.', 'warn')
-      go('/login?redirect=%2Fmap')
+      go('/login?redirect=%2Fhome')
     } else {
-      go('/map')
+      go('/home')
     }
   }
 
