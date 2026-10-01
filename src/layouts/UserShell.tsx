@@ -241,17 +241,17 @@ export default function UserShell({
                     full
                     onClick={() => go(t.to)}
                     aria-current={a ? 'page' : undefined}
-                    className="!flex !h-auto !flex-col !items-center !gap-0.5 !border-0 !px-0 !py-2 text-[11px] font-extrabold hover:!bg-transparent"
+                    className="!flex !h-auto !min-h-[52px] !flex-col !items-center !justify-center !gap-0.5 !border-0 !px-0 !py-1 text-[11px] font-extrabold hover:!bg-transparent active:scale-95 transition-transform"
                   >
                     <span
                       className={cx(
-                        'grid h-8 w-14 place-items-center rounded-full transition',
-                        a ? 'bg-butter' : '',
+                        'grid h-8 w-14 place-items-center rounded-full transition-colors',
+                        a ? 'bg-butter shadow-sm' : '',
                       )}
                     >
-                      <t.icon className={cx('size-[22px]', a && 'fill-brown')} strokeWidth={a ? 2.2 : 2} />
+                      <t.icon className={cx('size-[22px]', a && 'fill-brown')} strokeWidth={a ? 2.4 : 2} />
                     </span>
-                    <span className={a ? 'font-black text-brown' : 'text-brown/65'}>{t.label}</span>
+                    <span className={cx('text-[11px] tracking-tight leading-tight', a ? 'font-black text-brown' : 'font-bold text-brown/70')}>{t.label}</span>
                   </Btn>
                 </li>
               )

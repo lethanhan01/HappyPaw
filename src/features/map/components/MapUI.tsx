@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Search, X, Clock, History, Sparkles, Lock, MapPin, Eye, HandHeart, Star } from 'lucide-react'
+import { Search, X, Clock, History, Sparkles, Lock, MapPin, Eye, HandHeart, Star, Siren } from 'lucide-react'
 import { useApp } from '@/store'
 import { CLINICS, SHELTERS } from '@/constants/mock/places'
 import { RISKS } from '@/constants/mock/risks'
@@ -263,32 +263,35 @@ const Close = ({ onClose }: { onClose: () => void }) => (
 
 export function MapPreview({ sel, onClose, className }: { sel: Sel; onClose: () => void; className?: string }) {
   const { go, getCase } = useApp()
-  const shell = 'animate-[rise_.22s_both] overflow-hidden rounded-3xl border-2 border-brown bg-paper shadow-soft'
+  const shell = 'animate-[rise_.22s_both] overflow-hidden rounded-[24px] border-2 border-brown bg-paper shadow-soft'
 
   if (sel.kind === 'case') {
     const c = getCase(sel.id)
     if (!c) return null
     const hide = c.critical && c.status === 'active'
-    const urgent = c.status === 'active' && c.type === 'rescue'
+    const urgent = c.status === 'active' && (c.critical || c.type === 'rescue')
+    const taken = c.status === 'progress' || c.status === 'pending'
     return (
       <div className={cx(shell, className)}>
-        <div className="flex gap-3 p-3">
+        <div className="flex gap-3 p-3.5">
           <PetPhoto
             src={c.photo}
             species={c.species}
             alt={`${c.species} ${c.color} tên ${c.name}`}
-            className="size-24 shrink-0 rounded-2xl border-2 border-brown"
+            className="size-24 shrink-0 rounded-2xl border-2 border-brown object-cover shadow-sm"
           />
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 space-y-1">
             <div className="flex items-start justify-between gap-1">
-              <h3 className="truncate font-display text-xl font-extrabold leading-tight">{c.name.toUpperCase()}</h3>
+              <h3 className="truncate font-display text-xl font-extrabold leading-tight text-brown">
+                {c.name.toUpperCase()}
+              </h3>
               <Close onClose={onClose} />
             </div>
-            <div className="mt-0.5 flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               <StatusBadge status={c.status} critical={c.critical} type={c.type} />
               {c.match && <MatchBadge v={c.match} />}
             </div>
-            <p className="mt-1.5 flex items-center gap-1 text-[13px] font-bold">
+            <p className="flex items-center gap-1 text-[13px] font-bold text-brown">
               <MapPin className="size-3.5 shrink-0" />
               <span className="truncate">{approxLoc(c)}</span>
             </p>
@@ -299,12 +302,12 @@ export function MapPreview({ sel, onClose, className }: { sel: Sel; onClose: () 
           </div>
         </div>
         {hide && (
-          <p className="mx-3 mb-2 flex items-start gap-1.5 rounded-xl bg-ink px-3 py-1.5 text-xs font-bold text-white">
-            <Lock className="mt-0.5 size-3.5 shrink-0" />
+          <p className="mx-3.5 mb-2.5 flex items-start gap-1.5 rounded-xl bg-ink px-3 py-1.5 text-xs font-bold text-white shadow-sm">
+            <Lock className="mt-0.5 size-3.5 shrink-0 text-butter" />
             Vị trí chính xác được bảo vệ để đảm bảo an toàn cho bé.
           </p>
         )}
-        <div className="flex gap-2 p-3 pt-0">
+        <div className="flex gap-2 p-3.5 pt-0">
           <Btn
             size="sm"
             variant="secondary"
@@ -312,22 +315,22 @@ export function MapPreview({ sel, onClose, className }: { sel: Sel; onClose: () 
             onClick={() => go(`/case/${c.id}`)}
             icon={<Eye className="size-4" />}
           >
-            Xem chi tiết
+            Chi tiết
           </Btn>
           {c.status === 'active' && (
             <Btn
               size="sm"
               variant={urgent ? 'danger' : 'primary'}
-              className="flex-1"
+              className="flex-[1.4] font-extrabold shadow-[0_3px_0_var(--color-brown)] active:translate-y-1 active:shadow-none"
               onClick={() => go(`/case/${c.id}?help=1`)}
-              icon={<HandHeart className="size-4" />}
+              icon={urgent ? <Siren className="size-4" /> : <HandHeart className="size-4" />}
             >
-              {urgent ? 'Cứu bé' : 'Giúp bé'}
+              {urgent ? 'CẦN CỨU HỘ NGAY' : c.type === 'lost' ? 'Tôi đã thấy bé' : 'Tôi muốn cứu bé'}
             </Btn>
           )}
-          {c.status !== 'active' && c.assignee && (
-            <span className="flex flex-1 items-center justify-center rounded-2xl bg-butter/70 px-2 text-center text-xs font-extrabold">
-              Đã có người phụ trách
+          {taken && c.assignee && (
+            <span className="flex flex-1 items-center justify-center rounded-2xl border border-brown/30 bg-butter/80 px-2 py-1 text-center text-xs font-extrabold">
+              Đang có người phụ trách
             </span>
           )}
         </div>

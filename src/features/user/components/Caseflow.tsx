@@ -84,7 +84,7 @@ function timeline(c: Case) {
 
 /* ---------------- CASE DETAIL ---------------- */
 export function CaseDetail({ id, query }: { id: string; query: Record<string, string> }) {
-  const { getCase, go, back, myRescue, setMyRescue, updateCase, me, following, toggleFollow, toast, proof } = useApp()
+  const { getCase, go, back, myRescue, setMyRescue, updateCase, me, following, toggleFollow, toast, proof, setProof } = useApp()
   const c = getCase(id)
   const [accept, setAccept] = useState(false)
   const [seen, setSeen] = useState(false)
@@ -130,7 +130,20 @@ export function CaseDetail({ id, query }: { id: string; query: Record<string, st
         {c.status === 'pending' && (
           <div className="mb-5 space-y-3">
             <Note tone="butter" icon={<Clock className="size-5 shrink-0" />}>Ca cứu hộ đang <b>chờ xác minh</b>. Admin sẽ kiểm tra bằng chứng và xác nhận từ nơi tiếp nhận.</Note>
-            {mine && <Card className="p-4"><VerifyStepper kind={hp?.kind ?? 'shelter'} shelter={fl.mismatch ? 'warn' : fl.shelterConfirmed ? 'done' : 'wait'} admin="wait" /></Card>}
+            <Card className="p-4 space-y-3">
+              <VerifyStepper kind={hp?.kind ?? 'shelter'} shelter={fl.mismatch ? 'warn' : fl.shelterConfirmed ? 'done' : 'wait'} admin="wait" />
+              <div className="rounded-2xl border-2 border-line bg-cream-2/70 p-3">
+                <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-brown-soft">🧪 Bộ chuyển đổi mô phỏng kiểm thử (Demo)</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <Btn size="sm" variant="secondary" onClick={() => { setProof(c.id, { shelterConfirmed: true, mismatch: false }); updateCase(c.id, { status: 'resolved' }); toast('Admin đã duyệt ca thành công! 🐾'); go(`/case/${c.id}/resolved`) }}>
+                    🟢 Mô phỏng Duyệt Thành Công
+                  </Btn>
+                  <Btn size="sm" variant="danger" onClick={() => { setProof(c.id, { mismatch: true, shelterConfirmed: false }); toast('Đã mô phỏng trạm báo không khớp', 'warn') }}>
+                    ⚠️ Mô phỏng Trạm Báo Không Khớp
+                  </Btn>
+                </div>
+              </div>
+            </Card>
           </div>
         )}
         {c.status === 'resolved' && <div className="mb-5"><Note tone="sage" icon={<Check className="size-5 shrink-0" />}><span>Case đã được giải quyết thành công và không còn hiển thị trên bản đồ realtime.{mine && <> <Btn variant="ghost" size="sm" className="inline h-auto p-0 font-extrabold underline" onClick={() => go(`/case/${c.id}/resolved`)}>Xem kết quả</Btn></>}</span></Note></div>}
@@ -383,7 +396,7 @@ export function RescueProgress({ id }: { id: string }) {
 
 /* ---------------- PROOF ---------------- */
 export function Proof({ id }: { id: string }) {
-  const { getCase, updateCase, setMyRescue, go, proof } = useApp()
+  const { getCase, updateCase, setMyRescue, go, proof, setProof, toast } = useApp()
   const c = getCase(id)
   const [pet, setPet] = useState<string[]>([])
   const [spot, setSpot] = useState<string[]>([])
@@ -398,6 +411,17 @@ export function Proof({ id }: { id: string }) {
       <SuccessScreen title="Chờ xác minh" species={c.species} calm>
         <p className="max-w-md font-semibold text-brown-soft">Cảm ơn bạn đã cứu bé! Admin sẽ kiểm tra bằng chứng và xác nhận cùng nơi tiếp nhận trong thời gian sớm nhất.</p>
         <div className="w-full rounded-3xl border-2 border-brown bg-paper p-4"><VerifyStepper kind={hp?.kind ?? 'shelter'} shelter="wait" admin="wait" /></div>
+        <div className="w-full rounded-2xl border-2 border-line bg-cream-2/80 p-3.5 space-y-2 text-left">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-brown-soft">🧪 Bộ chuyển đổi mô phỏng kiểm thử (Demo)</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Btn size="sm" variant="secondary" onClick={() => { setProof(c.id, { shelterConfirmed: true, mismatch: false }); updateCase(c.id, { status: 'resolved' }); toast('Admin đã duyệt ca thành công! 🐾'); go(`/case/${c.id}/resolved`) }}>
+              🟢 Mô phỏng Trạm & Admin Duyệt
+            </Btn>
+            <Btn size="sm" variant="danger" onClick={() => { setProof(c.id, { mismatch: true, shelterConfirmed: false }); toast('Đã mô phỏng trạm báo không khớp', 'warn'); go(`/case/${c.id}`) }}>
+              ⚠️ Mô phỏng Trạm Báo Không Khớp
+            </Btn>
+          </div>
+        </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"><Btn size="lg" onClick={() => go(`/case/${c.id}`)}>Xem trạng thái</Btn><Btn size="lg" variant="secondary" onClick={() => go(`/case/${c.id}/shelter-confirm`)}>Mô phỏng nơi tiếp nhận</Btn></div>
       </SuccessScreen>
     </UserShell>

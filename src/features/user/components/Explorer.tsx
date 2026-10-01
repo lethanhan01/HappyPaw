@@ -12,6 +12,8 @@ import {
   Minus,
   LocateFixed,
   ChevronRight,
+  ArrowLeft,
+  X,
 } from 'lucide-react'
 import CityMap, {
   LegendSwatch,
@@ -33,13 +35,14 @@ import CityMap, {
   type Filters,
   type SearchHit,
   type StatusKey,
+  approxLoc,
 } from '@/features/map'
 import UserShell from '@/layouts/UserShell'
 import { useApp } from '@/store'
 import { CLINICS, SHELTERS } from '@/constants/mock/places'
 import { RISKS } from '@/constants/mock/risks'
 import { DISTRICTS } from '@/constants/districts'
-import { BottomSheet, Btn, IconBtn, Chip, Empty, Field, Input, Modal, Segmented, Select, cx } from '@ui'
+import { BottomSheet, Btn, IconBtn, Chip, Empty, Field, Input, Modal, Segmented, Select, Badge, StatusBadge, cx } from '@ui'
 import { useMedia } from '@/hooks/useMedia'
 import { CaseCard, CaseCardSkeleton } from '@/components/common'
 
@@ -304,9 +307,10 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
 
   return (
     <UserShell fullBleed hideFab>
-      <div className="relative h-[calc(100dvh-64px-68px)] overflow-hidden lg:grid lg:h-[calc(100dvh-64px)] lg:grid-cols-[410px_1fr]">
+      <div className="relative h-[calc(100dvh-64px-68px)] overflow-hidden lg:h-[calc(100dvh-64px)] lg:flex lg:flex-row">
+        {/* AREA 1: Desktop Left Control Sidebar */}
         {desktop && (
-          <aside className="flex min-h-0 flex-col border-r-2 border-brown/15 bg-cream">
+          <aside className="flex w-[320px] xl:w-[350px] shrink-0 min-h-0 flex-col border-r-2 border-brown/15 bg-cream">
             {variant === 'home' && (
               <div className="px-4 pt-4">
                 <p className="font-display text-2xl font-extrabold leading-tight">
@@ -345,12 +349,30 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
             </div>
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 pb-4">
               {summary}
-              {resultList}
+              <div className="rounded-3xl border-2 border-line bg-paper/85 p-3.5 space-y-2">
+                <p className="text-xs font-extrabold uppercase tracking-wide text-brown-soft">Lọc nhanh loài</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Tất cả', 'Chó', 'Mèo', 'Khác'].map((s) => {
+                    const isAll = s === 'Tất cả'
+                    const active = isAll ? !f.species : f.species === s
+                    return (
+                      <Chip
+                        key={s}
+                        active={active}
+                        onClick={() => setF({ ...f, species: isAll ? '' : f.species === s ? '' : s })}
+                      >
+                        {s}
+                      </Chip>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
           </aside>
         )}
 
-        <section className="relative size-full">
+        {/* AREA 2: Center Interactive Map */}
+        <section className="relative flex-1 min-w-0 h-full overflow-hidden bg-map-sand">
           {desktop && view === 'list' ? (
             <div className="size-full overflow-y-auto bg-cream p-6">
               {list.length ? (
@@ -397,20 +419,13 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
             </div>
           )}
           {desktop && view === 'map' && (
-            <>
-              <div className="absolute left-4 top-4 z-10">
-                <MapLegend
-                  defaultOpen={variant === 'map'}
-                  hidden={hiddenKinds}
-                  onToggle={(t) => setHiddenKinds((h) => toggle(h, t))}
-                />
-              </div>
-              {sel && (
-                <div className="absolute bottom-6 left-4 z-10 w-[390px]">
-                  <MapPreview sel={sel} onClose={() => setSel(null)} />
-                </div>
-              )}
-            </>
+            <div className="absolute left-4 top-4 z-10">
+              <MapLegend
+                defaultOpen={variant === 'map'}
+                hidden={hiddenKinds}
+                onToggle={(t) => setHiddenKinds((h) => toggle(h, t))}
+              />
+            </div>
           )}
 
           {!desktop && (
@@ -480,32 +495,73 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
               <BottomSheet
                 snap={snap}
                 onSnap={setSnap}
-                peek={88}
+                peek={sel ? 128 : 88}
                 header={
-                  <div className="flex items-center gap-3 px-4 pb-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-display text-[15px] font-extrabold leading-tight">
-                        {list.filter((c) => c.status !== 'resolved').length} case đang hoạt động
-                      </p>
-                      <p className="truncate text-xs font-bold text-brown-soft">
-                        {examples.map((c) => c.district).join(' · ') || 'Kéo lên để xem danh sách'}
-                      </p>
+                  sel && selCase ? (
+                    <div className="flex items-center gap-2.5 px-4 pb-2.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="truncate font-display text-[15px] font-extrabold">
+                            {selCase.name.toUpperCase()}
+                          </span>
+                          <StatusBadge status={selCase.status} critical={selCase.critical} type={selCase.type} />
+                        </div>
+                        <p className="truncate text-xs font-bold text-brown-soft">
+                          {approxLoc(selCase)} · cách bạn {kmFrom(selCase.x, selCase.y)} km
+                        </p>
+                      </div>
+                      <Btn
+                        size="sm"
+                        variant={selCase.critical || selCase.type === 'rescue' ? 'danger' : 'primary'}
+                        pill
+                        className="h-10 shrink-0 px-3 text-xs font-extrabold shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          go(`/case/${sel.id}?help=1`)
+                        }}
+                      >
+                        {selCase.critical || selCase.type === 'rescue' ? 'CỨU NGAY' : 'Giúp bé'}
+                      </Btn>
+                      <IconBtn
+                        label="Bỏ chọn ghim"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSel(null)
+                          setSnap(0)
+                        }}
+                        className="!size-8 !rounded-full hover:!bg-brown/10"
+                      >
+                        <X className="size-4" />
+                      </IconBtn>
                     </div>
-                    <Btn
-                      size="sm"
-                      variant="danger"
-                      pill
-                      className="h-11 shrink-0 px-3.5"
-                      icon={<Plus className="size-4" strokeWidth={3} />}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        go('/report')
-                      }}
-                      onPointerDown={(e) => e.stopPropagation()}
-                    >
-                      Báo case
-                    </Btn>
-                  </div>
+                  ) : (
+                    <div className="flex items-center gap-3 px-4 pb-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-display text-[15px] font-extrabold leading-tight">
+                          {list.filter((c) => c.status !== 'resolved').length} case đang hoạt động
+                        </p>
+                        <p className="truncate text-xs font-bold text-brown-soft">
+                          {examples.map((c) => c.district).join(' · ') || 'Kéo lên để xem danh sách'}
+                        </p>
+                      </div>
+                      <Btn
+                        size="sm"
+                        variant="danger"
+                        pill
+                        className="h-11 shrink-0 px-3.5"
+                        icon={<Plus className="size-4" strokeWidth={3} />}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          go('/report')
+                        }}
+                        onPointerDown={(e) => e.stopPropagation()}
+                      >
+                        Báo case
+                      </Btn>
+                    </div>
+                  )
                 }
               >
                 <div className="space-y-3 px-4 pb-6">
@@ -520,7 +576,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                   )}
                   {sel && (
                     <p className="flex items-center gap-1 pt-1 text-xs font-extrabold uppercase tracking-wide text-brown-soft">
-                      Gần đó <ChevronRight className="size-3" />
+                      Các case lân cận khác <ChevronRight className="size-3" />
                     </p>
                   )}
                   {resultList}
@@ -529,6 +585,56 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
             </>
           )}
         </section>
+
+        {/* AREA 3: Desktop Right Contextual Case Panel */}
+        {desktop && view === 'map' && (
+          <aside className="w-[370px] xl:w-[410px] shrink-0 min-h-0 flex flex-col border-l-2 border-brown/15 bg-paper z-20 shadow-soft animate-[rise_.2s_both]">
+            {sel ? (
+              <div className="flex h-full flex-col min-h-0">
+                <div className="flex items-center justify-between border-b-2 border-line bg-cream/40 px-4 py-3">
+                  <Btn
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSel(null)}
+                    icon={<ArrowLeft className="size-4" />}
+                    className="!h-auto !px-2.5 !py-1.5 text-xs font-extrabold text-brown"
+                  >
+                    Quay lại danh sách
+                  </Btn>
+                  <IconBtn
+                    label="Đóng chi tiết ca"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSel(null)}
+                    className="!size-8 !rounded-full hover:!bg-brown/10"
+                  >
+                    <X className="size-4" />
+                  </IconBtn>
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                  <MapPreview sel={sel} onClose={() => setSel(null)} />
+                </div>
+              </div>
+            ) : (
+              <div className="flex h-full flex-col min-h-0">
+                <div className="flex items-center justify-between border-b-2 border-line bg-cream/30 px-4 py-3">
+                  <div>
+                    <h3 className="font-display text-base font-extrabold text-brown">
+                      Danh sách lân cận
+                    </h3>
+                    <p className="text-xs font-bold text-brown-soft">
+                      {list.length} ca trong bán kính {f.radius} km
+                    </p>
+                  </div>
+                  {n > 0 && <Badge tone="butter">Đang lọc · {n}</Badge>}
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto p-3.5 space-y-3">
+                  {resultList}
+                </div>
+              </div>
+            )}
+          </aside>
+        )}
       </div>
 
       <Modal open={open} onClose={() => setOpen(false)} title={`Bộ lọc${countFilters(draft) ? ` · ${countFilters(draft)}` : ''}`} wide>

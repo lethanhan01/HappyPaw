@@ -1,4 +1,4 @@
-import { Bookmark, Clock, MapPin, HandHeart, ChevronRight, Siren, CheckCircle2 } from 'lucide-react'
+import { Bookmark, Clock, MapPin, HandHeart, ChevronRight, Siren, CheckCircle2, ShieldAlert } from 'lucide-react'
 import { timeAgo } from '@/constants/time'
 import type { Case } from '@/types/case'
 import { useApp } from '@/store'
@@ -18,7 +18,7 @@ export function SaveBtn({ id, className }: { id: string; className?: string }) {
         toast(on ? 'Đã bỏ lưu case' : 'Đã lưu case 🐾')
       }}
       className={cx(
-        '!rounded-full !border-brown !bg-paper hover:!bg-butter',
+        '!rounded-full !border-brown !bg-paper hover:!bg-butter shadow-sm',
         on && '!bg-butter',
         className,
       )}
@@ -34,41 +34,59 @@ const TYPE_LABEL = (c: Case) =>
 export function CaseCardSkeleton({ compact }: { compact?: boolean }) {
   return (
     <div
-      className={cx('overflow-hidden rounded-[22px] border-2 border-line bg-paper', compact && 'flex')}
+      className={cx(
+        'overflow-hidden rounded-[24px] border-2 border-line bg-paper p-1 shadow-soft',
+        compact ? 'flex items-center gap-3' : 'flex flex-col',
+      )}
       aria-busy
     >
-      <Skeleton className={cx('rounded-none', compact ? 'h-28 w-28 shrink-0' : 'h-40 w-full')} />
-      <div className="flex-1 space-y-2 p-3.5">
-        <Skeleton className="h-5 w-1/2" />
-        <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="h-4 w-full" />
+      <Skeleton className={cx('rounded-2xl', compact ? 'size-28 shrink-0' : 'aspect-[16/9] w-full')} />
+      <div className="flex-1 space-y-2.5 p-3">
+        <Skeleton className="h-5 w-2/3" />
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-4 w-5/6" />
+        {!compact && <Skeleton className="mt-3 h-10 w-full rounded-2xl" />}
       </div>
     </div>
   )
 }
 
-/** SCAN → UNDERSTAND → ACT: photo, name, status, place/time, blurb, AI match, CTA. */
+/**
+ * SCAN → UNDERSTAND → ACT:
+ * 1. Pet image
+ * 2. Pet name
+ * 3. Status
+ * 4. Location
+ * 5. Time
+ * 6. Short description
+ * 7. AI match nếu có
+ * 8. CTA
+ */
 export function CaseCard({
   c,
   compact,
   selected,
   disabled,
+  showCtaInCompact,
   onSelect,
 }: {
   c: Case
   compact?: boolean
   selected?: boolean
   disabled?: boolean
+  showCtaInCompact?: boolean
   onSelect?: () => void
 }) {
-  const { go, saved } = useApp()
-  const urgent = c.status === 'active' && (c.critical || c.type === 'rescue')
-  const resolved = c.status === 'resolved'
-  const taken = c.status === 'progress' || c.status === 'pending'
+  const { go, saved, me } = useApp()
+  const isRescueEmergency = c.status === 'active' && (c.critical || c.type === 'rescue')
+  const isResolved = c.status === 'resolved'
+  const isInProgress = c.status === 'progress' || c.status === 'pending'
+  const isMine = c.assignee === me
+  const isProtected = c.critical && c.status === 'active'
   const open = () => (onSelect ? onSelect() : go(`/case/${c.id}`))
   const alt = `${c.species} ${c.color} tên ${c.name}`
 
-  const cta = disabled ? null : resolved ? (
+  const cta = disabled ? null : isResolved ? (
     <Btn
       size="sm"
       full
@@ -81,7 +99,20 @@ export function CaseCard({
     >
       Xem kết quả
     </Btn>
-  ) : taken ? (
+  ) : isMine && c.status === 'progress' ? (
+    <Btn
+      size="sm"
+      full
+      variant="primary"
+      onClick={(e) => {
+        e.stopPropagation()
+        go(`/case/${c.id}/rescue`)
+      }}
+    >
+      Tiếp tục ca cứu hộ
+      <ChevronRight className="size-4" />
+    </Btn>
+  ) : isInProgress ? (
     <Btn
       size="sm"
       full
@@ -94,7 +125,7 @@ export function CaseCard({
       Theo dõi case
       <ChevronRight className="size-4" />
     </Btn>
-  ) : urgent ? (
+  ) : isRescueEmergency ? (
     <Btn
       size="sm"
       full
@@ -104,6 +135,7 @@ export function CaseCard({
         e.stopPropagation()
         go(`/case/${c.id}?help=1`)
       }}
+      className="font-extrabold shadow-[0_4px_0_var(--color-brown)] active:translate-y-1 active:shadow-none"
     >
       CẦN CỨU HỘ NGAY
     </Btn>
@@ -111,13 +143,14 @@ export function CaseCard({
     <Btn
       size="sm"
       full
+      variant="primary"
       icon={<HandHeart className="size-4" />}
       onClick={(e) => {
         e.stopPropagation()
         go(`/case/${c.id}`)
       }}
     >
-      {c.type === 'lost' ? 'Tôi đã thấy bé' : 'Tôi muốn giúp'}
+      {c.type === 'lost' ? 'Tôi đã thấy bé' : 'Tôi muốn cứu bé'}
     </Btn>
   )
 
@@ -132,36 +165,57 @@ export function CaseCard({
         if (!disabled && e.key === 'Enter') open()
       }}
       className={cx(
-        'group relative overflow-hidden rounded-[22px] border-2 bg-paper shadow-soft transition',
-        compact ? 'flex' : 'flex flex-col',
-        disabled ? 'cursor-not-allowed opacity-55 grayscale' : 'cursor-pointer hover:-translate-y-0.5 hover:border-brown',
-        selected ? 'border-brown ring-4 ring-butter' : urgent ? 'border-coral/60' : 'border-line',
-        resolved && 'bg-cream/60',
+        'group relative overflow-hidden rounded-[24px] border-2 bg-paper shadow-soft transition-all duration-200',
+        compact ? 'flex items-center gap-3 p-2.5' : 'flex flex-col',
+        disabled
+          ? 'cursor-not-allowed opacity-55 grayscale'
+          : 'cursor-pointer hover:-translate-y-1 hover:border-brown hover:shadow-[0_8px_20px_-8px_rgba(107,65,40,0.35)]',
+        selected
+          ? 'border-brown ring-4 ring-butter bg-butter/10'
+          : isRescueEmergency
+            ? 'border-coral/70'
+            : 'border-line',
+        isResolved && 'bg-cream/40 opacity-90',
         'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-butter',
       )}
     >
-      {urgent && !selected && <span className="absolute inset-y-0 left-0 z-10 w-1.5 bg-coral" aria-hidden />}
+      {/* Urgent ribbon */}
+      {isRescueEmergency && !selected && (
+        <span className="absolute inset-y-0 left-0 z-10 w-2 bg-coral" aria-hidden />
+      )}
+
+      {/* 1. Pet image */}
       <div
         className={cx(
-          'relative shrink-0',
-          compact ? 'w-28 self-stretch sm:w-32' : 'aspect-[16/9] w-full sm:aspect-auto sm:h-40',
+          'relative shrink-0 overflow-hidden rounded-2xl',
+          compact
+            ? 'size-28 sm:size-32'
+            : 'aspect-[16/9] w-full sm:h-44',
         )}
       >
-        <PetPhoto src={c.photo} species={c.species} alt={alt} className={cx('size-full', resolved && 'opacity-80')} />
+        <PetPhoto
+          src={c.photo}
+          species={c.species}
+          alt={alt}
+          className={cx('size-full object-cover transition-transform duration-300 group-hover:scale-105', isResolved && 'opacity-85')}
+        />
         {!compact && (
           <div className="absolute left-2.5 top-2.5">
             <StatusBadge status={c.status} critical={c.critical} type={c.type} />
           </div>
         )}
-        {!compact && <SaveBtn id={c.id} className="absolute right-2.5 top-2.5" />}
-        {!compact && taken && c.assignee && (
-          <span className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 rounded-full border-2 border-brown bg-paper py-0.5 pl-0.5 pr-2.5 text-xs font-extrabold">
+        {!compact && <SaveBtn id={c.id} className="absolute right-2.5 top-2.5 z-10" />}
+        {!compact && isInProgress && c.assignee && (
+          <span className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 rounded-full border-2 border-brown bg-paper py-0.5 pl-0.5 pr-2.5 text-xs font-extrabold shadow-sm">
             <UserAvatar id={c.assignee} size={22} />
             Đang phụ trách
           </span>
         )}
       </div>
-      <div className={cx('min-w-0 flex-1 space-y-1.5', compact ? 'p-3' : 'p-3.5')}>
+
+      {/* Body content */}
+      <div className={cx('min-w-0 flex-1 space-y-1.5', compact ? 'py-1 pr-1' : 'p-4')}>
+        {/* 2. Pet name & type */}
         <div className="flex items-start justify-between gap-2">
           <h3 className="flex min-w-0 items-baseline gap-1.5 font-display text-lg font-extrabold leading-tight">
             <span className="truncate">{c.name.toUpperCase()}</span>
@@ -171,26 +225,53 @@ export function CaseCard({
             <Bookmark className="size-4 shrink-0 fill-brown" aria-label="Đã lưu" />
           )}
         </div>
-        {compact && <StatusBadge status={c.status} critical={c.critical} type={c.type} />}
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[13px] font-bold">
-          <span className="inline-flex min-w-0 items-center gap-1">
-            <MapPin className="size-3.5 shrink-0" />
-            <span className="truncate">{c.district}</span>
-          </span>
-          <span className="inline-flex items-center gap-1 text-brown-soft">
-            <Clock className="size-3.5" />
-            {timeAgo(c.minutesAgo)}
-          </span>
-        </p>
-        {!compact && <p className="line-clamp-2 text-sm text-brown-soft">{c.desc}</p>}
-        {(c.match || (c.reward && !compact)) && (
-          <div className="flex flex-wrap items-center gap-1.5">
-            {c.match && !resolved && <MatchBadge v={c.match} />}
-            {c.reward && !compact && !resolved && <Badge tone="pink">Có hậu tạ</Badge>}
+
+        {/* 3. Status badge (shown here in compact mode) */}
+        {compact && (
+          <div className="flex flex-wrap items-center gap-1">
+            <StatusBadge status={c.status} critical={c.critical} type={c.type} />
           </div>
         )}
-        {!compact && cta && <div className="pt-1">{cta}</div>}
+
+        {/* 4 & 5. Location & Time */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] font-bold">
+          <span className="inline-flex min-w-0 items-center gap-1 text-brown">
+            {isProtected ? (
+              <ShieldAlert className="size-3.5 shrink-0 text-coral" />
+            ) : (
+              <MapPin className="size-3.5 shrink-0 text-brown" />
+            )}
+            <span className="truncate">
+              {isProtected ? `Khu vực ${c.district} (Bảo mật)` : `${c.street ? `${c.street}, ` : ''}${c.district}`}
+            </span>
+          </span>
+          <span className="inline-flex items-center gap-1 text-brown-soft">
+            <Clock className="size-3.5 shrink-0" />
+            {timeAgo(c.minutesAgo)}
+          </span>
+        </div>
+
+        {/* 6. Short description */}
+        {!compact && (
+          <p className="line-clamp-2 text-sm font-semibold text-brown-soft">
+            {c.desc}
+          </p>
+        )}
+
+        {/* 7. AI Match & Reward */}
+        {(c.match || (c.reward && !compact)) && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+            {c.match && !isResolved && <MatchBadge v={c.match} />}
+            {c.reward && !compact && !isResolved && <Badge tone="pink">Có hậu tạ</Badge>}
+          </div>
+        )}
+
+        {/* 8. CTA */}
+        {(!compact || showCtaInCompact) && cta && (
+          <div className="pt-2">{cta}</div>
+        )}
       </div>
     </article>
   )
 }
+
