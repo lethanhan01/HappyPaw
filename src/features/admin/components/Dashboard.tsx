@@ -51,10 +51,10 @@ export default function Dashboard() {
   const rate = cases.length ? Math.round((resolved / cases.length) * 100) : 0
 
   const alerts = [
-    { n: unassigned || 3, dot: '🔴', t: 'rescue chưa có người nhận', to: '/admin/cases?status=active' },
-    { n: highReports || 4, dot: '⚠️', t: 'report mức độ cao', to: '/admin/reports' },
-    { n: pending || 2, dot: '🟡', t: 'rescue chờ xác minh', to: '/admin/verification' },
-    { n: multiReportUsers || 1, dot: '⚠️', t: 'user nhiều report', to: '/admin/fraud' },
+    { n: unassigned || 3, dotColor: 'bg-coral', t: 'rescue chưa có người nhận', to: '/admin/cases?status=active' },
+    { n: highReports || 4, dotColor: 'bg-orange', t: 'report mức độ cao', to: '/admin/reports' },
+    { n: pending || 2, dotColor: 'bg-amber-500', t: 'rescue chờ xác minh', to: '/admin/verification' },
+    { n: multiReportUsers || 1, dotColor: 'bg-plum', t: 'user nhiều report', to: '/admin/fraud' },
   ]
 
   const byDistrict = useMemo(() => {
@@ -83,7 +83,7 @@ export default function Dashboard() {
           {alerts.map((a) => (
             <li key={a.t}>
               <Btn variant="ghost" size="sm" onClick={() => go(a.to)} className="flex min-h-11 w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm hover:bg-paper">
-                <span aria-hidden>{a.dot}</span>
+                <span className={`size-2 shrink-0 rounded-full ${a.dotColor}`} />
                 <span className="min-w-0 flex-1 font-semibold leading-tight"><b className="font-display text-lg">{a.n}</b> {a.t}</span>
                 <ChevronRight className="size-4 shrink-0 text-brown-soft" />
               </Btn>

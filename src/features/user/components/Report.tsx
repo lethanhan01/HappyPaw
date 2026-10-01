@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, ArrowRight, Siren, Search, PawPrint, MapPin, Users, Radio, Share2, Bell, Map as MapIcon, FileImage, Check } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Siren, Search, PawPrint, MapPin, Users, Radio, Share2, Bell, Map as MapIcon, FileImage, Check, Footprints, Home, Stethoscope } from 'lucide-react'
 import UserShell from '@/layouts/UserShell'
 import { useApp } from '@/store'
 import CityMap, { ME_POS } from '@/features/map'
@@ -32,7 +32,7 @@ export function ReportChooser() {
   const opts = [
     {
       to: '/report/lost',
-      dot: '🔴',
+      icon: Search,
       title: 'Tìm thú cưng của tôi bị lạc',
       sub: 'Đăng tin, thông báo người quanh khu vực và tạo tờ rơi.',
       tone: 'bg-orange-soft',
@@ -41,7 +41,7 @@ export function ReportChooser() {
     },
     {
       to: '/report/found',
-      dot: '🟠',
+      icon: PawPrint,
       title: 'Tôi vừa thấy một thú cưng bị lạc',
       sub: 'Giúp chủ nhân tìm lại bé nhanh hơn.',
       tone: 'bg-butter/70',
@@ -50,7 +50,7 @@ export function ReportChooser() {
     },
     {
       to: '/report/rescue',
-      dot: '🚨',
+      icon: Siren,
       title: 'Thú cưng đang cần cứu hộ',
       sub: 'Bị thương, mắc kẹt hoặc gặp nguy hiểm. Gửi yêu cầu ngay.',
       tone: 'bg-coral-soft',
@@ -82,8 +82,10 @@ export function ReportChooser() {
                   {o.badge}
                 </span>
               </div>
-              <span className="mt-1 text-2xl">{o.dot}</span>
-              <h2 className="font-display text-2xl font-extrabold leading-tight">{o.title}</h2>
+              <span className="mt-1 grid size-9 place-items-center rounded-full bg-paper border-2 border-brown">
+                <o.icon className={cx('size-5', o.urgent ? 'text-coral' : 'text-brown')} />
+              </span>
+              <h2 className="mt-2 font-display text-2xl font-extrabold leading-tight">{o.title}</h2>
               <p className="mt-2 text-sm font-semibold text-brown-soft">{o.sub}</p>
               <span className={cx('mt-5 inline-flex items-center gap-2 rounded-full border-2 border-brown px-5 py-2 font-extrabold', o.urgent ? 'bg-coral text-white' : 'bg-paper')}>Bắt đầu <ArrowRight className="size-4" /></span>
             </Card>
@@ -113,7 +115,7 @@ function LocationStep({ district, setDistrict, ward, setWard, street, setStreet,
         <div className="h-80 overflow-hidden rounded-3xl border-2 border-brown lg:h-[390px]">
           <CityMap className="size-full" me={ME_POS} dropPin={pin} onMapClick={(x, y) => setPin({ x: Math.round(x), y: Math.round(y) })} center={pin ? { ...pin, k: 1.4 } : { x: 400, y: 330, k: 1 }} />
         </div>
-        <p className="mt-2 text-xs font-bold text-brown-soft">{pin ? '📍 Đã ghim vị trí. Chạm vào bản đồ để chỉnh lại.' : 'Chạm vào bản đồ để ghim vị trí.'}</p>
+        <p className="mt-2 text-xs font-bold text-brown-soft">{pin ? 'Đã ghim vị trí. Chạm vào bản đồ để chỉnh lại.' : 'Chạm vào bản đồ để ghim vị trí.'}</p>
       </div>
     </div>
   )
@@ -195,7 +197,7 @@ function Done({ c, kind }: { c: Case; kind: 'lost' | 'found' | 'rescue' }) {
   const notified = kind === 'rescue' ? 64 : kind === 'lost' ? 128 : 47
   return (
     <UserShell>
-      <SuccessScreen title={kind === 'lost' ? 'Tin tìm bé đã được đăng 🐾' : kind === 'found' ? 'Cảm ơn bạn đã báo thấy bé 🐾' : 'Yêu cầu cứu hộ đã được gửi'} species={c.species} calm={kind === 'rescue'}>
+      <SuccessScreen title={kind === 'lost' ? 'Tin tìm bé đã được đăng' : kind === 'found' ? 'Cảm ơn bạn đã báo thấy bé' : 'Yêu cầu cứu hộ đã được gửi'} species={c.species} calm={kind === 'rescue'}>
         <div className="w-full rounded-3xl border-2 border-brown bg-paper p-5 text-left shadow-soft">
           <div className="grid grid-cols-3 gap-3 text-center">
             <div><p className="text-xs font-bold text-brown-soft">Case ID</p><p className="font-display text-xl font-extrabold">{c.id}</p></div>
@@ -295,8 +297,17 @@ export function FoundWizard() {
   const steps = ['Loài & hình ảnh', 'Vị trí hiện tại', 'Tình trạng', 'Đặc điểm']
   const ok = [true, !!d.district && !!d.street, true, true][step]
   if (done) return <Done c={done} kind="found" />
-  const conds = [['ok', '🟢', 'Bình thường / Đang lang thang', 'Bé trông khoẻ và vẫn đi lại bình thường.'], ['scared', '🟡', 'Rất hoảng sợ / Khó tiếp cận', 'Đừng cố bắt bé. Giữ khoảng cách an toàn.'], ['hurt', '🔴', 'Bị thương / Yếu / Cần cứu hộ y tế gấp', 'Chúng mình sẽ chuyển thành ca cứu hộ ưu tiên.']]
-  const wheres = [['stay', '📍', 'Vẫn ở nguyên vị trí'], ['move', '🚶', 'Đang di chuyển'], ['kept', '🏠', 'Đã giữ bé lại'], ['clinic', '🏥', 'Đã gửi ở phòng khám']]
+  const conds = [
+    { v: 'ok', dotColor: 'bg-emerald-500', t: 'Bình thường / Đang lang thang', s: 'Bé trông khoẻ và vẫn đi lại bình thường.' },
+    { v: 'scared', dotColor: 'bg-amber-500', t: 'Rất hoảng sợ / Khó tiếp cận', s: 'Đừng cố bắt bé. Giữ khoảng cách an toàn.' },
+    { v: 'hurt', dotColor: 'bg-coral', t: 'Bị thương / Yếu / Cần cứu hộ y tế gấp', s: 'Chúng mình sẽ chuyển thành ca cứu hộ ưu tiên.' },
+  ]
+  const wheres = [
+    { v: 'stay', icon: MapPin, t: 'Vẫn ở nguyên vị trí' },
+    { v: 'move', icon: Footprints, t: 'Đang di chuyển' },
+    { v: 'kept', icon: Home, t: 'Đã giữ bé lại' },
+    { v: 'clinic', icon: Stethoscope, t: 'Đã gửi ở phòng khám' },
+  ]
   const submit = () => {
     const hurt = d.cond === 'hurt'
     const c: Case = { id: newId(cases.length - 16), name: 'Chưa rõ tên', type: hurt ? 'rescue' : 'found', species: d.species as any, breed: d.breed || 'Chưa rõ', color: d.color || 'Chưa rõ', gender: 'Đực', status: 'active', district: d.district, street: d.street, x: pin?.x ?? 400, y: pin?.y ?? 300, minutesAgo: 1, updatedAgo: 0, desc: `Bé ${d.species.toLowerCase()} ${d.color.toLowerCase()} được báo thấy gần ${d.landmark || d.street}.`, traits: d.traits || d.collar || 'Chưa có mô tả', photo: d.photos[0] || STOCK[d.species as 'Chó'], critical: hurt, condition: hurt ? 'Bị thương' : d.cond === 'scared' ? 'Hoảng sợ' : 'Bình thường', reporter: me }
@@ -308,12 +319,13 @@ export function FoundWizard() {
       {step === 1 && <LocationStep district={d.district} setDistrict={p('district')} ward={d.ward} setWard={p('ward')} street={d.street} setStreet={p('street')} landmark={d.landmark} setLandmark={p('landmark')} pin={pin} setPin={setPin} prompt="Ghim vị trí hiện tại của bé." />}
       {step === 2 && (
         <div className="space-y-6">
-          <div className="space-y-3">{conds.map(([v, i, t, s]) => (
-            <Btn key={v} variant="ghost" size="md" full onClick={() => p('cond')(v)} aria-pressed={d.cond === v} className={cx('!flex !h-auto w-full !items-start !gap-3 !rounded-3xl !border-2 !p-4 text-left transition', d.cond === v ? '!border-brown !bg-butter/70 shadow-[0_4px_0_var(--color-brown)]' : '!border-line !bg-white hover:!border-brown')}>
-              <span className="text-2xl">{i}</span><span><span className="block font-display text-lg font-extrabold">{t}</span><span className="text-sm font-semibold text-brown-soft">{s}</span></span>
+          <div className="space-y-3">{conds.map(({ v, dotColor, t, s }) => (
+            <Btn key={v} variant="ghost" size="md" full onClick={() => p('cond')(v)} aria-pressed={d.cond === v} className={cx('!flex !h-auto w-full !items-start !gap-3.5 !rounded-3xl !border-2 !p-4 text-left transition', d.cond === v ? '!border-brown !bg-butter/70 shadow-[0_4px_0_var(--color-brown)]' : '!border-line !bg-white hover:!border-brown')}>
+              <span className={cx('mt-1.5 size-3 shrink-0 rounded-full', dotColor)} />
+              <span><span className="block font-display text-lg font-extrabold">{t}</span><span className="text-sm font-semibold text-brown-soft">{s}</span></span>
             </Btn>))}</div>
           {d.cond === 'hurt' && <Note tone="coral" icon={<Siren className="size-5 shrink-0" />}>Báo cáo này sẽ được đưa lên bản đồ như một ca cứu hộ khẩn cấp.</Note>}
-          <Field label="Bé đang ở đâu?"><div className="grid grid-cols-2 gap-2">{wheres.map(([v, i, t]) => <Chip key={v} active={d.where === v} onClick={() => p('where')(v)}>{i} {t}</Chip>)}</div></Field>
+          <Field label="Bé đang ở đâu?"><div className="grid grid-cols-2 gap-2">{wheres.map(({ v, icon: Icon, t }) => <Chip key={v} active={d.where === v} onClick={() => p('where')(v)}><Icon className="mr-1.5 inline size-4 shrink-0" />{t}</Chip>)}</div></Field>
         </div>
       )}
       {step === 3 && (

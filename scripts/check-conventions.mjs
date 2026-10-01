@@ -60,6 +60,15 @@ const BANNED_HEX_CLASSES = [
   },
 ]
 
+// Banned raw system emojis in UI code
+const BANNED_EMOJIS = [
+  {
+    regex: /(?![\u00A9\u00AE])\p{Extended_Pictographic}/gu,
+    name: 'Raw system emoji',
+    replacement: 'Cấm sử dụng raw emoji (🚨, 🔍, 🐾, ✨, 💰, 📦...) trong UI/JSX! Hãy sử dụng icon SVG đồng bộ từ thư viện lucide-react hoặc primitive @ui.',
+  },
+]
+
 function getLineAndCol(content, index) {
   const lines = content.slice(0, index).split('\n')
   const line = lines.length
@@ -141,6 +150,22 @@ for (const filePath of allFiles) {
   // Check banned arbitrary hex utility classes
   for (const rule of BANNED_HEX_CLASSES) {
     let match
+    rule.regex.lastIndex = 0
+    while ((match = rule.regex.exec(content)) !== null) {
+      const { line, col } = getLineAndCol(content, match.index)
+      violations.push({
+        line,
+        col,
+        element: match[0],
+        replacement: rule.replacement,
+      })
+    }
+  }
+
+  // Check banned raw emojis
+  for (const rule of BANNED_EMOJIS) {
+    let match
+    rule.regex.lastIndex = 0
     while ((match = rule.regex.exec(content)) !== null) {
       const { line, col } = getLineAndCol(content, match.index)
       violations.push({

@@ -12,7 +12,7 @@ export function EmergencySosModal({ open, onClose, onReportClick }: EmergencySos
   const emergencyClinics = CLINICS.filter((c) => c.emergency).slice(0, 3)
 
   return (
-    <Modal open={open} onClose={onClose} title="🚨 Đường Dây Nóng Cứu Hộ & Cấp Cứu 24/7" wide>
+    <Modal open={open} onClose={onClose} title="Đường Dây Nóng Cứu Hộ & Cấp Cứu 24/7" wide>
       <div className="space-y-6">
         {/* Banner Alert */}
         <div className="flex items-start gap-3 rounded-2xl border-2 border-coral bg-coral-soft p-4">
@@ -106,7 +106,7 @@ export function EmergencySosModal({ open, onClose, onReportClick }: EmergencySos
             icon={<Siren className="size-5" />}
             onClick={() => { onClose(); onReportClick() }}
           >
-            Báo ca khẩn cấp lên hệ thống 🚨
+            Báo ca khẩn cấp lên hệ thống
           </Btn>
           <Btn variant="secondary" size="lg" full onClick={onClose}>
             Đóng cửa sổ

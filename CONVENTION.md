@@ -47,6 +47,14 @@ Hệ thống HappyPaw được định vị theo phong cách **Retro-Warm**: Ấ
 - ❌ Tuyệt đối CẤM viết mã màu hex tùy tiện trong JSX className (ví dụ: `text-[#8f2a1c]`, `bg-[#efe5c4]`, `border-[#123456]`, `hover:bg-[#bd3f2f]`).
 - ✔ Mọi màu sắc hiển thị, chữ, viền, nền, đổ bóng bắt buộc phải sử dụng các Design Tokens đã được định nghĩa tập trung trong `@theme` tại file [src/index.css](file:///c:/Users/An/Documents/GitHub/HappyPaw/src/index.css) (ví dụ: `text-coral-dark`, `text-sage-dark`, `bg-map-sand`, `hover:bg-coral-hover`).
 
+### ⛔ Quy Tắc Bất Biến 4: ZERO RAW EMOJIS & THỐNG NHẤT ICON HỆ THỐNG
+- ❌ Tuyệt đối CẤM chèn emoji hệ thống trực tiếp (`🚨`, `🔍`, `🐾`, `✨`, `💰`, `📦`, `🔴`, `🟢`, `🟡`, `⚠️`, `🐶`, `🐱`...) vào mã nguồn JSX, chuỗi hiển thị, tiêu đề, nút bấm hay thông báo toast.
+  - *Lý do*: Emoji hệ điều hành (Apple, Windows, Android) hiển thị màu sắc và đường nét lệch lạc, không đồng nhất với phong cách Retro-Warm của HappyPaw, gây cảm giác lộn xộn, thiếu chuyên nghiệp và giảm thẩm mỹ chung.
+- ✔ Bắt buộc 100% biểu tượng phải sử dụng từ thư viện vector chuẩn:
+  - Thư viện icon chính thức: **`lucide-react`** (stroke đồng nhất 2px, kích thước chuẩn Tailwind `size-*`).
+  - Biểu tượng thương hiệu: Component vector nội bộ `<Paw />`, `<Logo />` từ `@ui`.
+  - Trạng thái màu sắc (xanh/đỏ/vàng): Dùng CSS dot indicator (`<span className="size-2 rounded-full bg-coral inline-block" />`) thay vì emoji hình tròn (`🔴`, `🟢`, `🟡`).
+
 ---
 
 ## 2. Bảng Cấm & Ánh Xạ Chuyển Đổi (Ban & Migration Matrix)
@@ -80,6 +88,7 @@ Bảng tra cứu nhanh giúp lập trình viên chuyển đổi code vi phạm s
 | Multi-step flow | Thanh tiến trình các bước biểu mẫu | `<Stepper>` | `<Stepper steps={['Thông tin', 'Vị trí', 'Xác nhận']} current={step} />` |
 | Callout note `<div>` | Hộp cảnh báo / chú thích nghiệp vụ | `<Note>` | `<Note tone="butter">Lưu ý khi tiếp cận bé...</Note>` |
 | App Logo / Identity | Biểu tượng móng vuốt và thương hiệu | `<Logo>` / `<Paw>` | `<Logo onClick={() => go('/home')} />` |
+| Raw Emojis (`🚨`, `🔍`, `🐾`, `✨`...) | Biểu tượng trang trí, nút bấm, thông báo | SVG Icon từ `lucide-react` / CSS dot | `<Btn icon={<Siren className="size-4" />}>SOS</Btn>` |
 
 ---
 
@@ -339,6 +348,30 @@ Toàn bộ hệ thống tokens được định nghĩa tập trung trong `@theme
   - `animate-rise`: Trượt từ dưới lên (Bottom sheet, Drawer).
   - `animate-pulse-ring`: Vòng tròn sóng lan tỏa định vị trên bản đồ.
 
+### 4.5. Quy Chuẩn Iconography & Tiêu Chuẩn Thẩm Mỹ Biểu Tượng
+
+Nhằm giữ giao diện gọn gàng, tinh tế và sang trọng, việc sử dụng icon phải tuân theo nguyên tắc **có chủ đích (intentional)**, tránh lạm dụng bừa bãi:
+
+#### 1. Khi Nào NÊN Dùng Icon:
+- **Nút hành động & CTA quan trọng**: Tăng cường nhận diện hành động chính (`<Btn icon={<Siren className="size-4" />} variant="danger">SOS Khẩn cấp</Btn>`, `<IconBtn label="Tìm kiếm"><Search className="size-4" /></IconBtn>`).
+- **Thanh điều hướng & Tabs phân loại**: Kết hợp icon + chữ ngắn gọn trong `<Segmented>` hoặc topbar/bottom navigation giúp người dùng quét thị giác nhanh.
+- **Huy hiệu & Cảnh báo**: Chỉ dẫn trực quan mức độ nguy hiểm hoặc tính xác thực (`<Note icon={<AlertTriangle className="size-4" />}>`, `<Verified />`).
+- **Input adornment**: Biểu tượng bổ trợ trong ô nhập liệu (icon kính lúp `<Search className="size-4" />` ở ô tìm kiếm, icon địa chỉ `<MapPin className="size-4" />`).
+- **Trạng thái kết nối / xử lý**: Đốm tròn màu sắc CSS (`size-2 rounded-full bg-coral animate-pulse`) cho biết tình trạng trực tiếp.
+
+#### 2. Khi Nào KHÔNG ĐƯỢC Dùng Icon (Tránh Bừa Bãi):
+- ❌ **Không chèn icon trang trí vào câu văn thường / đoạn văn bản**: Tuyệt đối không gắn icon hoặc emoji vào cuối câu hay giữa đoạn (VD: "Cảm ơn bạn đã báo tin! 🐾" ➔ Viết chuẩn: "Cảm ơn bạn đã báo tin!").
+- ❌ **Không gắn icon vào mọi đầu mục danh sách**: Nếu danh sách dài hoặc bảng biểu đã có phân cấp rõ ràng, việc gắn icon vào từng dòng gây nhiễu thị giác và làm rối mắt.
+- ❌ **Không dùng icon thay thế hoàn toàn chữ trong các chức năng phức tạp**: Người dùng cần hiểu chính xác hành động; icon chỉ nên đóng vai trò bổ trợ trừ các thao tác hiển nhiên (như Đóng `X`, Quay lại `ArrowLeft`).
+
+#### 3. Bảng Thang Kích Thước Icon Chuẩn (Sizing Scale):
+| Cấp Độ | Tailwind Class | Kích Thước | Ngữ Cảnh Sử Dụng |
+|---|---|---|---|
+| **Micro** | `size-3.5` | 14px | Bên trong `<Badge>`, inline tag, micro metadata. |
+| **Small** | `size-4` | 16px | Inline văn bản, nút nhỏ (`Btn size="sm"`), tiền tố input. |
+| **Medium** | `size-5` | 20px | Nút tiêu chuẩn (`Btn size="md"` / `lg`), tiêu đề thẻ card, bottom bar. |
+| **Large** | `size-6` - `size-7` | 24 - 28px | Feature cards nổi bật (như mục Quyên góp, Hero features). |
+
 ---
 
 ## 5. Quy Chuẩn Cấu Trúc Dự Án & Import Aliases
@@ -414,9 +447,9 @@ export function PetFormCorrect() {
 
       <Field label="Loài động vật" required>
         <Select size="md">
-          <option value="cat">Mèo 🐱</option>
-          <option value="dog">Chó 🐶</option>
-          <option value="other">Loài khác 🐾</option>
+          <option value="cat">Mèo</option>
+          <option value="dog">Chó</option>
+          <option value="other">Loài khác</option>
         </Select>
       </Field>
 
@@ -503,4 +536,5 @@ Mọi Pull Request trước khi được phê duyệt bắt buộc phải vượ
 - [ ] **5. Chuẩn Typography**: Tiêu đề chính sử dụng `font-display`, nội dung thường sử dụng `font-sans`.
 - [ ] **6. Chuẩn Aliases**: Tất cả import đều thông qua path aliases (`@ui`, `@store`, `@lib`, `@features/*`, `@/*`). Không có import lùi nhiều tầng (`../../`).
 - [ ] **7. Chuẩn Trợ Năng & Chạm**: Kích thước nút bấm trên mobile đạt tối thiểu 44px, độ tương phản chữ đạt chuẩn WCAG.
-- [ ] **8. Clean Linter & Build**: Lệnh `npm run check:conventions`, `npx tsc --noEmit` và `npm run build` trả về mã thoát `0` (Exit code 0).
+- [ ] **8. Chuẩn Zero Raw Emojis & Icon**: 100% sử dụng icon SVG từ `lucide-react` hoặc `@ui`. Không có emoji hệ thống (`🚨`, `🐾`, `🔍`, `✨`...) xuất hiện trong giao diện.
+- [ ] **9. Clean Linter & Build**: Lệnh `npm run check:conventions`, `npx tsc --noEmit` và `npm run build` trả về mã thoát `0` (Exit code 0).

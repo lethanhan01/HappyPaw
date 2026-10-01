@@ -27,8 +27,9 @@ export function Safety() {
     <div className="space-y-6">
       <PageHead title="Cảnh báo an toàn" sub="Các khu vực và hành vi được cộng đồng đánh dấu để mọi người cùng cẩn thận." />
       <Btn variant="danger" size="lg" full onClick={() => go('/safety/report')}
+        icon={<ShieldAlert className="size-5" />}
         className="h-auto py-4 text-lg rounded-[24px]">
-        <span aria-hidden>🚨</span> Báo cáo người dùng
+        Báo cáo người dùng
       </Btn>
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4">

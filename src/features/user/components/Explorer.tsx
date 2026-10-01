@@ -237,7 +237,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
     </div>
   ) : list.length === 0 ? (
     <Empty
-      title="Chưa có case nào trong khu vực này 🐾"
+      title="Chưa có case nào trong khu vực này"
       body="Thử mở rộng bán kính hoặc bỏ bớt bộ lọc nhé."
       cta="Xóa bộ lọc"
       onCta={clearAll}
@@ -314,7 +314,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
             {variant === 'home' && (
               <div className="px-4 pt-4">
                 <p className="font-display text-2xl font-extrabold leading-tight">
-                  Chào Linh <span className="inline-block animate-bounce-soft">🐾</span>
+                  Chào Linh
                 </p>
                 <p className="text-sm text-brown-soft">Cùng tìm lại những chiếc đuôi nhỏ.</p>
                 <div className="mt-3 grid grid-cols-5 gap-2">
@@ -382,7 +382,7 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                   ))}
                 </div>
               ) : (
-                <Empty title="Chưa có case nào trong khu vực này 🐾" cta="Xóa bộ lọc" onCta={clearAll} />
+                <Empty title="Chưa có case nào trong khu vực này" cta="Xóa bộ lọc" onCta={clearAll} />
               )}
             </div>
           ) : (
@@ -726,7 +726,11 @@ export default function Explorer({ variant }: { variant: 'home' | 'map' }) {
                   active={draft.status.includes(v)}
                   onClick={() => setDraft({ ...draft, status: toggle(draft.status, v) })}
                 >
-                  {v === 'active' ? '🔴' : v === 'progress' ? '🟡' : '🟢'} {l}
+                  <span className={cx(
+                    'mr-1.5 inline-block size-2 rounded-full',
+                    v === 'active' ? 'bg-coral' : v === 'progress' ? 'bg-amber-500' : 'bg-emerald-500'
+                  )} />
+                  {l}
                 </Chip>
               ))}
             </div>

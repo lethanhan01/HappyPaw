@@ -96,21 +96,26 @@ function UrgentShelters() {
 export function DonateHome() {
   const { go } = useApp()
   const opts = [
-    { to: '/donate/money', emoji: '💰', title: 'Quyên góp tiền', sub: 'Chuyển trực tiếp tới tài khoản chính thức của mái ấm đã xác minh.', bg: 'bg-butter/70' },
-    { to: '/donate/goods', emoji: '📦', title: 'Gửi hiện vật', sub: 'Thức ăn, thuốc, chăn đệm… theo đúng danh sách mái ấm đang cần.', bg: 'bg-sage-soft' },
+    { to: '/donate/money', icon: HandHeart, title: 'Quyên góp tiền', sub: 'Chuyển trực tiếp tới tài khoản chính thức của mái ấm đã xác minh.', bg: 'bg-butter/70', iconColor: 'text-terracotta' },
+    { to: '/donate/goods', icon: Package, title: 'Gửi hiện vật', sub: 'Thức ăn, thuốc, chăn đệm… theo đúng danh sách mái ấm đang cần.', bg: 'bg-sage-soft', iconColor: 'text-olive' },
   ]
   return (
     <div className="space-y-8">
       <PageHead title="Bạn muốn giúp theo cách nào?" sub="Mọi khoản hỗ trợ đều đến thẳng tay mái ấm, Happy Paws không đứng giữa." />
       <div className="grid gap-5 md:grid-cols-2">
-        {opts.map((o) => (
-          <Card key={o.to} hover onClick={() => go(o.to)} className={cx('flex flex-col gap-3 p-7', o.bg)}>
-            <span className="text-6xl" aria-hidden>{o.emoji}</span>
-            <h2 className="font-display text-3xl font-extrabold">{o.title}</h2>
-            <p className="text-brown-2">{o.sub}</p>
-            <span className="font-extrabold">Tiếp tục →</span>
-          </Card>
-        ))}
+        {opts.map((o) => {
+          const Icon = o.icon
+          return (
+            <Card key={o.to} hover onClick={() => go(o.to)} className={cx('flex flex-col gap-3 p-7', o.bg)}>
+              <div className={cx('flex size-14 items-center justify-center rounded-2xl bg-paper/80 border-2 border-brown shadow-soft', o.iconColor)}>
+                <Icon className="size-7" />
+              </div>
+              <h2 className="font-display text-3xl font-extrabold">{o.title}</h2>
+              <p className="text-brown-2">{o.sub}</p>
+              <span className="font-extrabold">Tiếp tục →</span>
+            </Card>
+          )
+        })}
       </div>
       <UrgentShelters />
     </div>

@@ -37,7 +37,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
     setBusy(true)
     setTimeout(() => {
       setBusy(false)
-      toast(reg ? 'Chào mừng bạn đến với Happy Paws 🐾' : 'Đăng nhập thành công')
+      toast(reg ? 'Chào mừng bạn đến với Happy Paws' : 'Đăng nhập thành công')
       login('user')
     }, 700)
   }
@@ -141,14 +141,6 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
               {reg ? 'Đăng nhập' : 'Đăng ký ngay'}
             </Btn>
           </p>
-
-          <div className="mt-6 space-y-2">
-            <Note tone="sky" icon={<ShieldCheck className="size-5 shrink-0" />}>Happy Paws không yêu cầu xác thực khuôn mặt. Chúng tôi chỉ dùng email hoặc tài khoản Google.</Note>
-            <div className="rounded-2xl border-2 border-dashed border-brown/40 p-3 text-center">
-              <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-brown-soft">Demo prototype</p>
-              <div className="flex gap-2"><Btn size="sm" variant="secondary" className="flex-1" onClick={() => login('user')}>Vào với User</Btn><Btn size="sm" variant="dark" className="flex-1" onClick={() => login('admin')}>Vào với Admin</Btn></div>
-            </div>
-          </div>
         </div>
       </main>
     </div>

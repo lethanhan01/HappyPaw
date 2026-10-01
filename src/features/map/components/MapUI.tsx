@@ -193,7 +193,7 @@ export function SearchBar({
               </ul>
             ) : (
               <p className="px-3 py-4 text-center text-sm font-bold text-brown-soft">
-                Không tìm thấy kết quả cho “{value}”. Thử từ khóa khác nhé 🐾
+                Không tìm thấy kết quả cho “{value}”. Thử từ khóa khác nhé.
               </p>
             )
           ) : (

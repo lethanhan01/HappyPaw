@@ -15,7 +15,7 @@ export function SaveBtn({ id, className }: { id: string; className?: string }) {
       onClick={(e) => {
         e.stopPropagation()
         toggleSave(id)
-        toast(on ? 'Đã bỏ lưu case' : 'Đã lưu case 🐾')
+        toast(on ? 'Đã bỏ lưu ca' : 'Đã lưu ca thành công')
       }}
       className={cx(
         '!rounded-full !border-brown !bg-paper hover:!bg-butter shadow-sm',

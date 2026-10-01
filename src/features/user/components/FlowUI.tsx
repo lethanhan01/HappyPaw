@@ -86,13 +86,13 @@ export function VerifyStepper({
   admin: 'done' | 'wait'
 }) {
   const nodes: { name: string; state: 'done' | 'wait' | 'warn'; text: string }[] = [
-    { name: 'Người cứu hộ', state: 'done', text: '✓ Rescue submitted' },
+    { name: 'Người cứu hộ', state: 'done', text: 'Đã gửi bằng chứng' },
     {
       name: kindLabel(kind),
       state: shelter,
-      text: shelter === 'done' ? '✓ Shelter confirmation' : shelter === 'warn' ? '⚠ Cần kiểm tra' : '○ Shelter confirmation',
+      text: shelter === 'done' ? 'Nơi tiếp nhận đã duyệt' : shelter === 'warn' ? 'Cần kiểm tra lại' : 'Chờ nơi tiếp nhận duyệt',
     },
-    { name: 'Admin', state: admin, text: admin === 'done' ? '✓ Admin verification' : '○ Admin verification' },
+    { name: 'Admin', state: admin, text: admin === 'done' ? 'Admin đã duyệt' : 'Chờ Admin duyệt' },
   ]
   return (
     <ol className="grid grid-cols-3" aria-label="Tiến trình xác minh">
@@ -134,7 +134,10 @@ export function VerifyStepper({
 export function MismatchCard({ onView }: { onView: () => void }) {
   return (
     <div className="space-y-3 rounded-2xl border-2 border-butter-2 bg-butter/60 p-4" role="status">
-      <p className="font-display text-lg font-extrabold">⚠️ Cần kiểm tra</p>
+      <p className="flex items-center gap-2 font-display text-lg font-extrabold text-brown">
+        <TriangleAlert className="size-5 shrink-0 text-amber-600" />
+        Cần kiểm tra
+      </p>
       <p className="text-sm font-semibold">Thông tin cứu hộ chưa khớp. Đội ngũ Happy Paws đang kiểm tra case này.</p>
       <Btn variant="secondary" onClick={onView}>
         Xem trạng thái

@@ -128,7 +128,7 @@ export function Segmented<T extends string>({
   className?: string
 }) {
   return (
-    <div className={cx('inline-flex max-w-full rounded-2xl border-2 border-line bg-cream-2 p-1', className)} role="tablist">
+    <div className={cx('inline-flex max-w-full overflow-x-auto no-scrollbar rounded-2xl border-2 border-line bg-cream-2 p-1', className)} role="tablist">
       {options.map((o) => (
         <button
           key={o.v}
@@ -136,7 +136,7 @@ export function Segmented<T extends string>({
           aria-selected={value === o.v}
           onClick={() => onChange(o.v)}
           className={cx(
-            'min-h-10 min-w-0 flex-1 whitespace-nowrap rounded-xl px-2.5 py-1.5 text-[13px] sm:px-4 sm:text-sm font-extrabold transition',
+            'min-h-10 shrink-0 whitespace-nowrap rounded-xl px-3 py-1.5 text-[13px] sm:px-4 sm:text-sm sm:flex-1 font-extrabold transition',
             value === o.v
               ? 'bg-butter text-brown shadow-[0_2px_0_var(--color-brown)] border border-brown'
               : 'text-brown/70 hover:text-brown',

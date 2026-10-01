@@ -20,7 +20,7 @@ const FEATURES = [
   },
   {
     id: 'ai-match',
-    title: 'Công nghệ AI Image Matching 🐾',
+    title: 'Công nghệ AI Image Matching',
     desc: 'Thuật toán thị giác máy tính đối soát ảnh chụp bé đi lạc và tin báo thấy, nhận diện hoa văn lông, dáng tai, đốm mắt với độ chuẩn xác cao.',
     badge: 'AI CỨU HỘ ĐỘC QUYỀN',
     tone: 'plum',

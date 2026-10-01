@@ -90,7 +90,7 @@ export default function LandingPage() {
                       onClick={() => go('/map')}
                       className="hover:bg-white"
                     >
-                      Xem bản đồ cứu hộ 🗺️
+                      Xem bản đồ cứu hộ
                     </Btn>
                   </>
                 ) : (

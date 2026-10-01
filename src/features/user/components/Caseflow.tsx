@@ -22,6 +22,8 @@ import {
   Sparkles,
   Siren,
   PawPrint,
+  CheckCircle2,
+  FlaskConical,
 } from 'lucide-react'
 import UserShell from '@/layouts/UserShell'
 import { useApp } from '@/store'
@@ -133,13 +135,13 @@ export function CaseDetail({ id, query }: { id: string; query: Record<string, st
             <Card className="p-4 space-y-3">
               <VerifyStepper kind={hp?.kind ?? 'shelter'} shelter={fl.mismatch ? 'warn' : fl.shelterConfirmed ? 'done' : 'wait'} admin="wait" />
               <div className="rounded-2xl border-2 border-line bg-cream-2/70 p-3">
-                <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-brown-soft">🧪 Bộ chuyển đổi mô phỏng kiểm thử (Demo)</p>
+                <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-brown-soft">Bộ chuyển đổi mô phỏng kiểm thử (Demo)</p>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <Btn size="sm" variant="secondary" onClick={() => { setProof(c.id, { shelterConfirmed: true, mismatch: false }); updateCase(c.id, { status: 'resolved' }); toast('Admin đã duyệt ca thành công! 🐾'); go(`/case/${c.id}/resolved`) }}>
-                    🟢 Mô phỏng Duyệt Thành Công
+                  <Btn size="sm" variant="secondary" onClick={() => { setProof(c.id, { shelterConfirmed: true, mismatch: false }); updateCase(c.id, { status: 'resolved' }); toast('Admin đã duyệt ca thành công!'); go(`/case/${c.id}/resolved`) }}>
+                    Mô phỏng Duyệt Thành Công
                   </Btn>
                   <Btn size="sm" variant="danger" onClick={() => { setProof(c.id, { mismatch: true, shelterConfirmed: false }); toast('Đã mô phỏng trạm báo không khớp', 'warn') }}>
-                    ⚠️ Mô phỏng Trạm Báo Không Khớp
+                    Mô phỏng Trạm Báo Không Khớp
                   </Btn>
                 </div>
               </div>
@@ -334,7 +336,10 @@ export function RescueProgress({ id }: { id: string }) {
           Quay lại trang case
         </Btn>
         <div className="mb-4 rounded-3xl border-2 border-brown bg-butter p-4" role="status">
-          <p className="font-display text-sm font-extrabold tracking-wide">🟡 ĐANG XỬ LÝ</p>
+          <p className="inline-flex items-center gap-1.5 font-display text-sm font-extrabold tracking-wide">
+            <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+            ĐANG XỬ LÝ
+          </p>
           <h1 className="font-display text-2xl font-extrabold leading-tight md:text-3xl">Bạn đang phụ trách ca này.</h1>
           <p className="mt-0.5 text-sm font-bold text-brown-soft">{c.id} · {c.name} · {c.species}</p>
         </div>
@@ -421,13 +426,16 @@ export function Proof({ id }: { id: string }) {
         <p className="max-w-md font-semibold text-brown-soft">Cảm ơn bạn đã cứu bé! Admin sẽ kiểm tra bằng chứng và xác nhận cùng nơi tiếp nhận trong thời gian sớm nhất.</p>
         <div className="w-full rounded-3xl border-2 border-brown bg-paper p-4"><VerifyStepper kind={hp?.kind ?? 'shelter'} shelter="wait" admin="wait" /></div>
         <div className="w-full rounded-2xl border-2 border-line bg-cream-2/80 p-3.5 space-y-2 text-left">
-          <p className="text-xs font-extrabold uppercase tracking-wide text-brown-soft">🧪 Bộ chuyển đổi mô phỏng kiểm thử (Demo)</p>
+          <p className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide text-brown-soft">
+            <FlaskConical className="size-3.5" />
+            Bộ chuyển đổi mô phỏng kiểm thử (Demo)
+          </p>
           <div className="grid gap-2 sm:grid-cols-2">
-            <Btn size="sm" variant="secondary" onClick={() => { setProof(c.id, { shelterConfirmed: true, mismatch: false }); updateCase(c.id, { status: 'resolved' }); toast('Admin đã duyệt ca thành công! 🐾'); go(`/case/${c.id}/resolved`) }}>
-              🟢 Mô phỏng Trạm & Admin Duyệt
+            <Btn size="sm" variant="secondary" icon={<CheckCircle2 className="size-4 text-emerald-600" />} onClick={() => { setProof(c.id, { shelterConfirmed: true, mismatch: false }); updateCase(c.id, { status: 'resolved' }); toast('Admin đã duyệt ca thành công!'); go(`/case/${c.id}/resolved`) }}>
+              Mô phỏng Trạm & Admin Duyệt
             </Btn>
-            <Btn size="sm" variant="danger" onClick={() => { setProof(c.id, { mismatch: true, shelterConfirmed: false }); toast('Đã mô phỏng trạm báo không khớp', 'warn'); go(`/case/${c.id}`) }}>
-              ⚠️ Mô phỏng Trạm Báo Không Khớp
+            <Btn size="sm" variant="danger" icon={<TriangleAlert className="size-4" />} onClick={() => { setProof(c.id, { mismatch: true, shelterConfirmed: false }); toast('Đã mô phỏng trạm báo không khớp', 'warn'); go(`/case/${c.id}`) }}>
+              Mô phỏng Trạm Báo Không Khớp
             </Btn>
           </div>
         </div>
@@ -518,8 +526,8 @@ export function Resolved({ id }: { id: string }) {
     <UserShell hideFab>
       <div className="relative mx-auto max-w-xl">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-60 overflow-hidden opacity-60 motion-reduce:hidden" aria-hidden><Confetti /></div>
-        <SuccessScreen title="🟢 Đã giải quyết thành công" species={c.species} calm>
-          <p className="font-display text-xl font-extrabold">Bé đã được an toàn 🐾</p>
+        <SuccessScreen title="Đã giải quyết thành công" species={c.species} calm>
+          <p className="font-display text-xl font-extrabold">Bé đã được an toàn</p>
           <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-brown bg-butter px-4 py-1.5 font-extrabold"><Paw className="size-4" />+1 ca cứu hộ</span>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"><Btn size="lg" onClick={() => go('/profile')}>Xem thành tích</Btn><Btn size="lg" variant="secondary" onClick={() => go('/map')}>Về bản đồ</Btn></div>
         </SuccessScreen>

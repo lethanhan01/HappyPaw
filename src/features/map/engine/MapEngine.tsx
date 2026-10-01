@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type MutableRefObject, type ReactNode } from 'react'
-import { Plus, Minus, LocateFixed, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Minus, LocateFixed, ChevronDown, ChevronUp, PawPrint } from 'lucide-react'
 import type { Case, Clinic, Risk, Shelter } from '@/types'
 import { DISTRICT_XY } from '@/constants/districts'
 import { Btn, IconBtn, cx } from '@ui'
@@ -345,7 +345,7 @@ export default function CityMap(p: CityMapProps) {
 
       {p.loading && (
         <div className="absolute inset-0 z-20 grid place-items-center bg-cream/85">
-          <div className="flex flex-col items-center gap-2 font-extrabold"><div className="animate-bounce-soft text-4xl">🐾</div>Đang tải bản đồ…</div>
+          <div className="flex flex-col items-center gap-2 font-extrabold text-brown"><PawPrint className="size-10 text-terracotta animate-bounce-soft" />Đang tải bản đồ…</div>
         </div>
       )}
     </div>

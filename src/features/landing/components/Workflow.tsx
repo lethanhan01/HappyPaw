@@ -102,7 +102,7 @@ export default function RescueWorkflow({ onReportClick }: RescueWorkflowProps) {
               onClick={onReportClick}
               className="shadow-[0_4px_0_var(--color-brown)] hover:shadow-[0_6px_0_var(--color-brown)]"
             >
-              Báo ca khẩn cấp ngay bây giờ 🚨
+              Báo ca khẩn cấp ngay bây giờ
             </Btn>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Phone, MapPin, Star, ArrowRight } from 'lucide-react'
+import { Phone, MapPin, Star, ArrowRight, PawPrint, Siren, Building2, Stethoscope } from 'lucide-react'
 import { useApp } from '@/store'
 import { SHELTERS, CLINICS } from '@/constants/mock/places'
 import type { Shelter, Clinic } from '@/types/place'
@@ -33,8 +33,24 @@ export default function SheltersPartners() {
               value={tab}
               onChange={setTab}
               options={[
-                { v: 'shelter', label: '🏠 Mái ấm tình nguyện' },
-                { v: 'clinic', label: '🏥 Phòng khám 24/7' },
+                {
+                  v: 'shelter',
+                  label: (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Building2 className="size-4" />
+                      Mái ấm tình nguyện
+                    </span>
+                  ),
+                },
+                {
+                  v: 'clinic',
+                  label: (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Stethoscope className="size-4" />
+                      Phòng khám 24/7
+                    </span>
+                  ),
+                },
               ]}
             />
           </div>
@@ -80,8 +96,8 @@ export default function SheltersPartners() {
                         {s.about}
                       </p>
 
-                      <div className="mt-3 rounded-xl bg-cream-2/60 p-2.5 text-xs font-bold text-brown">
-                        🐾 Đang chăm sóc: <strong>{s.pets} bé</strong>
+                      <div className="mt-3 rounded-xl bg-cream-2/60 p-2.5 text-xs font-bold text-brown flex items-center gap-1.5">
+                        <PawPrint className="size-3.5 text-brown-soft" /> Đang chăm sóc: <strong>{s.pets} bé</strong>
                       </div>
                     </div>
 
@@ -113,7 +129,7 @@ export default function SheltersPartners() {
                   <div className="relative h-44 overflow-hidden bg-cream-2">
                     <img src={c.photo} alt={c.name} className="size-full object-cover" />
                     <div className="absolute left-2.5 top-2.5">
-                      <Badge tone="coral">🚨 CẤP CỨU 24/7</Badge>
+                      <Badge tone="coral" icon={<Siren className="size-3.5" />}>CẤP CỨU 24/7</Badge>
                     </div>
                     {c.verified && (
                       <div className="absolute right-2.5 top-2.5">

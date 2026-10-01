@@ -1,4 +1,4 @@
-import { Siren, MapPin, Sparkles, HeartHandshake, ShieldCheck, ArrowRight } from 'lucide-react'
+import { Siren, MapPin, Sparkles, HeartHandshake, ShieldCheck, ArrowRight, PawPrint } from 'lucide-react'
 import { useApp } from '@/store'
 import { Btn, IconBtn, Paw } from '@ui'
 import pawsImg from '@/assets/paws.png'
@@ -36,7 +36,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
             <div className="inline-flex items-center gap-2 rounded-full border-2 border-brown bg-butter px-4 py-1.5 shadow-[0_2px_0_var(--color-brown)]">
               <Paw className="size-4 text-brown" />
               <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-brown">
-                Mạng lưới cứu trợ thú cưng số 1 tại Hà Nội
+                Mạng lưới cứu trợ thú cưng số 1 Hà Nội
               </span>
             </div>
 
@@ -53,7 +53,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
               báo cáo ca nguy kịch thời gian thực và liên kết với hơn 42 trạm cứu hộ & phòng khám thú y 24/7.
             </p>
 
-            {/* Action Buttons */}
+            {/* Main Action Buttons */}
             <div className="flex flex-wrap items-center gap-3.5 pt-2 sm:pt-4 w-full sm:w-auto">
               <Btn
                 size="lg"
@@ -62,7 +62,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                 onClick={onReportClick}
                 className="w-full sm:w-auto shadow-[0_5px_0_var(--color-brown)] hover:shadow-[0_7px_0_var(--color-brown)]"
               >
-                Báo ca khẩn cấp ngay 🚨
+                Báo ca khẩn cấp ngay
               </Btn>
               <Btn
                 size="lg"
@@ -71,7 +71,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                 onClick={() => go('/map')}
                 className="w-full sm:w-auto hover:bg-white"
               >
-                Khám phá bản đồ cứu trợ 🗺️
+                Khám phá bản đồ cứu trợ
               </Btn>
             </div>
 
@@ -105,14 +105,16 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                 />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brown/70 via-transparent to-transparent p-3 pt-8 text-white">
                   <p className="font-display text-xs sm:text-sm font-extrabold flex items-center gap-1.5 drop-shadow">
-                    🐾 Milo · Cocker Spaniel
+                    <PawPrint className="size-3.5" /> Milo · Cocker Spaniel
                   </p>
                 </div>
               </div>
 
               {/* Floating Top-Left Badge: 1.240+ ca đoàn tụ */}
               <div className="absolute -top-5 -left-5 z-20 rounded-3xl border-2 border-brown bg-paper px-4 py-2.5 shadow-soft animate-bounce-soft">
-                <p className="font-display text-xs sm:text-sm font-extrabold text-brown">🐾 1.240+ ca đoàn tụ</p>
+                <p className="font-display text-xs sm:text-sm font-extrabold text-brown flex items-center gap-1.5">
+                  <PawPrint className="size-3.5 text-coral" /> 1.240+ ca đoàn tụ
+                </p>
               </div>
 
               {/* Floating Mini Pet Card: Bé Bơ (Poodle vàng mơ) */}
@@ -124,7 +126,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                 />
                 <div className="pr-2">
                   <p className="font-display text-xs font-extrabold text-brown">Bé Bơ (Poodle)</p>
-                  <p className="text-[11px] font-bold text-sage-2">Đoàn tụ sau 4h 💚</p>
+                  <p className="text-[11px] font-bold text-sage-2">Đoàn tụ sau 4h</p>
                 </div>
               </div>
 
@@ -141,7 +143,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
             <div className="mt-8 flex w-full max-w-md items-center justify-between rounded-3xl border-2 border-brown bg-paper p-4 shadow-soft">
               <div className="flex items-center gap-3">
                 <span className="grid size-11 place-items-center rounded-2xl border-2 border-brown bg-coral text-white font-extrabold text-lg">
-                  🚨
+                  <Siren className="size-6 text-white" />
                 </span>
                 <div>
                   <p className="font-display text-base font-extrabold text-brown">Ca mới cần hỗ trợ tại Cầu Giấy</p>

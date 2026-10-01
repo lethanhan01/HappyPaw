@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowRight, Filter, MapPin, Sparkles } from 'lucide-react'
+import { ArrowRight, Filter, MapPin, Sparkles, Siren, Search, PawPrint, CheckCircle2 } from 'lucide-react'
 import { useApp } from '@/store'
 import { DISTRICTS } from '@/constants/districts'
 import type { Case } from '@/types/case'
@@ -70,10 +70,42 @@ export default function RecentCasesFeed() {
               onChange={setCategory}
               options={[
                 { v: 'all', label: 'Tất cả' },
-                { v: 'rescue', label: '🚨 Cứu hộ khẩn' },
-                { v: 'lost', label: '🔍 Đang thất lạc' },
-                { v: 'found', label: '🐾 Được báo thấy' },
-                { v: 'resolved', label: '✨ Đã đoàn tụ' },
+                {
+                  v: 'rescue',
+                  label: (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Siren className="size-4 text-coral shrink-0" />
+                      Cứu hộ khẩn
+                    </span>
+                  ),
+                },
+                {
+                  v: 'lost',
+                  label: (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Search className="size-4 text-orange shrink-0" />
+                      Đang thất lạc
+                    </span>
+                  ),
+                },
+                {
+                  v: 'found',
+                  label: (
+                    <span className="inline-flex items-center gap-1.5">
+                      <PawPrint className="size-4 text-brown-soft shrink-0" />
+                      Được báo thấy
+                    </span>
+                  ),
+                },
+                {
+                  v: 'resolved',
+                  label: (
+                    <span className="inline-flex items-center gap-1.5">
+                      <CheckCircle2 className="size-4 text-sage-2 shrink-0" />
+                      Đã đoàn tụ
+                    </span>
+                  ),
+                },
               ]}
               className="w-full sm:w-auto"
             />
@@ -129,7 +161,7 @@ export default function RecentCasesFeed() {
             onClick={() => go('/map')}
             className="shadow-[0_5px_0_var(--color-brown)] hover:shadow-[0_7px_0_var(--color-brown)]"
           >
-            Xem tất cả {cases.length} ca trên Bản đồ Rada Cứu trợ 🗺️
+            Xem tất cả {cases.length} ca trên Bản đồ Rada Cứu trợ
           </Btn>
         </div>
       </div>
