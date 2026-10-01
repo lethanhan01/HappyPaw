@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Menu, X, PhoneCall, ArrowRight, LayoutDashboard, Home, MapPin } from 'lucide-react'
+import { Menu, X, ArrowRight, LayoutDashboard, Home } from 'lucide-react'
 import { useApp } from '@/store'
 import { Logo, Btn, IconBtn, Avatar } from '@/components/ui'
 import { USERS } from '@/constants/mock/users'
 
 interface LandingNavProps {
-  onOpenSos: () => void
+  onOpenSos?: () => void
 }
 
 export default function LandingNav({ onOpenSos }: LandingNavProps) {
@@ -25,24 +25,17 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
     <header className="sticky top-0 z-50 border-b-2 border-brown/15 bg-cream/95 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Logo onClick={() => go('/')} />
+        <div className="flex items-center lg:flex-1">
+          <Logo onClick={() => go('/')} />
+        </div>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden items-center gap-1 xl:gap-2 lg:flex" aria-label="Điều hướng chính">
-          <Btn
-            variant="ghost"
-            size="sm"
-            onClick={() => go('/map')}
-            icon={<MapPin className="size-4 text-coral" />}
-            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
-          >
-            Bản đồ cứu hộ
-          </Btn>
+        <nav className="hidden items-center justify-center gap-1 xl:gap-2 lg:flex" aria-label="Điều hướng chính">
           <Btn
             variant="ghost"
             size="sm"
             onClick={() => scrollToSection('recent-cases')}
-            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Ca cứu trợ
           </Btn>
@@ -50,7 +43,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
             variant="ghost"
             size="sm"
             onClick={() => scrollToSection('features')}
-            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Tính năng
           </Btn>
@@ -58,7 +51,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
             variant="ghost"
             size="sm"
             onClick={() => scrollToSection('workflow')}
-            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Quy trình
           </Btn>
@@ -66,7 +59,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
             variant="ghost"
             size="sm"
             onClick={() => scrollToSection('shelters')}
-            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Mạng lưới trạm
           </Btn>
@@ -74,31 +67,20 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
             variant="ghost"
             size="sm"
             onClick={() => scrollToSection('stories')}
-            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown"
+            className="!rounded-2xl !px-3.5 !py-2 text-[15px] font-extrabold text-brown/85 hover:!bg-butter hover:!text-brown whitespace-nowrap shrink-0"
           >
             Câu chuyện
           </Btn>
         </nav>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2.5">
-          {/* Quick Hotline Trigger */}
-          <Btn
-            variant="danger"
-            size="sm"
-            icon={<PhoneCall className="size-4 animate-bounce-soft" />}
-            onClick={onOpenSos}
-            className="hidden sm:inline-flex !bg-coral-soft !border-coral/30 !text-coral-dark hover:!bg-coral hover:!text-white hover:!border-coral shadow-none"
-          >
-            <span>Hotline 24/7</span>
-          </Btn>
-
+        <div className="flex items-center justify-end gap-2.5 lg:flex-1">
           {auth === 'guest' ? (
             <div className="flex items-center gap-2">
-              <Btn variant="ghost" size="sm" onClick={() => go('/login')}>
+              <Btn variant="ghost" size="sm" onClick={() => go('/login')} className="whitespace-nowrap">
                 Đăng nhập
               </Btn>
-              <Btn pill variant="primary" size="sm" onClick={() => go('/register')}>
+              <Btn pill variant="primary" size="sm" onClick={() => go('/register')} className="whitespace-nowrap">
                 Tham gia ngay
               </Btn>
             </div>
@@ -111,6 +93,7 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
                 size="sm"
                 icon={auth === 'admin' ? <LayoutDashboard className="size-4" /> : <Home className="size-4" />}
                 onClick={() => go(auth === 'admin' ? '/admin/dashboard' : '/home')}
+                className="whitespace-nowrap"
               >
                 {auth === 'admin' ? 'Bảng điều khiển' : 'Vào ứng dụng'}
               </Btn>
@@ -134,19 +117,6 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
       {mobileMenuOpen && (
         <div className="border-b-2 border-brown/15 bg-paper p-4 lg:hidden animate-[rise_.2s_ease-out]">
           <nav className="flex flex-col gap-1.5" aria-label="Menu di động">
-            <Btn
-              variant="ghost"
-              size="md"
-              full
-              onClick={() => { setMobileMenuOpen(false); go('/map') }}
-              className="!justify-between !rounded-xl !px-4 !py-3 text-left text-base font-extrabold text-brown hover:!bg-butter/50"
-            >
-              <span className="flex items-center gap-2">
-                <MapPin className="size-5 text-coral" />
-                Bản đồ cứu trợ trực tiếp (Hà Nội)
-              </span>
-              <ArrowRight className="size-4 text-brown-soft" />
-            </Btn>
             <Btn
               variant="ghost"
               size="md"
@@ -199,16 +169,6 @@ export default function LandingNav({ onOpenSos }: LandingNavProps) {
             </Btn>
 
             <div className="mt-3 border-t-2 border-line pt-3 flex flex-col gap-2">
-              <Btn
-                variant="danger"
-                size="md"
-                full
-                icon={<PhoneCall className="size-5" />}
-                onClick={() => { setMobileMenuOpen(false); onOpenSos() }}
-                className="!h-12 shadow-[0_3px_0_var(--color-brown)] font-extrabold"
-              >
-                Hotline Cấp Cứu 24/7
-              </Btn>
               {auth === 'guest' ? (
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <Btn variant="secondary" onClick={() => { setMobileMenuOpen(false); go('/login') }}>

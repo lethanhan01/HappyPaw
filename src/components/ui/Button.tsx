@@ -31,7 +31,7 @@ export const Btn = forwardRef<HTMLButtonElement, BtnProps>(function Btn(
       ref={ref}
       {...p}
       className={cx(
-        'inline-flex items-center justify-center gap-2 border-2 font-bold transition duration-150 disabled:opacity-45 disabled:shadow-none disabled:translate-y-0 disabled:hover:translate-y-0',
+        'inline-flex items-center justify-center gap-2 border-2 font-bold whitespace-nowrap transition duration-150 disabled:opacity-45 disabled:shadow-none disabled:translate-y-0 disabled:hover:translate-y-0',
         size === 'sm' && 'h-9 px-3.5 text-sm',
         size === 'md' && 'h-11 px-5 text-[15px]',
         size === 'lg' && 'h-14 px-7 text-lg',
@@ -68,6 +68,11 @@ export const IconBtn = forwardRef<HTMLButtonElement, IconBtnProps>(function Icon
   ref,
 ) {
   const accessibleLabel = label || (p['aria-label'] as string) || undefined
+  const isCustomPos =
+    className?.includes('absolute') ||
+    className?.includes('fixed') ||
+    className?.includes('static')
+
   return (
     <button
       ref={ref}
@@ -75,7 +80,8 @@ export const IconBtn = forwardRef<HTMLButtonElement, IconBtnProps>(function Icon
       aria-label={accessibleLabel}
       title={accessibleLabel}
       className={cx(
-        'relative grid shrink-0 place-items-center transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none',
+        'grid shrink-0 place-items-center transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none',
+        !isCustomPos && 'relative',
         size === 'sm' && 'size-8 sm:size-9 rounded-xl',
         size === 'md' && 'size-11 rounded-2xl',
         size === 'lg' && 'size-14 rounded-2xl',

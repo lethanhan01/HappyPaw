@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, EyeOff, ShieldCheck, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, ShieldCheck, Loader2, ArrowLeft } from 'lucide-react'
 import pawsImg from '@/assets/paws.png'
 import puddleApricot from '@/assets/puddle_vang_mo.jpg'
 import { useApp } from '@/store'
@@ -83,6 +83,15 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
       <main className="flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-md">
           <div className="mb-6 text-center lg:hidden"><BrandImage className="mx-auto w-56" /></div>
+          <Btn
+            variant="ghost"
+            size="sm"
+            onClick={() => go('/')}
+            icon={<ArrowLeft className="size-4" />}
+            className="mb-4 !h-auto !p-0 !border-0 inline-flex items-center gap-1.5 text-sm font-extrabold text-brown-soft hover:text-brown transition"
+          >
+            Quay lại trang chủ
+          </Btn>
           <h1 className="font-display text-4xl font-extrabold">{reg ? 'Tạo tài khoản' : 'Chào mừng trở lại'}</h1>
           <p className="mb-6 mt-1 text-brown-soft">{reg ? 'Chỉ mất một phút để tham gia cộng đồng.' : 'Đăng nhập để tiếp tục giúp các bé.'}</p>
 
@@ -103,7 +112,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
             {reg && <Field label="Tên hiển thị" error={err.name} required><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Phạm Khánh Linh" invalid={!!err.name} /></Field>}
             <Field label="Email" error={err.email} required><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="linh@email.com" invalid={!!err.email} /></Field>
             <Field label="Mật khẩu" error={err.pw} helper={reg ? 'Ít nhất 6 ký tự.' : undefined} required>
-              <div className="relative">
+              <div className="relative flex items-center">
                 <Input type={show ? 'text' : 'password'} value={pw} onChange={(e) => setPw(e.target.value)} placeholder="••••••••" invalid={!!err.pw} className="pr-12" />
                 <IconBtn
                   type="button"
@@ -111,7 +120,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShow(!show)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-brown-soft"
+                  className="!absolute right-2.5 top-1/2 -translate-y-1/2 text-brown-soft hover:text-brown"
                 >
                   {show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                 </IconBtn>

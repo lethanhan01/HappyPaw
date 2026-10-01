@@ -28,7 +28,7 @@ import { photo } from '@/constants/photos'
 
 /* ---------- Chooser ---------- */
 export function ReportChooser() {
-  const { go } = useApp()
+  const { go, back } = useApp()
   const opts = [
     {
       to: '/report/lost',
@@ -62,6 +62,15 @@ export function ReportChooser() {
   return (
     <UserShell>
       <div className="mx-auto max-w-5xl">
+        <Btn
+          variant="ghost"
+          size="sm"
+          onClick={back}
+          icon={<ArrowLeft className="size-4" />}
+          className="mb-3 !h-auto !p-0 !border-0 inline-flex items-center gap-1.5 text-sm font-extrabold text-brown-soft hover:text-brown"
+        >
+          Quay lại
+        </Btn>
         <h1 className="bubble text-center font-display text-4xl font-extrabold md:text-5xl">Bạn muốn báo điều gì?</h1>
         <p className="mb-8 mt-2 text-center text-brown-soft">Chọn một lựa chọn, chúng mình sẽ hướng dẫn từng bước.</p>
         <div className="grid gap-5 md:grid-cols-3">

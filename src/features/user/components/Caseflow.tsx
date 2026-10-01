@@ -324,6 +324,15 @@ export function RescueProgress({ id }: { id: string }) {
   return (
     <UserShell hideFab>
       <div className="mx-auto max-w-5xl">
+        <Btn
+          variant="ghost"
+          size="sm"
+          onClick={() => go(`/case/${c.id}`)}
+          icon={<ArrowLeft className="size-4" />}
+          className="mb-3 !h-auto !p-0 !border-0 inline-flex items-center gap-1.5 text-sm font-extrabold text-brown-soft hover:text-brown"
+        >
+          Quay lại trang case
+        </Btn>
         <div className="mb-4 rounded-3xl border-2 border-brown bg-butter p-4" role="status">
           <p className="font-display text-sm font-extrabold tracking-wide">🟡 ĐANG XỬ LÝ</p>
           <h1 className="font-display text-2xl font-extrabold leading-tight md:text-3xl">Bạn đang phụ trách ca này.</h1>

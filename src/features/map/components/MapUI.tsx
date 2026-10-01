@@ -156,7 +156,7 @@ export function SearchBar({
             onChange('')
             setOpen(true)
           }}
-          className="absolute right-1.5 top-1/2 -translate-y-1/2 !rounded-full"
+          className="!absolute right-1.5 top-1/2 -translate-y-1/2 !rounded-full"
         >
           <X className="size-4" />
         </IconBtn>

@@ -300,7 +300,7 @@ export default function AdminApp({ path }: { path: string }) {
           <div className="absolute inset-0 bg-brown/50" onClick={() => setDrawer(false)} />
           <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] animate-[rise_.2s_ease-out]">
             <Sidebar collapsed={false} drawer onNav={() => setDrawer(false)} />
-            <IconBtn variant="ghost" onClick={() => setDrawer(false)} aria-label="Đóng menu" className="absolute right-2 top-1.5 grid size-11 place-items-center rounded-lg text-cream hover:bg-white/10"><X className="size-5" /></IconBtn>
+            <IconBtn variant="ghost" onClick={() => setDrawer(false)} aria-label="Đóng menu" className="!absolute right-2 top-1.5 grid size-11 place-items-center rounded-lg text-cream hover:bg-white/10"><X className="size-5" /></IconBtn>
           </div>
         </div>
       )}
