@@ -9,9 +9,27 @@ import { Btn, Chip, Segmented } from '@/components/ui'
 type CategoryFilter = 'all' | 'rescue' | 'lost' | 'found' | 'resolved'
 
 export default function RecentCasesFeed() {
-  const { cases, go } = useApp()
+  const { cases, auth, go, toast } = useApp()
   const [category, setCategory] = useState<CategoryFilter>('all')
   const [district, setDistrict] = useState<string>('')
+
+  const handleViewMap = () => {
+    if (auth === 'guest') {
+      toast('Vui lòng đăng nhập để xem Bản đồ cứu trợ.', 'warn')
+      go('/login?redirect=%2Fmap')
+    } else {
+      go('/map')
+    }
+  }
+
+  const handleCaseSelect = (caseId: string) => {
+    if (auth === 'guest') {
+      toast('Vui lòng đăng nhập để xem chi tiết ca cứu trợ này.', 'warn')
+      go(`/login?redirect=${encodeURIComponent(`/case/${caseId}`)}`)
+    } else {
+      go(`/case/${caseId}`)
+    }
+  }
 
   // Filter cases based on selected category and district
   const filteredCases = useMemo(() => {
@@ -55,7 +73,7 @@ export default function RecentCasesFeed() {
             variant="secondary"
             size="md"
             icon={<MapPin className="size-4 text-coral" />}
-            onClick={() => go('/map')}
+            onClick={handleViewMap}
             className="self-start md:self-auto hover:bg-white"
           >
             Mở Bản đồ cứu trợ toàn cảnh
@@ -146,7 +164,7 @@ export default function RecentCasesFeed() {
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {displayedCases.map((c: Case) => (
-                <CaseCard key={c.id} c={c} />
+                <CaseCard key={c.id} c={c} onSelect={() => handleCaseSelect(c.id)} />
               ))}
             </div>
           )}
@@ -158,7 +176,7 @@ export default function RecentCasesFeed() {
             size="lg"
             variant="primary"
             icon={<ArrowRight className="size-5" />}
-            onClick={() => go('/map')}
+            onClick={handleViewMap}
             className="shadow-[0_5px_0_var(--color-brown)] hover:shadow-[0_7px_0_var(--color-brown)]"
           >
             Xem tất cả {cases.length} ca trên Bản đồ Rada Cứu trợ

@@ -10,7 +10,16 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onReportClick }: HeroSectionProps) {
-  const { go } = useApp()
+  const { auth, go, toast } = useApp()
+
+  const handleMapClick = () => {
+    if (auth === 'guest') {
+      toast('Vui lòng đăng nhập để xem Bản đồ rada cứu trợ.', 'warn')
+      go('/login?redirect=%2Fmap')
+    } else {
+      go('/map')
+    }
+  }
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-cream via-cream to-cream-2/50 py-12 md:py-20 lg:py-24">
@@ -68,7 +77,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                 size="lg"
                 variant="secondary"
                 icon={<MapPin className="size-5 text-coral" />}
-                onClick={() => go('/map')}
+                onClick={handleMapClick}
                 className="w-full sm:w-auto hover:bg-white"
               >
                 Khám phá bản đồ cứu trợ
@@ -154,7 +163,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
                 label="Xem ca trên bản đồ"
                 variant="primary"
                 size="sm"
-                onClick={() => go('/map')}
+                onClick={handleMapClick}
                 className="!rounded-full hover:scale-105"
               >
                 <ArrowRight className="size-4" />

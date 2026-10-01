@@ -9,9 +9,9 @@ interface LandingNavProps {
 }
 
 export default function LandingNav({ onOpenSos }: LandingNavProps) {
-  const { auth, go } = useApp()
+  const { auth, account, go } = useApp()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const me = USERS[0]
+  const me = account || USERS[0]
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false)

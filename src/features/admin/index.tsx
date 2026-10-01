@@ -40,6 +40,7 @@ import { parsePath, cx } from '@/lib'
 import { useApp } from '@/store'
 import { Logo, Btn, IconBtn, Input } from '@ui'
 import { USERS } from '@/constants'
+import { MOCK_ADMIN_ACCOUNT } from '@/constants/mock/accounts'
 import { useAdmin } from './store/adminStore'
 import { useCases } from './components/AdminCommon'
 import Dashboard from './components/Dashboard'
@@ -206,7 +207,8 @@ function GlobalSearch() {
 }
 
 function Topbar({ onMenu }: { onMenu: () => void }) {
-  const { go, login, logout, path } = useApp()
+  const { go, logout, path, account } = useApp()
+  const adminAccount = account?.role === 'admin' ? account : MOCK_ADMIN_ACCOUNT
   const { reports, users } = useAdmin()
   const cases = useCases()
   const [bell, setBell] = useState(false)
@@ -246,16 +248,12 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
             </div>
           )}
         </div>
-        <Btn variant="secondary" size="sm" onClick={() => login('user')} className="hidden h-9 shrink-0 items-center gap-1.5 rounded-xl border border-line bg-paper px-3 text-[13px] font-bold hover:border-brown sm:inline-flex">
-          Về giao diện User
-        </Btn>
         <div className="relative">
           <IconBtn variant="ghost" onClick={() => { setMenu(!menu); setBell(false) }} aria-label="Menu quản trị viên" className="grid size-11 shrink-0 place-items-center rounded-full border border-brown bg-ink font-display text-sm font-bold text-butter md:size-9">AD</IconBtn>
           {menu && (
             <div className="absolute right-0 top-11 z-50 w-56 rounded-xl border border-brown/40 bg-paper p-2 shadow-lg">
-              <div className="border-b border-line px-2 pb-2"><p className="text-sm font-extrabold">Quản trị viên</p><p className="text-xs text-brown-soft">admin@happypaws.vn</p></div>
-              <Btn variant="ghost" size="sm" onClick={() => { login('user'); setMenu(false) }} className="mt-1 flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold hover:bg-butter/40 sm:hidden"><PawPrint className="size-4" />Về giao diện User</Btn>
-              <Btn variant="ghost" size="sm" onClick={() => { logout(); setMenu(false) }} className="flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold text-coral hover:bg-coral-soft"><LogOut className="size-4" />Đăng xuất</Btn>
+              <div className="border-b border-line px-2 pb-2"><p className="text-sm font-extrabold">{adminAccount.name}</p><p className="text-xs text-brown-soft">{adminAccount.email}</p></div>
+              <Btn variant="ghost" size="sm" onClick={() => { logout(); setMenu(false) }} className="mt-1 flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold text-coral hover:bg-coral-soft"><LogOut className="size-4" />Đăng xuất</Btn>
             </div>
           )}
         </div>

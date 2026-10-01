@@ -6,8 +6,17 @@ import type { Shelter, Clinic } from '@/types/place'
 import { Btn, Badge, Verified, Segmented } from '@/components/ui'
 
 export default function SheltersPartners() {
-  const { go } = useApp()
+  const { auth, go, toast } = useApp()
   const [tab, setTab] = useState<'shelter' | 'clinic'>('shelter')
+
+  const handleNavigate = (targetPath: string) => {
+    if (auth === 'guest') {
+      toast('Vui lòng đăng nhập để xem danh bạ chi tiết.', 'warn')
+      go(`/login?redirect=${encodeURIComponent(targetPath)}`)
+    } else {
+      go(targetPath)
+    }
+  }
 
   const displayedShelters = SHELTERS.slice(0, 4)
   const displayedClinics = CLINICS.filter((c) => c.emergency).slice(0, 4)
@@ -112,7 +121,7 @@ export default function SheltersPartners() {
                       <Btn
                         variant="ghost"
                         size="sm"
-                        onClick={() => go('/shelters')}
+                        onClick={() => handleNavigate('/shelters')}
                         className="!p-0 !h-auto !border-0 text-xs font-extrabold text-brown-soft hover:text-brown"
                       >
                         Chi tiết →
@@ -189,7 +198,7 @@ export default function SheltersPartners() {
           <Btn
             variant="secondary"
             icon={<ArrowRight className="size-4" />}
-            onClick={() => go(tab === 'shelter' ? '/shelters' : '/clinics')}
+            onClick={() => handleNavigate(tab === 'shelter' ? '/shelters' : '/clinics')}
           >
             Xem danh bạ đầy đủ tất cả {tab === 'shelter' ? 'mái ấm' : 'phòng khám'} tại Hà Nội
           </Btn>

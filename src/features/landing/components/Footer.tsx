@@ -3,7 +3,16 @@ import { useApp } from '@/store'
 import { Logo, Btn } from '@/components/ui'
 
 export default function LandingFooter() {
-  const { go } = useApp()
+  const { auth, go, toast } = useApp()
+
+  const navigateWithAuth = (targetPath: string) => {
+    if (auth === 'guest') {
+      toast('Vui lòng đăng nhập để truy cập tính năng này.', 'warn')
+      go(`/login?redirect=${encodeURIComponent(targetPath)}`)
+    } else {
+      go(targetPath)
+    }
+  }
 
   return (
     <footer className="border-t-2 border-brown/20 bg-paper py-14 text-brown">
@@ -38,22 +47,22 @@ export default function LandingFooter() {
             <h4 className="font-display text-base font-extrabold text-brown">Cứu hộ & Tìm kiếm</h4>
             <ul className="mt-3.5 space-y-2 text-sm font-bold text-brown-soft">
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/map')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/map')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Bản đồ radar cứu trợ
                 </Btn>
               </li>
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/find')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/find')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Tìm kiếm thú cưng lạc
                 </Btn>
               </li>
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/ai-match')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/ai-match')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Công nghệ AI Match
                 </Btn>
               </li>
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/report')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/report')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Báo ca khẩn cấp
                 </Btn>
               </li>
@@ -65,22 +74,22 @@ export default function LandingFooter() {
             <h4 className="font-display text-base font-extrabold text-brown">Cộng đồng & Trạm</h4>
             <ul className="mt-3.5 space-y-2 text-sm font-bold text-brown-soft">
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/shelters')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/shelters')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Mạng lưới mái ấm
                 </Btn>
               </li>
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/clinics')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/clinics')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Phòng khám thú y 24/7
                 </Btn>
               </li>
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/donate')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/donate')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Ủng hộ thức ăn & thuốc
                 </Btn>
               </li>
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/leaderboard')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/leaderboard')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Bảng vinh danh tình nguyện
                 </Btn>
               </li>
@@ -92,7 +101,7 @@ export default function LandingFooter() {
             <h4 className="font-display text-base font-extrabold text-brown">An toàn & Điều khoản</h4>
             <ul className="mt-3.5 space-y-2 text-sm font-bold text-brown-soft">
               <li>
-                <Btn variant="ghost" size="sm" onClick={() => go('/safety')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
+                <Btn variant="ghost" size="sm" onClick={() => navigateWithAuth('/safety')} className="h-auto p-0 font-bold text-brown-soft hover:text-brown justify-start">
                   Cảnh báo điểm đen & lừa đảo
                 </Btn>
               </li>

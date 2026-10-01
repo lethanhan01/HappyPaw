@@ -17,10 +17,19 @@ export default function LandingPage() {
   const { auth, go, toast } = useApp()
   const [sosOpen, setSosOpen] = useState(false)
 
+  const navigateWithAuth = (targetPath: string) => {
+    if (auth === 'guest') {
+      toast('Vui lòng đăng nhập để sử dụng tính năng này.', 'warn')
+      go(`/login?redirect=${encodeURIComponent(targetPath)}`)
+    } else {
+      go(targetPath)
+    }
+  }
+
   const handleReportAction = () => {
     if (auth === 'guest') {
       toast('Vui lòng đăng nhập để gửi báo cáo cứu hộ hoặc cập nhật thông tin bé.', 'warn')
-      go('/login')
+      go('/login?redirect=%2Freport%2Frescue')
     } else {
       go('/report/rescue')
     }
@@ -87,7 +96,7 @@ export default function LandingPage() {
                     <Btn
                       size="lg"
                       variant="secondary"
-                      onClick={() => go('/map')}
+                      onClick={() => navigateWithAuth('/map')}
                       className="hover:bg-white"
                     >
                       Xem bản đồ cứu hộ

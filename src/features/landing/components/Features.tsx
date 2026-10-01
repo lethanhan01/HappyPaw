@@ -66,7 +66,16 @@ const FEATURES = [
 ]
 
 export default function CoreFeatures() {
-  const { go } = useApp()
+  const { auth, go, toast } = useApp()
+
+  const handleNavigate = (route: string) => {
+    if (auth === 'guest') {
+      toast('Vui lòng đăng nhập để sử dụng tính năng này.', 'warn')
+      go(`/login?redirect=${encodeURIComponent(route)}`)
+    } else {
+      go(route)
+    }
+  }
 
   return (
     <section id="features" className="py-16 md:py-24 bg-paper/60 border-y-2 border-line">
@@ -133,7 +142,7 @@ export default function CoreFeatures() {
                   size="md"
                   full
                   icon={<ArrowRight className="size-4" />}
-                  onClick={() => go(f.route)}
+                  onClick={() => handleNavigate(f.route)}
                   className="hover:bg-butter/50"
                 >
                   {f.action}

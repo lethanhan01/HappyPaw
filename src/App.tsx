@@ -9,27 +9,73 @@ import AdminApp from '@/features/admin'
 import UserShell from '@/layouts/UserShell'
 
 function Router() {
-  const { path, auth, go } = useApp()
-  const { seg } = parsePath(path)
+  const { path, auth, go, toast } = useApp()
+  const { seg, query } = parsePath(path)
   const isLanding = seg.length === 0 || seg[0] === 'landing'
-  const isMap = seg[0] === 'map'
-  const isCase = seg[0] === 'case'
-  const pub = isLanding || isMap || isCase || seg[0] === 'login' || seg[0] === 'register'
+  const isAuthPage = seg[0] === 'login' || seg[0] === 'register'
+  const isPublic = isLanding || isAuthPage
 
   useEffect(() => {
-    if (auth === 'guest' && !pub) go('/login')
-    else if (auth !== 'guest' && (seg[0] === 'login' || seg[0] === 'register')) {
-      go(auth === 'admin' ? '/admin/dashboard' : '/home')
+    // 1. Khách chưa đăng nhập cố truy cập route được bảo vệ
+    if (auth === 'guest' && !isPublic) {
+      toast('Vui lòng đăng nhập để truy cập tính năng này.', 'warn')
+      go(`/login?redirect=${encodeURIComponent(path)}`, { replace: true })
+      return
     }
-    else if (auth === 'user' && seg[0] === 'admin') go('/home')
+
+    // 2. Tài khoản Admin: Bị cô lập hoàn toàn trong không gian /admin/*
+    if (auth === 'admin') {
+      if (seg[0] !== 'admin') {
+        go('/admin/dashboard', { replace: true })
+        return
+      }
+    }
+
+    // 3. Tài khoản User: Cấm truy cập toàn bộ giao diện Admin
+    if (auth === 'user') {
+      if (seg[0] === 'admin') {
+        toast('Bạn không có quyền truy cập trang quản trị.', 'warn')
+        go('/home', { replace: true })
+        return
+      }
+      if (isAuthPage) {
+        const redirectUrl = query.redirect ? decodeURIComponent(query.redirect) : null
+        if (
+          redirectUrl &&
+          !redirectUrl.startsWith('/login') &&
+          !redirectUrl.startsWith('/register') &&
+          !redirectUrl.startsWith('/admin')
+        ) {
+          go(redirectUrl, { replace: true })
+        } else {
+          go('/home', { replace: true })
+        }
+        return
+      }
+    }
   }, [auth, path])
 
-  if (auth === 'guest' && !pub) return null
+  if (auth === 'guest' && !isPublic) return null
+
+  if (auth === 'admin') {
+    if (seg[0] !== 'admin') return null
+    return <AdminApp path={path} />
+  }
+
   if (isLanding) return <LandingPage />
-  if (seg[0] === 'admin') return <AdminApp path={path} />
+  if (seg[0] === 'admin') return null
   const page = userRoute(path) ?? communityRoute(path)
   if (page) return <>{page}</>
-  return <UserShell><Empty title="Không tìm thấy trang này" body="Đường dẫn có thể đã thay đổi." cta="Về trang chủ" onCta={() => go(auth === 'guest' ? '/' : '/home')} /></UserShell>
+  return (
+    <UserShell>
+      <Empty
+        title="Không tìm thấy trang này"
+        body="Đường dẫn có thể đã thay đổi."
+        cta="Về trang chủ"
+        onCta={() => go(auth === 'guest' ? '/' : '/home')}
+      />
+    </UserShell>
+  )
 }
 
 export default function App() {

@@ -5,8 +5,9 @@ import { useUI } from './uiStore'
 
 // AppProvider & named hooks
 export { AppProvider } from './AppProvider'
-export { useAuth, type Auth } from './authStore'
-export { useNav } from './navStore'
+export { useAuth, type Auth, type AuthCtx } from './authStore'
+export { useNav, type GoOptions } from './navStore'
+export { type Account } from '@/constants/mock/accounts'
 export { useCasesStore } from './casesStore'
 export { useUI, type Toast } from './uiStore'
 

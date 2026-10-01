@@ -12,7 +12,6 @@ import {
   User,
   LogOut,
   Settings2,
-  LayoutDashboard,
 } from 'lucide-react'
 import { useApp } from '@/store'
 import { Avatar, Btn, IconBtn, Input, Logo, cx } from '@ui'
@@ -55,10 +54,10 @@ export default function UserShell({
   fullBleed?: boolean
   hideFab?: boolean
 }) {
-  const { path, go, notifs, logout, auth, saved, login } = useApp()
+  const { path, go, notifs, logout, auth, saved, account } = useApp()
   const [menu, setMenu] = useState(false)
   const unread = notifs.filter((n) => n.unread).length
-  const me = USERS[0]
+  const me = account || USERS[0]
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -172,19 +171,6 @@ export default function UserShell({
                           {l}
                         </Btn>
                       ))}
-                      <Btn
-                        variant="ghost"
-                        size="sm"
-                        full
-                        onClick={() => {
-                          setMenu(false)
-                          login('admin')
-                        }}
-                        className="!justify-start !rounded-2xl !px-3 !py-2 text-left font-bold hover:!bg-butter/60"
-                      >
-                        <LayoutDashboard className="size-4" />
-                        Chuyển sang Admin (demo)
-                      </Btn>
                       <Btn
                         variant="ghost"
                         size="sm"
