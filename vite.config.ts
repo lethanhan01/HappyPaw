@@ -19,6 +19,15 @@ export default defineConfig(({ mode }) => {
     build: {
       sourcemap: emitSourcemaps ? "inline" : false,
       minify: !emitSourcemaps,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules/lucide-react")) {
+              return "icons"
+            }
+          },
+        },
+      },
     },
     plugins: [
       react(),
