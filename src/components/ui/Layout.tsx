@@ -64,15 +64,25 @@ export function PageHead({
   sub,
   right,
   back,
+  size = "page",
+  className,
 }: {
-  title: string
-  sub?: string
+  title: ReactNode
+  sub?: ReactNode
   right?: ReactNode
   back?: () => void
+  size?: "page" | "section" | "sm"
+  className?: string
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-      <div>
+    <div
+      className={cx(
+        "flex flex-wrap items-end justify-between gap-3",
+        size === "page" ? "mb-5" : size === "section" ? "mb-3" : "mb-4",
+        className,
+      )}
+    >
+      <div className="min-w-0">
         {back && (
           <Btn
             variant="ghost"
@@ -83,15 +93,56 @@ export function PageHead({
             ← Quay lại
           </Btn>
         )}
-        <h1 className="font-display text-3xl font-extrabold leading-tight md:text-4xl">
-          {title}
-        </h1>
-        {sub && <p className="mt-0.5 text-brown-soft">{sub}</p>}
+        {typeof title === "string" ? (
+          size === "page" ? (
+            <h1 className="font-display text-3xl font-extrabold leading-tight md:text-4xl text-brown">
+              {title}
+            </h1>
+          ) : size === "sm" ? (
+            <h1 className="font-display text-xl font-black leading-tight text-brown md:text-2xl">
+              {title}
+            </h1>
+          ) : (
+            <h2 className="font-display text-2xl font-extrabold leading-tight text-brown">
+              {title}
+            </h2>
+          )
+        ) : (
+          title
+        )}
+        {sub && (
+          <div className="mt-0.5 text-sm font-semibold text-brown-soft">
+            {sub}
+          </div>
+        )}
       </div>
-      {right}
+      {right && (
+        <div className="flex flex-wrap items-center gap-2">{right}</div>
+      )}
     </div>
   )
 }
+
+// Aliases for backward compatibility
+export const Title = (props: {
+  title: string
+  sub?: string
+  right?: ReactNode
+  back?: () => void
+  className?: string
+}) => <PageHead {...props} size="sm" />
+
+export const SectionTitle = ({
+  children,
+  sub,
+  right,
+  className,
+}: {
+  children: ReactNode
+  sub?: string
+  right?: ReactNode
+  className?: string
+}) => <PageHead title={children} sub={sub} right={right} size="section" className={className} />
 
 /* ---------- Note ---------- */
 export const Note = ({

@@ -12,6 +12,11 @@ export * from "./Feedback"
 export * from "./Layout"
 export * from "./BottomSheet"
 export * from "./LightboxModal"
+export * from "./StatCard"
+export * from "./ActionMenu"
+export * from "./ConfirmModal"
+export * from "./Timeline"
+export * from "./FilterBar"
 
 // Utilities & hooks for backward compatibility
 export { cx } from "@/lib/cn"

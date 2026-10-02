@@ -39,27 +39,8 @@ export function RatingModal({
   )
 }
 
-export function SectionTitle({
-  children,
-  sub,
-  right,
-}: {
-  children: ReactNode
-  sub?: string
-  right?: ReactNode
-}) {
-  return (
-    <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-      <div>
-        <h2 className="font-display text-2xl font-extrabold leading-tight">
-          {children}
-        </h2>
-        {sub && <p className="text-sm text-brown-soft">{sub}</p>}
-      </div>
-      {right}
-    </div>
-  )
-}
+export { SectionTitle } from "@ui"
+
 
 /** Simple elbow route from the user's position to a target point on the map. */
 export const routeTo = (x: number, y: number) => [

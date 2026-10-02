@@ -15,7 +15,7 @@ import { useApp } from "@/store"
 import { SHELTERS, CLINICS, timeAgo, userById } from "@/constants"
 import type { Status } from "@/types"
 import CityMap from "@/features/map"
-import { Badge, Btn, PetPhoto, StatusBadge, Verified } from "@ui"
+import { Badge, Btn, PetPhoto, StatusBadge, Verified, Timeline } from "@ui"
 import { useAdmin, toggleIn } from "../store/adminStore"
 import CaseTable from "./CaseTable"
 import {
@@ -442,17 +442,7 @@ export function CaseDetail({ id }: { id: string }) {
           </Panel>
 
           <Panel title="Timeline case">
-            <ol className="space-y-2 border-l-2 border-line pl-4">
-              {caseTimeline(c).map((t, i) => (
-                <li key={i} className="relative text-sm">
-                  <span className="absolute -left-[22px] top-1.5 size-2.5 rounded-full bg-brown" />
-                  <span className="mr-2 text-xs font-extrabold text-brown-soft">
-                    {t.at}
-                  </span>
-                  {t.text}
-                </li>
-              ))}
-            </ol>
+            <Timeline items={caseTimeline(c)} />
           </Panel>
         </div>
 

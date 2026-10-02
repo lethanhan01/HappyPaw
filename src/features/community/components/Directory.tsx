@@ -29,7 +29,7 @@ import {
   Verified,
   Note,
 } from "@ui"
-import { cx } from "@/lib"
+import { PlaceCard } from "@/components/common"
 import { RatingModal, SectionTitle, routeTo } from "./Shared"
 
 type Kind = "shelter" | "clinic"
@@ -66,93 +66,6 @@ const reviewsFor = (id: string) => {
   return [...REVIEWS.slice(s), ...REVIEWS.slice(0, s)]
 }
 
-const Rating = ({ p }: { p: Place }) => (
-  <span className="inline-flex items-center gap-1 text-sm font-extrabold">
-    <Star className="size-4 fill-butter-2" />
-    {p.rating}
-    <span className="font-semibold text-brown-soft">({p.reviews})</span>
-  </span>
-)
-
-function PlaceCard({
-  p,
-  onOpen,
-  selected,
-}: {
-  p: Place
-  kind?: Kind
-  onOpen: () => void
-  selected?: boolean
-}) {
-  return (
-    <Card
-      hover
-      onClick={onOpen}
-      className={cx(
-        "flex gap-3 p-4",
-        selected && "border-brown ring-4 ring-butter",
-      )}
-    >
-      <div className="size-20 shrink-0 overflow-hidden rounded-2xl border-2 border-brown bg-cream-2">
-        <img
-          src={p.photo}
-          alt={p.name}
-          loading="lazy"
-          className="size-full object-cover"
-        />
-      </div>
-      <div className="min-w-0 flex-1 space-y-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <h3 className="font-display text-lg font-extrabold leading-tight">
-            {p.name}
-          </h3>
-          {p.verified && <Verified />}
-        </div>
-        <p className="flex flex-wrap items-center gap-x-3 text-sm font-bold text-brown-soft">
-          <span className="inline-flex items-center gap-1">
-            <MapPin className="size-3.5" />
-            {p.district}
-          </span>
-          <span>{p.distance} km</span>
-          <Rating p={p} />
-        </p>
-        {isShelter(p) ? (
-          <div className="flex flex-wrap gap-1.5 pt-0.5">
-            {p.urgent && (
-              <Badge tone="coral" icon={<Siren className="size-3.5" />}>
-                Đang cần hỗ trợ
-              </Badge>
-            )}
-            <Badge tone="sage">{p.pets} bé</Badge>
-            <span className="line-clamp-1 w-full text-sm text-brown-soft">
-              Cần: {p.needs.join(", ")}
-            </span>
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-1.5 pt-0.5">
-            <OpenBadge open={(p as Clinic).open} />
-            {(p as Clinic).emergency && (
-              <Badge tone="coral" icon={<Siren className="size-3.5" />}>
-                Cấp cứu 24/7
-              </Badge>
-            )}
-          </div>
-        )}
-      </div>
-    </Card>
-  )
-}
-
-const OpenBadge = ({ open }: { open: boolean }) =>
-  open ? (
-    <Badge tone="sage" icon={<Clock className="size-3.5" />}>
-      Đang mở
-    </Badge>
-  ) : (
-    <Badge tone="brown" icon={<Clock className="size-3.5" />}>
-      Đã đóng
-    </Badge>
-  )
 
 /* ---------------- Directory ---------------- */
 export function Directory({ kind }: { kind: Kind }) {

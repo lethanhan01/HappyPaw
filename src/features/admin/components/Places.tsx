@@ -15,6 +15,7 @@ import {
 import { useApp } from "@/store"
 import { DISTRICTS, userById } from "@/constants"
 import { Badge, Modal, Stars, UploadBox, Toggle, Empty } from "@ui"
+import { PlaceCard } from "@/components/common"
 import {
   jitterXY,
   patchRating,
@@ -466,7 +467,26 @@ function PlaceCRUD({ kind }: { kind: "shelter" | "clinic" }) {
           <option value="rejected">Từ chối</option>
         </ASelect>
       </div>
-      <DataTable cols={cols} rows={rows} rowKey={(p) => p.id} />
+      <DataTable
+        cols={cols}
+        rows={rows}
+        rowKey={(p) => p.id}
+        card={(p) => (
+          <PlaceCard
+            p={p as any}
+            actions={
+              <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <ABtn s="xs" icon={<Pencil />} onClick={() => setEdit({ p })}>
+                  Sửa
+                </ABtn>
+                <ABtn s="xs" v="danger" icon={<Trash2 />} onClick={() => setDel(p)}>
+                  Xóa
+                </ABtn>
+              </div>
+            }
+          />
+        )}
+      />
       <Modal
         open={!!edit}
         onClose={() => setEdit(null)}

@@ -3,6 +3,7 @@ import { useApp } from "@/store"
 import { timeAgo, userById } from "@/constants"
 import type { Case } from "@/types"
 import { PetPhoto, StatusBadge } from "@ui"
+import { CaseCard } from "@/components/common"
 import { toggleIn, useAdmin } from "../store/adminStore"
 import {
   ActionMenu,
@@ -167,52 +168,29 @@ export default function CaseTable({
       onRow={(c) => go("/admin/cases/" + c.id)}
       empty={empty || "Không có case nào khớp bộ lọc."}
       card={(c) => (
-        <div>
-          <div className="flex items-start gap-2.5">
-            <PetPhoto
-              src={c.photo}
-              species={c.species}
-              alt={c.name}
-              className="size-11 shrink-0 rounded-xl"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-bold leading-tight">
-                {c.id} · {c.name}
-              </p>
-              <p className="truncate text-xs text-brown-soft">
-                {typeLabel[c.type]} · {c.district}
-              </p>
-              <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                <StatusBadge
-                  status={c.status}
-                  critical={c.critical}
-                  type={c.type}
-                />
+        <CaseCard
+          c={c}
+          compact
+          showCtaInCompact={false}
+          actions={
+            <ActionMenu items={actions(c)} label={`Hành động ${c.id}`} />
+          }
+          extraMeta={
+            <div className="flex flex-wrap items-center justify-between gap-1 text-xs">
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-brown-soft">ID:</span>
+                <span className="font-bold text-brown">{c.id}</span>
                 <RiskChip l={risk(c)} />
               </div>
+              <div className="flex items-center gap-1">
+                <span className="font-extrabold text-brown-soft">Xử lý:</span>
+                {assigned(c)}
+              </div>
             </div>
-            <div onClick={(e) => e.stopPropagation()} className="shrink-0">
-              <ActionMenu items={actions(c)} label={`Hành động ${c.id}`} />
-            </div>
-          </div>
-          <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-line/70 pt-2 text-xs">
-            <div>
-              <dt className="font-bold uppercase text-brown-soft">Created</dt>
-              <dd className="font-semibold">{timeAgo(c.minutesAgo)}</dd>
-            </div>
-            <div>
-              <dt className="font-bold uppercase text-brown-soft">
-                Last update
-              </dt>
-              <dd className="font-semibold">{timeAgo(c.updatedAgo)}</dd>
-            </div>
-            <div className="col-span-2">
-              <dt className="font-bold uppercase text-brown-soft">Assigned</dt>
-              <dd className="font-semibold">{assigned(c)}</dd>
-            </div>
-          </dl>
-        </div>
+          }
+        />
       )}
     />
   )
 }
+

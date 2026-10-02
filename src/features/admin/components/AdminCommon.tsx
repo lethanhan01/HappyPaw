@@ -1,7 +1,5 @@
 import {
-  useEffect,
   useMemo,
-  useRef,
   useState,
   type ButtonHTMLAttributes,
   type InputHTMLAttributes,
@@ -12,16 +10,10 @@ import {
   AlertCircle,
   AlertTriangle,
   ArrowDown,
-  ArrowLeft,
   ArrowUp,
   ChevronsUpDown,
   Info,
-  MoreVertical,
   OctagonAlert,
-  Search,
-  SlidersHorizontal,
-  TrendingDown,
-  TrendingUp,
   X,
 } from "lucide-react"
 import { useApp } from "@store"
@@ -31,12 +23,10 @@ import {
   Avatar,
   Badge,
   Btn,
-  Card,
   Empty,
   Field,
   IconBtn,
   Input,
-  Modal,
   Select,
   Textarea,
   type BtnVariant,
@@ -80,42 +70,7 @@ export function Panel({
   )
 }
 
-export function Title({
-  title,
-  sub,
-  right,
-  back,
-}: {
-  title: string
-  sub?: string
-  right?: ReactNode
-  back?: () => void
-}) {
-  return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-      <div className="min-w-0">
-        {back && (
-          <Btn
-            variant="ghost"
-            size="sm"
-            onClick={back}
-            icon={<ArrowLeft className="size-4" />}
-            className="mb-1.5 h-auto p-0 text-xs font-extrabold text-brown-soft hover:text-brown"
-          >
-            Quay lại
-          </Btn>
-        )}
-        <h1 className="font-display text-xl font-black text-brown leading-tight md:text-2xl">
-          {title}
-        </h1>
-        {sub && <p className="mt-0.5 text-sm text-brown-soft font-semibold">{sub}</p>}
-      </div>
-      {right && (
-        <div className="flex flex-wrap items-center gap-2">{right}</div>
-      )}
-    </div>
-  )
-}
+export { Title } from "@ui"
 
 type V = "dark" | "primary" | "outline" | "danger" | "ghost" | "soft" | "ok" | "success"
 
@@ -208,31 +163,7 @@ export function FormRow({
     </Field>
   )
 }
-export function SearchBox({
-  value,
-  onChange,
-  placeholder,
-  className,
-}: {
-  value: string
-  onChange: (v: string) => void
-  placeholder?: string
-  className?: string
-}) {
-  return (
-    <div className={cx("relative min-w-[180px] flex-1 sm:max-w-xs", className)}>
-      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brown-soft" />
-      <Input
-        size="sm"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="bg-paper pl-9 font-semibold text-brown"
-        aria-label={placeholder}
-      />
-    </div>
-  )
-}
+export { SearchBox, SearchInput, type SearchInputProps } from "@/components/common"
 
 /* ---------- table ---------- */
 export interface Col<T> {
@@ -409,246 +340,12 @@ export function DataTable<T>({
   )
 }
 
-/* ---------- KPI card (single style for all admin pages) ---------- */
-export function KpiCard({
-  icon,
-  label,
-  value,
-  delta,
-  goodWhenUp = true,
-  hint,
-  onClick,
-  tone = "bg-cream-2 text-brown",
-  className,
-}: {
-  icon: ReactNode
-  label: string
-  value: ReactNode
-  delta?: number
-  goodWhenUp?: boolean
-  hint?: string
-  onClick?: () => void
-  tone?: string
-  className?: string
-}) {
-  const good =
-    delta === undefined || delta === 0 ? null : delta > 0 === goodWhenUp
-  return (
-    <Card
-      hover={!!onClick}
-      onClick={onClick}
-      className={cx(
-        "min-w-0 !p-3.5 sm:!p-4 text-left transition duration-150",
-        onClick && "cursor-pointer active:translate-y-0.5",
-        className,
-      )}
-    >
-      <div className="flex items-center gap-2">
-        <span
-          className={cx(
-            "grid size-8 shrink-0 place-items-center rounded-xl border border-brown/20 [&_svg]:size-4",
-            tone,
-          )}
-        >
-          {icon}
-        </span>
-        <span className="truncate text-xs font-extrabold uppercase tracking-wide text-brown-soft">
-          {label}
-        </span>
-      </div>
-      <div className="mt-2.5 flex items-baseline gap-2">
-        <span className="font-display text-[26px] font-black text-brown leading-none">
-          {value}
-        </span>
-        {delta !== undefined && (
-          <span
-            className={cx(
-              "inline-flex items-center gap-0.5 text-[11px] font-extrabold px-1.5 py-0.5 rounded-full",
-              good === null
-                ? "text-brown-soft bg-cream-2"
-                : good
-                  ? "text-sage-dark bg-sage-soft"
-                  : "text-coral-dark bg-coral-soft",
-            )}
-          >
-            {delta >= 0 ? (
-              <TrendingUp className="size-3" />
-            ) : (
-              <TrendingDown className="size-3" />
-            )}
-            {Math.abs(delta)}%
-          </span>
-        )}
-      </div>
-      {hint && (
-        <p className="mt-1 line-clamp-1 text-xs text-brown-soft font-semibold">
-          {hint}
-        </p>
-      )}
-    </Card>
-  )
-}
-export const KpiRow = ({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className?: string
-}) => (
-  <div
-    className={cx("mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4", className)}
-  >
-    {children}
-  </div>
-)
+export { KpiCard, KpiRow, ActionMenu, type MenuItem } from "@ui"
 
-/* ---------- kebab action menu ---------- */
-export interface MenuItem {
-  label: string
-  icon?: ReactNode
-  onClick: () => void
-  disabled?: boolean
-  danger?: boolean
-}
-export function ActionMenu({
-  items,
-  label = "Hành động",
-}: {
-  items: MenuItem[]
-  label?: string
-}) {
-  const [pos, setPos] = useState<{ x: number; y: number; up: boolean } | null>(
-    null,
-  )
-  const btn = useRef<HTMLButtonElement>(null)
-  useEffect(() => {
-    if (!pos) return
-    const close = () => setPos(null)
-    window.addEventListener("scroll", close, true)
-    window.addEventListener("resize", close)
-    return () => {
-      window.removeEventListener("scroll", close, true)
-      window.removeEventListener("resize", close)
-    }
-  }, [pos])
-  const openMenu = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    const r = btn.current!.getBoundingClientRect()
-    const up = r.bottom + items.length * 46 + 12 > window.innerHeight
-    setPos({
-      x: Math.max(8, Math.min(window.innerWidth - 184, r.right - 176)),
-      y: up ? r.top - 4 : r.bottom + 4,
-      up,
-    })
-  }
-  return (
-    <>
-      <IconBtn
-        variant="default"
-        size="sm"
-        ref={btn}
-        onClick={openMenu}
-        label={label}
-        aria-haspopup="menu"
-        className="size-11 sm:size-9"
-      >
-        <MoreVertical className="size-4" />
-      </IconBtn>
-      {pos && (
-        <div
-          className="fixed inset-0 z-[90]"
-          onClick={(e) => {
-            e.stopPropagation()
-            setPos(null)
-          }}
-        >
-          <div
-            role="menu"
-            style={{
-              left: pos.x,
-              top: pos.y,
-              transform: pos.up ? "translateY(-100%)" : undefined,
-            }}
-            className="absolute w-48 rounded-2xl border-2 border-brown bg-paper p-1.5 shadow-xl animate-[pop_.15s_ease-out]"
-          >
-            {items.map((it) => (
-              <Btn
-                key={it.label}
-                variant="ghost"
-                size="sm"
-                role="menuitem"
-                disabled={it.disabled}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setPos(null)
-                  it.onClick()
-                }}
-                className={cx(
-                  "flex min-h-11 w-full items-center justify-start gap-2.5 rounded-xl px-3 text-left text-sm font-bold hover:bg-butter/40 disabled:opacity-40 disabled:hover:bg-transparent md:min-h-9 [&_svg]:size-4",
-                  it.danger && "text-coral hover:bg-coral-soft",
-                )}
-              >
-                {it.icon}
-                {it.label}
-              </Btn>
-            ))}
-          </div>
-        </div>
-      )}
-    </>
-  )
-}
 
 /* ---------- collapsible filters: inline on desktop, bottom sheet on mobile ---------- */
-export function FilterBar({
-  children,
-  active,
-  onClear,
-}: {
-  children: ReactNode
-  active: number
-  onClear?: () => void
-}) {
-  const [open, setOpen] = useState(false)
-  return (
-    <>
-      <div className="mb-3 hidden flex-wrap items-center gap-2 md:flex">
-        {children}
-        {active > 0 && onClear && (
-          <Btn variant="ghost" size="sm" onClick={onClear}>
-            Xóa lọc
-          </Btn>
-        )}
-      </div>
-      <div className="mb-3 md:hidden">
-        <Btn
-          variant="outline"
-          size="md"
-          full
-          icon={<SlidersHorizontal className="size-4" />}
-          onClick={() => setOpen(true)}
-        >
-          Bộ lọc{active > 0 ? ` (${active})` : ""}
-        </Btn>
-      </div>
-      <Modal open={open} onClose={() => setOpen(false)} title="Bộ lọc tìm kiếm">
-        <div className="flex flex-col gap-3.5 [&>*]:!w-full [&>*]:!max-w-none">
-          {children}
-        </div>
-        <div className="mt-5 flex gap-2">
-          {onClear && (
-            <Btn variant="outline" size="md" className="flex-1" onClick={onClear}>
-              Xóa lọc
-            </Btn>
-          )}
-          <Btn variant="dark" size="md" className="flex-1" onClick={() => setOpen(false)}>
-            Áp dụng
-          </Btn>
-        </div>
-      </Modal>
-    </>
-  )
-}
+export { FilterBar, type FilterBarProps } from "@ui"
+
 
 /* ---------- drawer / confirm ---------- */
 export function Drawer({
@@ -691,40 +388,7 @@ export function Drawer({
     </div>
   )
 }
-export function Confirm({
-  open,
-  onClose,
-  onOk,
-  title,
-  body,
-  okLabel = "Xóa",
-}: {
-  open: boolean
-  onClose: () => void
-  onOk: () => void
-  title: string
-  body: ReactNode
-  okLabel?: string
-}) {
-  return (
-    <Modal open={open} onClose={onClose} title={title}>
-      <div className="mb-5 text-sm font-semibold text-brown">{body}</div>
-      <div className="flex justify-end gap-2.5">
-        <Btn variant="outline" size="md" onClick={onClose}>Hủy</Btn>
-        <Btn
-          variant="danger"
-          size="md"
-          onClick={() => {
-            onOk()
-            onClose()
-          }}
-        >
-          {okLabel}
-        </Btn>
-      </div>
-    </Modal>
-  )
-}
+export { Confirm, ConfirmModal } from "@ui"
 
 /* ---------- chips ---------- */
 export type Sev = Report["severity"]

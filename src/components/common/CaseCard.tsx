@@ -103,21 +103,27 @@ export function CaseCardSkeleton({ compact }: { compact?: boolean }) {
  * 7. AI match nếu có
  * 8. CTA
  */
+export interface CaseCardProps {
+  c: Case
+  compact?: boolean
+  selected?: boolean
+  disabled?: boolean
+  showCtaInCompact?: boolean
+  actions?: React.ReactNode
+  extraMeta?: React.ReactNode
+  onSelect?: () => void
+}
+
 export function CaseCard({
   c,
   compact,
   selected,
   disabled,
   showCtaInCompact,
+  actions,
+  extraMeta,
   onSelect,
-}: {
-  c: Case
-  compact?: boolean
-  selected?: boolean
-  disabled?: boolean
-  showCtaInCompact?: boolean
-  onSelect?: () => void
-}) {
+}: CaseCardProps) {
   const { go, saved, me } = useApp()
   const isRescueEmergency =
     c.status === "active" && (c.critical || c.type === "rescue")
@@ -280,11 +286,17 @@ export function CaseCard({
               · {TYPE_LABEL(c)}
             </span>
           </h3>
-          {compact && saved.includes(c.id) && (
-            <Bookmark
-              className="size-4 shrink-0 fill-brown"
-              aria-label="Đã lưu"
-            />
+          {actions ? (
+            <div onClick={(e) => e.stopPropagation()} className="shrink-0">
+              {actions}
+            </div>
+          ) : (
+            compact && saved.includes(c.id) && (
+              <Bookmark
+                className="size-4 shrink-0 fill-brown"
+                aria-label="Đã lưu"
+              />
+            )
           )}
         </div>
 
@@ -296,6 +308,13 @@ export function CaseCard({
               critical={c.critical}
               type={c.type}
             />
+          </div>
+        )}
+
+        {/* Extra metadata slot (Admin / custom context) */}
+        {extraMeta && (
+          <div className="mt-1 border-t border-line/60 pt-1">
+            {extraMeta}
           </div>
         )}
 
