@@ -77,7 +77,7 @@ export default function RiskPage() {
   const { toast } = useApp()
   const { risks } = useAdmin()
   const [mode, setMode] = useState<"circle" | "polygon">("circle")
-  const [center, setCenter] = useState<{ x: number y: number } | null>(null)
+  const [center, setCenter] = useState<{ x: number; y: number } | null>(null)
   const [radius, setRadius] = useState(55)
   const [pts, setPts] = useState<[number, number][]>([])
   const [reason, setReason] = useState(RISK_REASONS[0])

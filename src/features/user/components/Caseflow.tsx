@@ -21,7 +21,6 @@ import {
   Link2,
   Sparkles,
   Siren,
-  PawPrint,
   CheckCircle2,
   FlaskConical,
   ChevronLeft,

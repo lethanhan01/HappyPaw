@@ -268,7 +268,7 @@ export function DataTable<T>({
   dense?: boolean
   card?: (r: T) => ReactNode
 }) {
-  const [sort, setSort] = useState<{ key: string dir: 1 | -1 } | null>(null)
+  const [sort, setSort] = useState<{ key: string; dir: 1 | -1 } | null>(null)
   const sorted = useMemo(() => {
     const c = cols.find((x) => x.key === sort?.key)
     if (!sort || !c?.sort) return rows
@@ -521,7 +521,7 @@ export function ActionMenu({
   items: MenuItem[]
   label?: string
 }) {
-  const [pos, setPos] = useState<{ x: number y: number up: boolean } | null>(
+  const [pos, setPos] = useState<{ x: number; y: number; up: boolean } | null>(
     null,
   )
   const btn = useRef<HTMLButtonElement>(null)
@@ -772,7 +772,7 @@ export const typeLabel: Record<Case["type"], string> = {
   rescue: "Cứu hộ",
 }
 
-export function UserCell({ id, sub }: { id?: string sub?: string }) {
+export function UserCell({ id, sub }: { id?: string; sub?: string }) {
   const { go } = useApp()
   const u = userById(id)
   if (!u) return <span className="text-brown-soft">Hệ thống</span>
@@ -849,7 +849,7 @@ export function caseTimeline(c: Case) {
       month: "2-digit",
     })
   }
-  const t: { at: string text: string }[] = [
+  const t: { at: string; text: string }[] = [
     {
       at: fmt(c.minutesAgo),
       text: `Case được tạo bởi ${userById(c.reporter)?.name || "người dùng"}`,

@@ -1,19 +1,8 @@
 import { useMemo, useState, useEffect } from "react"
-import {
-  AlertTriangle,
-  Check,
-  CheckCircle2,
-  Eye,
-  MapPin,
-  RotateCcw,
-  ShieldAlert,
-  SlidersHorizontal,
-  X,
-} from "lucide-react"
+import { RotateCcw } from "lucide-react"
 import { DISTRICTS } from "@/constants"
 import type { AlertCategory, AlertSeverity, SafetyAlertStory, SafetyFilterState } from "@/types/safety"
-import { Badge, Btn, Chip, Modal, Select } from "@ui"
-import { cx } from "@/lib"
+import { Btn, Chip, Modal, Select } from "@ui"
 
 const CATEGORIES: (AlertCategory | "Tất cả")[] = [
   "Tất cả",

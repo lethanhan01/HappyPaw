@@ -20,7 +20,7 @@ export const kindLabel = (k: PlaceKind) =>
   k === "shelter" ? "Mái ấm" : "Phòng khám"
 export function findPlace(
   id?: string,
-): { place: Place kind: PlaceKind } | null {
+): { place: Place; kind: PlaceKind } | null {
   if (!id) return null
   const s = SHELTERS.find((x) => x.id === id)
   if (s) return { place: s, kind: "shelter" }
@@ -105,7 +105,7 @@ export function VerifyStepper({
   shelter: "done" | "wait" | "warn"
   admin: "done" | "wait"
 }) {
-  const nodes: { name: string state: "done" | "wait" | "warn" text: string }[] =
+  const nodes: { name: string; state: "done" | "wait" | "warn"; text: string }[] =
     [
       { name: "Người cứu hộ", state: "done", text: "Đã gửi bằng chứng" },
       {

@@ -1,17 +1,9 @@
 import { useMemo, useState, useEffect } from "react"
 import {
-  AlertTriangle,
-  Columns2,
   Compass,
-  Eye,
-  Filter,
   Grid,
-  Info,
-  Layers,
   Lock,
-  MapPin,
   Megaphone,
-  Plus,
   RotateCcw,
   Search,
   ShieldAlert,
@@ -27,12 +19,9 @@ import { DISTRICTS, REASONS, USERS } from "@/constants"
 import type { Risk } from "@/types"
 import type { AlertCategory, AlertSeverity, SafetyAlertStory } from "@/types/safety"
 import {
-  Badge,
   Btn,
   Card,
   Check2,
-  Chip,
-  Empty,
   Field,
   IconBtn,
   Input,
@@ -61,12 +50,6 @@ const CATEGORIES: (AlertCategory | "Tất cả")[] = [
   "Khu vực nguy hiểm",
 ]
 
-const SEVERITIES: (AlertSeverity | "Tất cả")[] = [
-  "Tất cả",
-  "Khẩn cấp",
-  "Cảnh giác",
-  "Đã khắc phục",
-]
 
 const TIPS = [
   "Luôn dùng dây dắt (leash) và rọ mõm mềm khi cho thú cưng đi dạo tại các công viên công cộng.",
@@ -148,18 +131,13 @@ export function Safety() {
     [alerts, modalAlertId],
   )
 
-  const hasActiveFilters =
-    filter.search.trim() !== "" ||
-    filter.category !== "Tất cả" ||
-    filter.district !== "Tất cả" ||
-    filter.severity !== "Tất cả"
 
   // When map pin is clicked
   const handleMapSelect = (s: Sel | null) => {
     setMapSel(s)
     if (s?.id) {
       setSelectedAlertId(s.id)
-      // Scroll to matching card if in Feed or Split mode
+      // Scroll to matching card if in Feed mode
       const el = document.getElementById(`alert-card-${s.id}`)
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "center" })
@@ -173,9 +151,9 @@ export function Safety() {
   const handleFocusMap = (a: SafetyAlertStory) => {
     setSelectedAlertId(a.id)
     setMapSel({ kind: "risk", id: a.id })
-    // If on mobile or feed mode, switch to split mode to show pin
+    // If in feed mode, switch to map mode to show pin
     if (viewMode === "feed") {
-      setViewMode("split")
+      setViewMode("map")
     }
   }
 
@@ -264,15 +242,6 @@ export function Safety() {
                   <span className="inline-flex items-center gap-1.5 font-extrabold">
                     <Compass className="size-4 shrink-0 text-coral" />
                     <span>Bản đồ</span>
-                  </span>
-                ),
-              },
-              {
-                v: "split",
-                label: (
-                  <span className="hidden lg:inline-flex items-center gap-1.5 font-extrabold">
-                    <Columns2 className="size-4 shrink-0 text-brown" />
-                    <span>Chia đôi</span>
                   </span>
                 ),
               },
@@ -456,60 +425,6 @@ export function Safety() {
         </section>
       )}
 
-      {viewMode === "split" && (
-        <section className="grid gap-6 lg:grid-cols-[1.2fr_1fr] items-start">
-          {/* Left: Map */}
-          <div className="sticky top-20 space-y-3">
-            <div className="overflow-hidden rounded-[28px] border-2 border-brown shadow-soft">
-              <CityMap
-                className="h-[480px] w-full"
-                risks={alertRisks}
-                me={ME_POS}
-                selected={mapSel}
-                onSelect={handleMapSelect}
-                center={
-                  pickedAlert
-                    ? {
-                        x: pickedAlert.coordinates.x,
-                        y: pickedAlert.coordinates.y,
-                        k: 1.35,
-                      }
-                    : undefined
-                }
-                focusKey={pickedAlert?.id}
-              />
-            </div>
-            {pickedAlert && (
-              <p className="text-xs font-bold text-coral-dark flex items-center gap-1.5">
-                <AlertTriangle className="size-4 shrink-0" />
-                Đang định vị: <strong>{pickedAlert.title}</strong>
-              </p>
-            )}
-          </div>
-
-          {/* Right: Scrollable Feed */}
-          <div className="space-y-4">
-            {filteredAlerts.length === 0 ? (
-              <Card className="text-center py-8">
-                <p className="text-sm font-bold text-brown-soft">
-                  Không tìm thấy cảnh báo phù hợp.
-                </p>
-              </Card>
-            ) : (
-              filteredAlerts.map((a) => (
-                <div key={a.id} id={`alert-card-${a.id}`}>
-                  <SafetyAlertCard
-                    alert={a}
-                    selected={selectedAlertId === a.id}
-                    onFocusMap={() => handleFocusMap(a)}
-                    onOpenDetail={() => setModalAlertId(a.id)}
-                  />
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-      )}
 
       {/* Safety Tips & Community Privacy Section */}
       <div className="grid gap-5 md:grid-cols-2 pt-4">

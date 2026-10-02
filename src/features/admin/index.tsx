@@ -217,7 +217,7 @@ function crumbs(path: string) {
   const hit =
     flat.find((i) => isActive(i, path)) ||
     flat.find((i) => parsePath(i.to).seg[1] === seg[1])
-  const out: { label: string to?: string }[] = [
+  const out: { label: string; to?: string }[] = [
     { label: "Admin", to: "/admin/dashboard" },
   ]
   if (hit?.group) out.push({ label: hit.group })

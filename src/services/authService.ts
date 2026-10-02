@@ -22,7 +22,7 @@ export async function logout(): Promise<void> {
   await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST" })
 }
 
-export async function getMe(): Promise<{ id: string role: Auth } | null> {
+export async function getMe(): Promise<{ id: string; role: Auth } | null> {
   if (IS_MOCK) return { id: "u1", role: "user" }
   const res = await fetch(`${API_BASE_URL}/auth/me`)
   if (!res.ok) return null

@@ -326,7 +326,7 @@ export function Directory({ kind }: { kind: Kind }) {
 }
 
 /* ---------------- Detail ---------------- */
-export function PlaceDetail({ kind, id }: { kind: Kind id: string }) {
+export function PlaceDetail({ kind, id }: { kind: Kind; id: string }) {
   const { go, toast, back } = useApp()
   const [rate, setRate] = useState(false)
   const [route, setRoute] = useState(false)

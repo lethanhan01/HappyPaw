@@ -2,7 +2,6 @@ import {
   Map,
   Cpu,
   ShieldCheck,
-  HeartHandshake,
   CheckCircle2,
   ArrowRight,
 } from "lucide-react"

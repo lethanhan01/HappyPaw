@@ -6,9 +6,11 @@
   "packageManager": "pnpm@10.34.3",
   "scripts": {
     "dev": "vite",
-    "build": "npm run check:conventions && vite build",
+    "build": "npm run check:conventions && npm run lint && vite build",
     "preview": "vite preview",
     "format": "oxfmt",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "check:conventions": "node scripts/check-conventions.mjs"
   },
   "dependencies": {
@@ -18,15 +20,21 @@
     "recharts": "^3.10.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.0",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
     "oxfmt": "^0.2.0",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0",
+    "typescript-eslint": "^8.71.0",
     "vite": "^8.0.5"
   }
 }

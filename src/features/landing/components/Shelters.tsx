@@ -3,7 +3,6 @@ import {
   Phone,
   MapPin,
   Star,
-  ArrowRight,
   PawPrint,
   Siren,
   Building2,

@@ -51,7 +51,6 @@ const DATE_OPTS: [string, string][] = [
 ]
 
 export function CaseList({ path }: { path: string }) {
-  const { go } = useApp()
   const cases = useCases()
   const risk = useRisk()
   const { query } = parsePath(path)
@@ -228,7 +227,7 @@ export function CaseList({ path }: { path: string }) {
   )
 }
 
-function Row({ k, children }: { k: string children: React.ReactNode }) {
+function Row({ k, children }: { k: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-3 border-b border-line/60 py-1.5 text-sm last:border-0">
       <dt className="w-32 shrink-0 text-brown-soft">{k}</dt>

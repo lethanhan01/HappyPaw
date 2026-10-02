@@ -17,7 +17,7 @@ import type {
 
 const STORAGE_KEY = "happypaw_safety_alerts_v1"
 
-export type SafetyViewMode = "feed" | "map" | "split"
+export type SafetyViewMode = "feed" | "map"
 
 interface SafetyCtx {
   alerts: SafetyAlertStory[]

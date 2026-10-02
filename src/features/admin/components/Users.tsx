@@ -34,7 +34,6 @@ import {
   SearchBox,
   SevChip,
   Title,
-  UserCell,
   typeLabel,
   useCases,
 } from "./AdminCommon"
@@ -71,7 +70,7 @@ function useUserActions() {
     },
   }
 }
-function UserActions({ u, view = true }: { u: User view?: boolean }) {
+function UserActions({ u, view = true }: { u: User; view?: boolean }) {
   const { go } = useApp()
   const a = useUserActions()
   return (

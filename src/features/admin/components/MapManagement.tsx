@@ -96,7 +96,6 @@ export default function MapManagement({ path }: { path: string }) {
           ? { kind: "clinic", data: clinics.find((c) => c.id === sel.id) }
           : { kind: "risk", data: risks.find((c) => c.id === sel.id) })
   const d = item?.data as any // eslint-disable-line @typescript-eslint/no-explicit-any
-  const hidden = sel ? hiddenPins.includes(key(sel.kind, sel.id)) : false
   const verified = sel
     ? sel.kind === "shelter" || sel.kind === "clinic"
       ? d?.verify === "verified"

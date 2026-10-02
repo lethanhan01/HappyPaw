@@ -43,7 +43,7 @@ export const PIN_META: Record<PinType, {
 export const caseType = (c: Case): PinType =>
   c.type === "rescue" ? "rescue" : "lost"
 
-function PawG({ s = 1, fill = "#fff" }: { s?: number fill?: string }) {
+function PawG({ s = 1, fill = "#fff" }: { s?: number; fill?: string }) {
   return (
     <g transform={`scale(${s})`} fill={fill}>
       <ellipse
@@ -86,7 +86,7 @@ const SHAPE = {
 }
 const TEAR = SHAPE.drop.d
 
-function Glyph({ type, color }: { type: PinType color: string }) {
+function Glyph({ type, color }: { type: PinType; color: string }) {
   switch (type) {
     case "rescue":
       return <PawG s={1} />
@@ -307,16 +307,16 @@ export interface CityMapProps {
   risks?: Risk[]
   selected?: Sel | null
   onSelect?: (s: Sel | null) => void
-  radius?: { x: number y: number km: number } | null
-  route?: { x: number y: number }[]
-  trail?: { x: number y: number t: string }[]
-  predicted?: { x: number y: number r: number } | null
-  me?: { x: number y: number } | null
-  dest?: { x: number y: number label?: string } | null
+  radius?: { x: number; y: number; km: number } | null
+  route?: { x: number; y: number }[]
+  trail?: { x: number; y: number; t: string }[]
+  predicted?: { x: number; y: number; r: number } | null
+  me?: { x: number; y: number } | null
+  dest?: { x: number; y: number; label?: string } | null
   revealIds?: string[]
-  center?: { x: number y: number k?: number }
+  center?: { x: number; y: number; k?: number }
   onMapClick?: (x: number, y: number) => void
-  dropPin?: { x: number y: number } | null
+  dropPin?: { x: number; y: number } | null
   extras?: ReactNode
   controlsClass?: string
   loading?: boolean
@@ -338,9 +338,9 @@ export default function CityMap(p: CityMapProps) {
     ty: 360 - center.y * k0,
   })
   const svg = useRef<SVGSVGElement>(null)
-  const drag = useRef<{ x: number y: number moved: boolean } | null>(null)
+  const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null)
 
-  const recenter = useCallback((c: { x: number y: number k?: number }) => {
+  const recenter = useCallback((c: { x: number; y: number; k?: number }) => {
     const k = c.k ?? 1.4
     setV({ k, tx: 500 - c.x * k, ty: 360 - c.y * k })
   }, [])
@@ -348,7 +348,7 @@ export default function CityMap(p: CityMapProps) {
     recenter(center) /* eslint-disable-next-line */
   }, [p.focusKey])
 
-  const pt = (e: { clientX: number clientY: number }) => {
+  const pt = (e: { clientX: number; clientY: number }) => {
     const s = svg.current!
     const m = s.getScreenCTM()!.inverse()
     const q = s.createSVGPoint()
@@ -732,7 +732,7 @@ export default function CityMap(p: CityMapProps) {
 
           {/* pins sorted so selected/hovered is on top */}
           {(() => {
-            const items: { id: string node: (h: boolean) => ReactNode }[] = []
+            const items: { id: string; node: (h: boolean) => ReactNode }[] = []
             for (const s of p.shelters || []) {
               items.push({
                 id: s.id,

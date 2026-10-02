@@ -5,7 +5,6 @@ import {
   Eye,
   MapPin,
   Share2,
-  ShieldAlert,
   ShieldCheck,
   ChevronRight,
   Camera,

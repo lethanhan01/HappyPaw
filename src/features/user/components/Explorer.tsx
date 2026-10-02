@@ -221,7 +221,7 @@ export default function Explorer({
         }),
       )
     return out
-  }, [q, cases]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [q, cases])
 
   const center = selCase
     ? { x: selCase.x, y: selCase.y + (desktop ? 0 : 40), k: 1.5 }

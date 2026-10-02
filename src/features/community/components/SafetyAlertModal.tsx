@@ -11,13 +11,11 @@ import {
   ShieldAlert,
   ShieldCheck,
   Stethoscope,
-  X,
 } from "lucide-react"
 import { useApp } from "@/store"
 import type { SafetyAlertStory, AlertCategory, AlertSeverity } from "@/types/safety"
-import { Avatar, Badge, Btn, IconBtn, Modal, Verified } from "@ui"
+import { Avatar, Badge, Btn, Modal, Verified } from "@ui"
 import { LightboxModal } from "@/components/ui/LightboxModal"
-import { cx } from "@/lib"
 
 const categoryTone = (cat: AlertCategory) => {
   switch (cat) {

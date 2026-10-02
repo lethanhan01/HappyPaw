@@ -12,7 +12,6 @@ import {
   Bell,
   Map as MapIcon,
   FileImage,
-  Check,
   Footprints,
   Home,
   Stethoscope,
@@ -24,7 +23,6 @@ import { DISTRICTS, DISTRICT_XY, USERS } from "@/constants"
 import type { Case } from "@/types"
 import {
   Btn,
-  IconBtn,
   Card,
   Check2,
   Chip,
