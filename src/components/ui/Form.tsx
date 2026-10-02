@@ -1,6 +1,7 @@
 import {
   useRef,
   useState,
+  useId,
   type ReactNode,
   type InputHTMLAttributes,
   type SelectHTMLAttributes,
@@ -20,7 +21,12 @@ import {
 } from "lucide-react"
 import { cx } from "@/lib/cn"
 import { useUI } from "@/store/uiStore"
-import { validateMediaFile, compressImageToBase64, isVideoUrl } from "@/lib/imageUtils"
+import {
+  validateMediaFile,
+  compressImageToBase64,
+  isVideoUrl,
+  ensureWebCompatibleImage,
+} from "@/lib/imageUtils"
 import { LightboxModal } from "./LightboxModal"
 
 /* ---------- Forms ---------- */
@@ -290,6 +296,7 @@ export function UploadBox({
   const [over, setOver] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [previewIndex, setPreviewIndex] = useState<number | null>(null)
+  const inputId = useId()
   const ref = useRef<HTMLInputElement>(null)
   const { toast } = useUI()
 
@@ -331,7 +338,9 @@ export function UploadBox({
         if (f.type.startsWith("video/") || f.name.match(/\.(mp4|webm|mov|m4v)$/i)) {
           processedUrls.push(URL.createObjectURL(f))
         } else {
-          const base64 = await compressImageToBase64(f, 1280, 0.82)
+          // Convert Apple HEIC/HEIF if present, then compress client-side
+          const webFile = await ensureWebCompatibleImage(f)
+          const base64 = await compressImageToBase64(webFile, 1280, 0.82)
           processedUrls.push(base64)
         }
       }
@@ -378,35 +387,40 @@ export function UploadBox({
   return (
     <div className="w-full space-y-3" onPaste={handlePaste} tabIndex={0}>
       <input
+        id={inputId}
         ref={ref}
         type="file"
-        hidden
+        className="sr-only"
         multiple={max > 1}
-        accept={video ? "image/*,video/*" : "image/*"}
+        accept={
+          video
+            ? "image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,video/mp4,video/quicktime,video/webm,video/x-m4v"
+            : "image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"
+        }
         onChange={(e) => add(e.target.files)}
-        disabled={disabled}
+        disabled={disabled || processing}
       />
 
       {/* When 0 files: Large inviting Retro-Warm Dropzone */}
       {files.length === 0 ? (
-        <div
+        <label
+          htmlFor={disabled || processing ? undefined : inputId}
           onDragOver={(e) => {
             e.preventDefault()
-            if (!disabled) setOver(true)
+            if (!disabled && !processing) setOver(true)
           }}
           onDragLeave={() => setOver(false)}
           onDrop={(e) => {
             e.preventDefault()
             setOver(false)
-            if (!disabled) add(e.dataTransfer.files)
+            if (!disabled && !processing) add(e.dataTransfer.files)
           }}
-          onClick={() => !disabled && ref.current?.click()}
           className={cx(
             "flex cursor-pointer flex-col items-center gap-2 rounded-3xl border-[2.5px] border-dashed px-5 py-8 text-center transition-all duration-200 select-none",
             over
               ? "border-brown bg-butter/50 ring-4 ring-butter/40 scale-[1.01]"
               : "border-brown/40 bg-cream-2/60 hover:border-brown hover:bg-cream-2/90 shadow-sm",
-            disabled && "cursor-not-allowed opacity-60",
+            (disabled || processing) && "cursor-not-allowed opacity-60",
           )}
         >
           <span className="grid size-14 place-items-center rounded-2xl border-2 border-brown bg-butter shadow-soft animate-[pop_.2s_ease-out]">
@@ -432,7 +446,7 @@ export function UploadBox({
               {video ? "Ảnh ≤ 10MB · Video ≤ 50MB" : "≤ 10MB / ảnh"}
             </span>
           </div>
-        </div>
+        </label>
       ) : (
         /* When >= 1 files: Dynamic Responsive Grid */
         <div className="space-y-2">
@@ -535,17 +549,17 @@ export function UploadBox({
 
             {/* "+ Add More" card if files.length < max */}
             {files.length < max && (
-              <div
-                onClick={() => !disabled && !processing && ref.current?.click()}
+              <label
+                htmlFor={disabled || processing ? undefined : inputId}
                 onDragOver={(e) => {
                   e.preventDefault()
-                  if (!disabled) setOver(true)
+                  if (!disabled && !processing) setOver(true)
                 }}
                 onDragLeave={() => setOver(false)}
                 onDrop={(e) => {
                   e.preventDefault()
                   setOver(false)
-                  if (!disabled) add(e.dataTransfer.files)
+                  if (!disabled && !processing) add(e.dataTransfer.files)
                 }}
                 className={cx(
                   "aspect-square rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 active:scale-95 select-none",
@@ -553,6 +567,7 @@ export function UploadBox({
                     ? "border-brown bg-butter/50 ring-4 ring-butter/30"
                     : "border-brown/40 bg-cream-2/50 hover:border-brown hover:bg-butter/40",
                   processing && "opacity-75 cursor-wait",
+                  disabled && "cursor-not-allowed opacity-60",
                 )}
               >
                 {processing ? (
@@ -568,7 +583,7 @@ export function UploadBox({
                 <span className="text-[10px] font-bold text-brown-soft">
                   (hoặc Ctrl + V)
                 </span>
-              </div>
+              </label>
             )}
           </div>
         </div>
