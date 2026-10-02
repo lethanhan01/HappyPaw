@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react"
+import { useEffect, useMemo, useState, useRef, type ReactNode } from "react"
 import {
   Bell,
   ChevronDown,
@@ -7,6 +7,7 @@ import {
   ClipboardCheck,
   FileWarning,
   Gavel,
+  Home,
   LayoutDashboard,
   ListChecks,
   Map as MapIcon,
@@ -24,7 +25,7 @@ import {
 } from "lucide-react"
 import { parsePath, cx } from "@lib"
 import { useApp } from "@store"
-import { Btn, IconBtn, logoSvg, NavBtn } from "@ui"
+import { Avatar, Btn, IconBtn, logoSvg, NavBtn } from "@ui"
 import { SearchInput, type SearchHitItem } from "@/components/common"
 import { USERS } from "@/constants"
 import { MOCK_ADMIN_ACCOUNT } from "@/constants/mock/accounts"
@@ -611,7 +612,7 @@ function GlobalSearch({
       .map((u) => ({
         key: `user-${u.id}`,
         label: u.name,
-        sub: `${u.role} · ${u.area || u.phone}`,
+        sub: `${u.status} · ${u.area || u.phone}`,
         icon: <UserCog className="size-4 text-sky shrink-0" />,
         onPick: () => {
           go("/admin/users/" + u.id)
@@ -646,34 +647,68 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   const [bell, setBell] = useState(false)
   const [menu, setMenu] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+
+  const bellRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Tự động đóng popover khi click bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+        setBell(false)
+      }
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenu(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
   const pendingRescue = cases.filter((c) => c.status === "pending").length
   const newReports = reports.filter((r) => r.status === "Mới").length
   const suspicious = users.filter(
     (u) => u.status !== "Hoạt động" || u.reports >= 3,
   ).length
   const total = pendingRescue + newReports
+
   const notes = [
     {
       icon: <ClipboardCheck className="size-4 text-orange" />,
-      text: `${pendingRescue} rescue chờ xác minh`,
+      text: "Rescue chờ xác minh",
+      count: pendingRescue,
+      badgeColor: "bg-orange text-white",
       to: "/admin/verification",
     },
     {
       icon: <FileWarning className="size-4 text-coral" />,
-      text: `${newReports} report mới cần xử lý`,
+      text: "Report mới cần xử lý",
+      count: newReports,
+      badgeColor: "bg-coral text-white",
       to: "/admin/reports",
     },
     {
       icon: <ShieldAlert className="size-4 text-plum" />,
-      text: `${suspicious} user đáng ngờ`,
+      text: "Tài khoản đáng ngờ",
+      count: suspicious,
+      badgeColor: "bg-plum text-white",
       to: "/admin/fraud",
     },
   ]
+
   const cr = crumbs(path)
+  const currentCrumb = cr[cr.length - 1]
+  const currentTitle = currentCrumb?.label || "Admin"
+
+  // Contextual badge on mobile
+  let currentBadgeCount = 0
+  if (path.includes("verification")) currentBadgeCount = pendingRescue
+  else if (path.includes("reports")) currentBadgeCount = newReports
+  else if (path.includes("fraud")) currentBadgeCount = suspicious
 
   if (mobileSearchOpen) {
     return (
-      <header className="sticky top-0 z-40 flex min-h-12 items-center gap-2 border-b border-line bg-cream/95 px-2.5 py-1.5 backdrop-blur-sm md:px-5">
+      <header className="sticky top-0 z-40 flex h-16 items-center gap-2 border-b-2 border-brown/15 bg-cream/95 px-3 backdrop-blur-sm md:px-6">
         <GlobalSearch
           autoFocus
           onClose={() => setMobileSearchOpen(false)}
@@ -682,7 +717,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
           variant="ghost"
           label="Đóng tìm kiếm"
           onClick={() => setMobileSearchOpen(false)}
-          className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:hidden"
+          className="size-10 shrink-0 rounded-2xl text-brown hover:bg-brown/10 md:hidden"
         >
           <X className="size-5" />
         </IconBtn>
@@ -691,121 +726,233 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 flex min-h-12 items-center gap-x-2 md:gap-x-3 border-b border-line bg-cream/95 px-2.5 py-1.5 backdrop-blur-sm md:px-5">
-      <IconBtn
-        variant="ghost"
-        label="Mở menu điều hướng"
-        onClick={onMenu}
-        className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:size-9 lg:hidden"
-      >
-        <Menu className="size-5" />
-      </IconBtn>
-      <nav
-        aria-label="Breadcrumb"
-        className="hidden min-w-0 items-center gap-1 text-[13px] font-bold text-brown-soft md:flex"
-      >
-        {cr.map((c, i) => (
-          <span key={i} className="flex items-center gap-1 whitespace-nowrap">
-            {i > 0 && <ChevronRight className="size-3.5" />}
-            {c.to ? (
-              <Btn
-                variant="ghost"
-                size="sm"
-                onClick={() => go(c.to!)}
-                className="inline h-auto p-0 hover:text-brown hover:underline font-bold text-[13px]"
-              >
-                {c.label}
-              </Btn>
-            ) : (
-              <span className={i === cr.length - 1 ? "text-brown" : ""}>
-                {c.label}
-              </span>
-            )}
+    <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-2.5 border-b-2 border-brown/15 bg-cream/95 px-3 backdrop-blur-sm md:px-6">
+      {/* Left: Mobile Hamburger & Desktop Breadcrumbs */}
+      <div className="flex shrink-0 items-center gap-2 md:gap-3">
+        <IconBtn
+          variant="ghost"
+          label="Mở menu điều hướng"
+          onClick={onMenu}
+          className="size-10 rounded-2xl text-brown hover:bg-brown/10 lg:hidden"
+        >
+          <Menu className="size-5" />
+        </IconBtn>
+
+        {/* Desktop Breadcrumbs (>= 768px) */}
+        <nav
+          aria-label="Breadcrumb"
+          className="hidden min-w-0 items-center gap-1.5 text-sm font-bold text-brown-soft md:flex"
+        >
+          {cr.map((c, i) => (
+            <span key={i} className="flex items-center gap-1.5 whitespace-nowrap">
+              {i > 0 && <ChevronRight className="size-3.5 text-brown/40" />}
+              {c.to ? (
+                <Btn
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => go(c.to!)}
+                  className="inline h-auto !p-0 font-bold text-brown/70 hover:text-brown hover:underline text-sm"
+                >
+                  {c.label}
+                </Btn>
+              ) : (
+                <span
+                  className={
+                    i === cr.length - 1
+                      ? "font-extrabold text-brown"
+                      : "text-brown/70"
+                  }
+                >
+                  {c.label}
+                </span>
+              )}
+            </span>
+          ))}
+        </nav>
+      </div>
+
+      {/* Center Zone: Mobile Page Title & Context Badge (< 768px) */}
+      <div className="flex flex-1 min-w-0 items-center gap-1.5 md:hidden">
+        <span className="truncate font-display text-[15px] font-extrabold text-brown">
+          {currentTitle}
+        </span>
+        {currentBadgeCount > 0 && (
+          <span className="shrink-0 rounded-full bg-coral/15 border border-coral/30 px-2 py-0.5 text-[10px] font-black text-coral">
+            {currentBadgeCount}
           </span>
-        ))}
-      </nav>
-      <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 md:flex-none">
+        )}
+      </div>
+
+      {/* Right Cluster: Search, Notifications & Admin Avatar */}
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2 shrink-0 md:flex-none">
         <div className="hidden md:block">
           <GlobalSearch />
         </div>
+
         <IconBtn
           variant="ghost"
           label="Tìm kiếm toàn hệ thống"
           onClick={() => setMobileSearchOpen(true)}
-          className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:hidden"
+          className="size-10 rounded-2xl text-brown hover:bg-brown/10 md:hidden"
         >
           <Search className="size-5" />
         </IconBtn>
-        <div className="relative">
+
+        {/* Action Center / Notification Popover */}
+        <div className="relative" ref={bellRef}>
           <IconBtn
             variant="ghost"
-            label={`Thông báo (${total})`}
+            label={`Thông báo (${total} mới)`}
             onClick={() => {
               setBell(!bell)
               setMenu(false)
             }}
-            className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper hover:border-brown md:size-9"
+            className="relative size-10 rounded-2xl text-brown hover:bg-brown/10"
           >
-            <Bell className="size-[18px]" />
+            <Bell className="size-5" />
             {total > 0 && (
-              <span className="absolute -right-1 -top-1 grid min-w-[18px] place-items-center rounded-full bg-coral px-1 text-[10px] font-extrabold text-white">
+              <span className="absolute right-1 top-1 grid size-5 animate-[pop_.3s_both] place-items-center rounded-full border-2 border-cream bg-coral text-[10px] font-extrabold text-white">
                 {total}
               </span>
             )}
           </IconBtn>
+
           {bell && (
-            <div className="absolute right-0 top-11 z-50 w-72 rounded-xl border border-brown/40 bg-paper p-2 shadow-lg">
-              <p className="px-2 py-1 text-xs font-extrabold uppercase tracking-wide text-brown-soft">
-                Cần xử lý
-              </p>
-              {notes.map((n) => (
-                <Btn
-                  variant="ghost"
-                  size="sm"
-                  key={n.to}
-                  onClick={() => {
-                    go(n.to)
-                    setBell(false)
-                  }}
-                  className="flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold hover:bg-butter/40"
-                >
-                  {n.icon}
-                  {n.text}
-                </Btn>
-              ))}
+            <div className="absolute right-0 top-14 z-50 w-80 max-w-[calc(100vw-24px)] animate-[pop_.2s_both] rounded-3xl border-2 border-brown bg-paper p-3 shadow-soft">
+              <div className="flex items-center justify-between border-b-2 border-line/50 pb-2.5 px-1">
+                <div className="flex items-center gap-2">
+                  <Bell className="size-4 text-coral" />
+                  <p className="font-display font-extrabold text-brown text-sm">
+                    Việc cần xử lý
+                  </p>
+                </div>
+                {total > 0 ? (
+                  <span className="rounded-full bg-coral px-2 py-0.5 text-[10px] font-black text-white">
+                    {total} tác vụ
+                  </span>
+                ) : (
+                  <span className="text-xs font-bold text-leaf">Đã hoàn tất</span>
+                )}
+              </div>
+
+              <div className="mt-2 space-y-1">
+                {notes.map((n) => (
+                  <button
+                    key={n.to}
+                    type="button"
+                    onClick={() => {
+                      go(n.to)
+                      setBell(false)
+                    }}
+                    className="flex w-full items-center justify-between gap-2.5 rounded-2xl p-2 text-left text-xs font-bold text-brown transition-all hover:bg-butter/50 group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="grid size-8 shrink-0 place-items-center rounded-xl bg-cream border border-brown/10 group-hover:scale-105 transition-transform">
+                        {n.icon}
+                      </div>
+                      <span className="truncate">{n.text}</span>
+                    </div>
+                    {n.count > 0 && (
+                      <span
+                        className={cx(
+                          "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black",
+                          n.badgeColor
+                        )}
+                      >
+                        {n.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
-        <div className="relative">
+
+        {/* Admin Profile Dropdown */}
+        <div className="relative" ref={menuRef}>
           <IconBtn
             variant="ghost"
-            label="Menu quản trị viên"
+            label="Tài khoản quản trị viên"
             onClick={() => {
               setMenu(!menu)
               setBell(false)
             }}
-            className="grid size-11 shrink-0 place-items-center rounded-full border border-brown bg-ink font-display text-sm font-bold text-butter md:size-9"
+            aria-expanded={menu}
+            className="!size-auto !rounded-full !border-0 !p-0 transition-transform hover:scale-105"
           >
-            AD
+            <Avatar
+              name={adminAccount.name}
+              tone="ink"
+              initials="AD"
+              size={40}
+            />
           </IconBtn>
+
           {menu && (
-            <div className="absolute right-0 top-11 z-50 w-56 rounded-xl border border-brown/40 bg-paper p-2 shadow-lg">
-              <div className="border-b border-line px-2 pb-2">
-                <p className="text-sm font-extrabold">{adminAccount.name}</p>
-                <p className="text-xs text-brown-soft">{adminAccount.email}</p>
+            <div className="absolute right-0 top-14 z-50 w-64 max-w-[calc(100vw-24px)] animate-[pop_.2s_both] rounded-3xl border-2 border-brown bg-paper p-2.5 shadow-soft">
+              <div className="flex items-center gap-3 border-b-2 border-line/50 p-2 pb-3">
+                <Avatar
+                  name={adminAccount.name}
+                  tone="ink"
+                  initials="AD"
+                  size={40}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-display font-extrabold text-brown text-sm truncate">
+                    {adminAccount.name}
+                  </p>
+                  <p className="text-[11px] text-brown-soft truncate">
+                    {adminAccount.email}
+                  </p>
+                  <span className="inline-block mt-1 rounded-full bg-butter/60 border border-brown/15 px-2 py-0.5 text-[10px] font-extrabold text-brown">
+                    {adminAccount.badge || "System Admin"}
+                  </span>
+                </div>
               </div>
-              <Btn
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  logout()
-                  setMenu(false)
-                }}
-                className="mt-1 flex h-auto w-full items-center justify-start gap-2 rounded-lg px-2 py-2 text-left text-sm font-bold text-coral hover:bg-coral-soft"
-              >
-                <LogOut className="size-4" />
-                Đăng xuất
-              </Btn>
+
+              <div className="mt-1 space-y-0.5">
+                <Btn
+                  variant="ghost"
+                  size="sm"
+                  full
+                  onClick={() => {
+                    setMenu(false)
+                    go("/home")
+                  }}
+                  className="!justify-start !rounded-2xl !px-3 !py-2 text-left font-bold hover:!bg-butter/60 text-xs"
+                >
+                  <Home className="size-4 text-orange" />
+                  Về Cổng người dùng (App)
+                </Btn>
+                <Btn
+                  variant="ghost"
+                  size="sm"
+                  full
+                  onClick={() => {
+                    setMenu(false)
+                    go("/admin/dashboard")
+                  }}
+                  className="!justify-start !rounded-2xl !px-3 !py-2 text-left font-bold hover:!bg-butter/60 text-xs"
+                >
+                  <LayoutDashboard className="size-4 text-sky" />
+                  Bảng điều khiển Admin
+                </Btn>
+                <div className="my-1 border-t border-line/40" />
+                <Btn
+                  variant="ghost"
+                  size="sm"
+                  full
+                  onClick={() => {
+                    logout()
+                    setMenu(false)
+                  }}
+                  className="!justify-start !rounded-2xl !px-3 !py-2 text-left font-bold !text-coral hover:!bg-coral-soft text-xs"
+                >
+                  <LogOut className="size-4" />
+                  Đăng xuất
+                </Btn>
+              </div>
             </div>
           )}
         </div>

@@ -34,6 +34,7 @@ export interface SearchInputProps {
   rightAction?: ReactNode
   className?: string
   ariaLabel?: string
+  autoFocus?: boolean
 }
 
 export function SearchInput({
@@ -43,6 +44,7 @@ export function SearchInput({
   placeholder = "Tìm kiếm…",
   mode = "simple",
   size = mode === "simple" ? "sm" : "md",
+  autoFocus,
   hits = [],
   recent = [],
   suggestions = DEFAULT_SEARCH_SUGGESTIONS,
@@ -85,6 +87,7 @@ export function SearchInput({
       />
       <Input
         size={size === "sm" ? "sm" : "md"}
+        autoFocus={autoFocus}
         value={value}
         onFocus={() => {
           if (mode === "rich") setOpen(true)
