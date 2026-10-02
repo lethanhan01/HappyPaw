@@ -55,7 +55,7 @@ export default function HeroSection({ onReportClick }: HeroSectionProps) {
             <div className="inline-flex items-center gap-2 rounded-full border-2 border-brown bg-butter px-3 sm:px-4 py-1 sm:py-1.5 shadow-[0_2px_0_var(--color-brown)]">
               <Paw className="size-3.5 sm:size-4 text-brown" />
               <span className="text-[11px] sm:text-sm font-extrabold uppercase tracking-wide text-brown">
-                Mạng lưới cứu trợ thú cưng số 1 Hà Nội
+                Mạng lưới cứu trợ thú cưng uy tín hàng đầu Việt Nam
               </span>
             </div>
 

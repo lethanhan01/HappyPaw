@@ -10,6 +10,7 @@ import {
   Stethoscope,
   Trophy,
   TriangleAlert,
+  ShieldAlert,
   ExternalLink,
 } from "lucide-react"
 import { useApp } from "@/store"
@@ -34,7 +35,7 @@ import { PseudoQR, SectionTitle } from "./Shared"
 
 /* ---------------- Community hub ---------------- */
 export function CommunityHub() {
-  const { go } = useApp()
+  const { go, alerts } = useApp()
   const tiles = [
     {
       to: "/shelters",
@@ -77,6 +78,7 @@ export function CommunityHub() {
           viết.
         </p>
       </div>
+
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {tiles.map((t) => (
           <Card
@@ -95,6 +97,71 @@ export function CommunityHub() {
           </Card>
         ))}
       </div>
+
+      {/* Community Safety Alerts Spotlight */}
+      <section>
+        <SectionTitle
+          right={
+            <Btn
+              size="sm"
+              variant="secondary"
+              onClick={() => go("/safety")}
+              icon={<ShieldAlert className="size-3.5 text-coral" />}
+            >
+              Xem tất cả ({alerts.length})
+            </Btn>
+          }
+          sub="Cập nhật điểm đen bẫy bả, trộm cắp và chiêu trò lừa đảo mới nhất"
+        >
+          Cảnh báo an toàn cộng đồng
+        </SectionTitle>
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {alerts.slice(0, 3).map((a) => (
+            <Card
+              key={a.id}
+              hover
+              onClick={() => go(`/safety?alert=${a.id}`)}
+              className="group overflow-hidden p-0 flex flex-col justify-between"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden bg-cream-2 border-b-2 border-brown">
+                <img
+                  src={a.photos[0]}
+                  alt={a.title}
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute left-2.5 top-2.5">
+                  <Badge tone={a.severity === "Khẩn cấp" ? "coral" : "orange"} className="shadow-xs">
+                    {a.category}
+                  </Badge>
+                </div>
+                <div className="absolute right-2.5 top-2.5">
+                  <Badge tone={a.severity === "Khẩn cấp" ? "coral" : "butter"}>
+                    {a.severity}
+                  </Badge>
+                </div>
+              </div>
+              <div className="space-y-1.5 p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-display text-base sm:text-lg font-extrabold leading-snug line-clamp-2 text-brown group-hover:text-coral transition-colors">
+                    {a.title}
+                  </h3>
+                  <p className="mt-1 text-xs sm:text-sm text-brown-soft line-clamp-2">
+                    {a.excerpt}
+                  </p>
+                </div>
+                <div className="pt-2 flex items-center justify-between text-xs font-bold text-brown-soft border-t border-line mt-2">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="size-3.5 text-coral" />
+                    {a.district}
+                  </span>
+                  <span>{a.createdAt}</span>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
 
       <section>
         <SectionTitle sub="Những câu chuyện nhỏ làm ấm cả ngày">

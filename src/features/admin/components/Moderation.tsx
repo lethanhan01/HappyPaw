@@ -16,6 +16,7 @@ import {
   Clock,
   FileWarning,
   OctagonAlert,
+  Megaphone,
 } from "lucide-react"
 import { useApp } from "@/store"
 import { userById } from "@/constants"
@@ -72,7 +73,7 @@ const RStatus = ({ s }: { s: Report["status"] }) =>
 
 /* ---------------- Report queue ---------------- */
 export function ReportQueue() {
-  const { go, toast } = useApp()
+  const { go, toast, publishReportAsAlert } = useApp()
   const { reports } = useAdmin()
   const [q, setQ] = useState("")
   const [sev, setSev] = useState("")
@@ -310,6 +311,43 @@ export function ReportQueue() {
               </ABtn>
               <ABtn icon={<Binoculars />} onClick={() => act(cur, "monitor")}>
                 Monitor
+              </ABtn>
+              <ABtn
+                icon={<Megaphone />}
+                onClick={() => {
+                  const reporter = userById(cur.reporter)
+                  const reported = userById(cur.reported)
+                  const newStory = publishReportAsAlert({
+                    title: `Cảnh báo đối tượng ${reported?.name || "khả nghi"}: ${cur.reason}`,
+                    category:
+                      cur.reason.includes("tiền") || cur.reason.includes("cọc")
+                        ? "Lừa đảo tiền cọc / chuộc"
+                        : cur.reason.includes("ngược đãi")
+                          ? "Khu vực nguy hiểm"
+                          : "Tài khoản khả nghi",
+                    severity:
+                      cur.severity === "Critical" || cur.severity === "High"
+                        ? "Khẩn cấp"
+                        : "Cảnh giác",
+                    district: reported?.district || "Đống Đa",
+                    address: `Liên quan tài khoản ${reported?.name || "khả nghi"}`,
+                    excerpt:
+                      cur.note || `Báo cáo về hành vi ${cur.reason} từ người dùng.`,
+                    fullStory: `Vào lúc ${cur.created}, hệ thống ghi nhận tố cáo đối với tài khoản ${reported?.name || "này"} vì lý do: ${cur.reason}.\n\nNội dung chi tiết: ${cur.note || "Không có thêm ghi chú."}\n\nĐội ngũ Ban Quản Trị Happy Paws đã tiến hành xác minh và công bố cảnh báo này để cộng đồng cùng nâng cao tinh thần cảnh giác.`,
+                    reporterName: reporter?.name,
+                  })
+                  patchReport(cur.id, {
+                    status: "Đã xử lý",
+                    adminNote:
+                      (note ? note + "\n" : "") +
+                      `[Đã xuất bản bài viết cảnh báo: ${newStory.id}]`,
+                  })
+                  toast("Đã xuất bản thành bài viết cảnh báo cộng đồng!")
+                  setOpenId(null)
+                  go(`/safety?alert=${newStory.id}`)
+                }}
+              >
+                Xuất bản thành cảnh báo
               </ABtn>
               <ABtn
                 v="danger"

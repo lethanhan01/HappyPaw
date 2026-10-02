@@ -161,11 +161,6 @@ export default function LandingFooter() {
               </li>
               <li>
                 <span className="cursor-default">
-                  Quy tắc nhận nuôi văn minh
-                </span>
-              </li>
-              <li>
-                <span className="cursor-default">
                   Bảo mật thông tin người báo
                 </span>
               </li>
