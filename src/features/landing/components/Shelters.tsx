@@ -1,17 +1,13 @@
 import { useState } from "react"
 import {
   Phone,
-  MapPin,
-  Star,
-  PawPrint,
-  Siren,
   Building2,
   Stethoscope,
 } from "lucide-react"
 import { useApp } from "@/store"
 import { SHELTERS, CLINICS } from "@/constants/mock/places"
-import type { Shelter, Clinic } from "@/types/place"
-import { Btn, Badge, Verified, Segmented } from "@/components/ui"
+import { Btn, Badge, Segmented } from "@/components/ui"
+import { PlaceCard } from "@/components/common"
 
 export default function SheltersPartners() {
   const { auth, go, toast } = useApp()
@@ -80,144 +76,39 @@ export default function SheltersPartners() {
 
         {/* Content Grid */}
         <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {tab === "shelter"
-            ? displayedShelters.map((s: Shelter) => (
-                <div
-                  key={s.id}
-                  className="flex flex-col justify-between overflow-hidden rounded-[28px] border-2 border-brown bg-paper shadow-[0_4px_0_var(--color-brown)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_var(--color-brown)]"
-                >
-                  <div className="relative h-44 overflow-hidden bg-cream-2">
-                    <img
-                      src={s.photo}
-                      alt={s.name}
-                      className="size-full object-cover"
-                    />
-                    <div className="absolute left-2.5 top-2.5">
-                      <Verified label="Đã thẩm định" />
-                    </div>
-                    {s.urgent && (
-                      <span className="absolute right-2.5 top-2.5 rounded-full border-2 border-brown bg-coral px-2.5 py-0.5 text-xs font-black text-white">
-                        Cần tiếp tế gấp
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex-1 p-5 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between gap-1 text-xs font-bold text-brown-soft">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="size-3.5 text-coral" />
-                          {s.district}
-                        </span>
-                        <span className="flex items-center gap-0.5 text-amber-600">
-                          <Star className="size-3.5 fill-amber-500 text-amber-500" />
-                          {s.rating} ({s.reviews})
-                        </span>
-                      </div>
-
-                      <h3 className="mt-2 font-display text-xl font-extrabold text-brown">
-                        {s.name}
-                      </h3>
-                      <p className="mt-1 line-clamp-2 text-xs font-semibold text-brown-soft">
-                        {s.about}
-                      </p>
-
-                      <div className="mt-3 rounded-xl bg-cream-2/60 p-2.5 text-xs font-bold text-brown flex items-center gap-1.5">
-                        <PawPrint className="size-3.5 text-brown-soft" /> Đang
-                        chăm sóc: <strong>{s.pets} bé</strong>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t-2 border-line flex items-center justify-between">
-                      <a
-                        href={`tel:${s.phone.replace(/\s+/g, "")}`}
-                        className="inline-flex items-center gap-1.5 rounded-xl border-2 border-brown bg-butter px-3 py-1.5 text-xs font-extrabold text-brown transition hover:bg-butter-2"
-                      >
-                        <Phone className="size-3.5" />
-                        {s.phone}
-                      </a>
-                      <Btn
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleNavigate("/shelters")}
-                        className="!p-0 !h-auto !border-0 text-xs font-extrabold text-brown-soft hover:text-brown"
-                      >
-                        Chi tiết →
-                      </Btn>
-                    </div>
-                  </div>
+          {(tab === "shelter" ? displayedShelters : displayedClinics).map((place) => (
+            <PlaceCard
+              key={place.id}
+              p={place}
+              layout="vertical"
+              onOpen={() => handleNavigate(`/${tab === "shelter" ? "shelters" : "clinics"}/${place.id}`)}
+              actions={
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  {"phone" in place && place.phone ? (
+                    <a
+                      href={`tel:${place.phone.replace(/\s+/g, "")}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1.5 rounded-xl border-2 border-brown bg-butter px-3 py-1.5 text-xs font-extrabold text-brown transition hover:bg-butter-2"
+                    >
+                      <Phone className="size-3.5" />
+                      {place.phone}
+                    </a>
+                  ) : <div />}
+                  <Btn
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleNavigate(`/${tab === "shelter" ? "shelters" : "clinics"}/${place.id}`)
+                    }}
+                    className="!p-0 !h-auto !border-0 text-xs font-extrabold text-brown-soft hover:text-brown"
+                  >
+                    Chi tiết →
+                  </Btn>
                 </div>
-              ))
-            : displayedClinics.map((c: Clinic) => (
-                <div
-                  key={c.id}
-                  className="flex flex-col justify-between overflow-hidden rounded-[28px] border-2 border-brown bg-paper shadow-[0_4px_0_var(--color-brown)] transition hover:-translate-y-1 hover:shadow-[0_8px_0_var(--color-brown)]"
-                >
-                  <div className="relative h-44 overflow-hidden bg-cream-2">
-                    <img
-                      src={c.photo}
-                      alt={c.name}
-                      className="size-full object-cover"
-                    />
-                    <div className="absolute left-2.5 top-2.5">
-                      <Badge tone="coral" icon={<Siren className="size-3.5" />}>
-                        CẤP CỨU 24/7
-                      </Badge>
-                    </div>
-                    {c.verified && (
-                      <div className="absolute right-2.5 top-2.5">
-                        <Verified />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 p-5 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between gap-1 text-xs font-bold text-brown-soft">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="size-3.5 text-coral" />
-                          {c.district}
-                        </span>
-                        <span className="flex items-center gap-0.5 text-amber-600">
-                          <Star className="size-3.5 fill-amber-500 text-amber-500" />
-                          {c.rating} ({c.reviews})
-                        </span>
-                      </div>
-
-                      <h3 className="mt-2 font-display text-xl font-extrabold text-brown">
-                        {c.name}
-                      </h3>
-                      <p className="mt-1 line-clamp-1 text-xs font-semibold text-brown-soft">
-                        {c.address}
-                      </p>
-
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        {c.services.slice(0, 3).map((srv, i) => (
-                          <span
-                            key={i}
-                            className="rounded-md bg-sky-soft px-2 py-0.5 text-[11px] font-extrabold text-sky-dark"
-                          >
-                            {srv}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t-2 border-line flex items-center justify-between">
-                      <a
-                        href={`tel:${c.phone.replace(/\s+/g, "")}`}
-                        className="inline-flex items-center gap-1.5 rounded-xl border-2 border-brown bg-coral px-3 py-1.5 text-xs font-extrabold text-white transition hover:bg-coral/90 shadow-[0_2px_0_var(--color-brown)]"
-                      >
-                        <Phone className="size-3.5" />
-                        Gọi cấp cứu
-                      </a>
-                      <span className="text-xs font-black text-sage-2">
-                        {c.hours}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              }
+            />
+          ))}
         </div>
 
         {/* View all button */}

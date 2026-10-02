@@ -431,14 +431,9 @@ export function CaseDetail({ id }: { id: string }) {
               focusKey={c.id}
               showLabels={false}
             />
-            <ol className="mt-3 space-y-1.5 border-l-2 border-line pl-4">
-              {trail.map((t, i) => (
-                <li key={i} className="relative text-sm">
-                  <span className="absolute -left-[22px] top-1.5 size-2.5 rounded-full border-2 border-brown bg-butter" />
-                  <b>{t.t}</b> · {t.note}
-                </li>
-              ))}
-            </ol>
+            <div className="mt-3">
+              <Timeline items={trail.map((t) => ({ at: t.t, text: t.note }))} />
+            </div>
           </Panel>
 
           <Panel title="Timeline case">

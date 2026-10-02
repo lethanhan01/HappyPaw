@@ -21,7 +21,6 @@ import CityMap, {
   type PinType,
   type Sel,
   F0,
-  MapPreview,
   SearchBar,
   TIME_OPTS,
   countFilters,
@@ -53,7 +52,7 @@ import {
   cx,
 } from "@ui"
 import { useMedia } from "@/hooks/useMedia"
-import { CaseCard, CaseCardSkeleton } from "@/components/common"
+import { CaseCard, CaseCardSkeleton, PinDetailCard } from "@/components/common"
 
 export { approxLoc } from "@/features/map"
 
@@ -566,7 +565,7 @@ export default function Explorer({
               >
                 <div className="space-y-3 px-4 pb-6">
                   {sel && (
-                    <MapPreview
+                    <PinDetailCard
                       sel={sel}
                       onClose={() => {
                         setSel(null)
@@ -611,7 +610,7 @@ export default function Explorer({
                 </IconBtn>
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                <MapPreview sel={sel} onClose={() => setSel(null)} />
+                <PinDetailCard sel={sel} display="panel" onClose={() => setSel(null)} />
               </div>
             </div>
           </aside>

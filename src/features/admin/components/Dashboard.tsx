@@ -30,7 +30,8 @@ import {
 import { useApp } from "@/store"
 import { CLINICS, SHELTERS } from "@/constants"
 import CityMap, { MapLegend, type Sel } from "@/features/map"
-import { PetPhoto, Btn } from "@ui"
+import { Btn } from "@ui"
+import { PinDetailCard } from "@/components/common"
 import { useAdmin } from "../store/adminStore"
 import { ABtn, KpiCard, Panel, Title, useCases } from "./AdminCommon"
 import CaseTable from "./CaseTable"
@@ -180,8 +181,6 @@ export default function Dashboard() {
     { name: "Đã giải quyết", v: resolved },
     { name: "Đang mở", v: cases.length - resolved },
   ]
-  const selCase =
-    sel?.kind === "case" ? cases.find((c) => c.id === sel.id) : null
 
   return (
     <div className="min-w-0">
@@ -322,28 +321,26 @@ export default function Dashboard() {
               revealIds={open.map((c) => c.id)}
               controlsClass="!bottom-2 !right-2 scale-90 origin-bottom-right"
             />
-            {selCase && (
-              <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-4rem)] items-center gap-2 rounded-xl border border-brown/40 bg-paper p-2 text-xs shadow">
-                <PetPhoto
-                  src={selCase.photo}
-                  species={selCase.species}
-                  alt={selCase.name}
-                  className="size-10 shrink-0 rounded-lg"
-                />
-                <div className="min-w-0">
-                  <p className="truncate font-bold">
-                    {selCase.id} · {selCase.name}
-                  </p>
-                  <p className="truncate text-brown-soft">{selCase.district}</p>
-                </div>
-                <ABtn
-                  s="xs"
-                  v="dark"
-                  onClick={() => go("/admin/cases/" + selCase.id)}
-                >
-                  Chi tiết
-                </ABtn>
-              </div>
+            {sel && (
+              <PinDetailCard
+                sel={sel}
+                compact
+                onClose={() => setSel(null)}
+                actions={
+                  <ABtn
+                    s="xs"
+                    v="dark"
+                    onClick={() => {
+                      if (sel.kind === "case") go("/admin/cases/" + sel.id)
+                      else if (sel.kind === "shelter" || sel.kind === "clinic")
+                        go("/admin/places?q=" + sel.id)
+                      else go("/admin/risk")
+                    }}
+                  >
+                    Chi tiết
+                  </ABtn>
+                }
+              />
             )}
           </div>
           <MapLegend defaultOpen={false} className="mt-2 !rounded-xl !border" />

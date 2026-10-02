@@ -22,6 +22,7 @@ import {
   Card,
   Chip,
   Empty,
+  FilterBar,
   PageHead,
   Segmented,
   Select,
@@ -139,7 +140,14 @@ export function Directory({ kind }: { kind: Kind }) {
           />
         }
       />
-      <div className="mb-5 grid gap-3 rounded-[24px] border-2 border-line bg-paper p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto_auto]">
+      <FilterBar
+        activeCount={
+          (district ? 1 : 0) + (dist ? 1 : 0) + (rating ? 1 : 0) + (need ? 1 : 0)
+        }
+        onClear={reset}
+        title="Bộ lọc địa điểm"
+        className="mb-4"
+      >
         <Select
           value={district}
           onChange={(e) => setDistrict(e.target.value)}
@@ -175,10 +183,7 @@ export function Directory({ kind }: { kind: Kind }) {
             {kind === "shelter" ? "Đang cần hỗ trợ" : "Đang mở cửa"}
           </Chip>
         </div>
-        <Btn variant="ghost" size="sm" onClick={reset} className="self-center">
-          Xóa lọc
-        </Btn>
-      </div>
+      </FilterBar>
       <p className="mb-3 text-sm font-bold text-brown-soft">
         {list.length} kết quả
       </p>

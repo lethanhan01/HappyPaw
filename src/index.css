@@ -143,6 +143,27 @@ button:disabled { cursor: not-allowed; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
+.dark-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(253, 243, 220, 0.2) transparent;
+}
+.dark-scrollbar:hover {
+  scrollbar-color: rgba(253, 243, 220, 0.4) transparent;
+}
+.dark-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(253, 243, 220, 0.2);
+  border-radius: 9999px;
+}
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(253, 243, 220, 0.4);
+}
+
 .map-grab { cursor: grab; touch-action: none; }
 .map-grab:active { cursor: grabbing; }
 

@@ -114,3 +114,21 @@ export const IconBtn = forwardRef<HTMLButtonElement, IconBtnProps>(
     )
   },
 )
+
+export interface NavBtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  active?: boolean
+}
+
+export const NavBtn = forwardRef<HTMLButtonElement, NavBtnProps>(
+  function NavBtn({ className, type = "button", ...props }, ref) {
+    return (
+      <button
+        ref={ref}
+        type={type}
+        className={className}
+        {...props}
+      />
+    )
+  },
+)
+

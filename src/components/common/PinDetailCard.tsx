@@ -32,6 +32,7 @@ export interface PinDetailCardProps {
   sel: Sel | null
   onClose?: () => void
   display?: "popup" | "panel"
+  compact?: boolean
   actions?: ReactNode
   verified?: boolean
   className?: string
@@ -43,6 +44,7 @@ export function PinDetailCard({
   sel,
   onClose,
   display = "popup",
+  compact,
   actions,
   verified,
   className,
@@ -85,6 +87,39 @@ export function PinDetailCard({
     const hide = c.critical && c.status === "active"
     const urgent = c.status === "active" && (c.critical || c.type === "rescue")
     const taken = c.status === "progress" || c.status === "pending"
+
+    if (compact) {
+      return (
+        <div
+          className={cx(
+            "absolute left-2 top-2 z-10 flex max-w-[calc(100%-2rem)] items-center gap-2.5 rounded-2xl border-2 border-brown bg-paper p-2 text-xs shadow-soft animate-[rise_.15s_both]",
+            className,
+          )}
+        >
+          <PetPhoto
+            src={c.photo}
+            species={c.species}
+            alt={c.name}
+            className="size-11 shrink-0 rounded-xl border border-brown object-cover"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <p className="truncate font-extrabold text-brown">
+                {c.id} · {c.name}
+              </p>
+              <StatusBadge status={c.status} critical={c.critical} type={c.type} />
+            </div>
+            <p className="truncate text-brown-soft font-semibold">{c.district}</p>
+          </div>
+          {actions || (
+            <Btn size="sm" variant="dark" onClick={() => go(`/case/${c.id}`)}>
+              Chi tiết
+            </Btn>
+          )}
+          {CloseBtn}
+        </div>
+      )
+    }
 
     return (
       <div className={cx(shell, className)}>
@@ -192,6 +227,31 @@ export function PinDetailCard({
     const r = data || RISKS.find((x) => x.id === sel.id)
     if (!r) return null
 
+    if (compact) {
+      return (
+        <div
+          className={cx(
+            "absolute left-2 top-2 z-10 flex max-w-[calc(100%-2rem)] items-center gap-2.5 rounded-2xl border-2 border-brown bg-paper p-2 text-xs shadow-soft animate-[rise_.15s_both]",
+            className,
+          )}
+        >
+          <div className="grid size-11 shrink-0 place-items-center rounded-xl border border-plum bg-plum-soft">
+            <Siren className="size-5 text-plum" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-extrabold text-brown">{r.title}</p>
+            <p className="text-xs text-brown-soft font-semibold">Mức độ: {r.severity}</p>
+          </div>
+          {actions || (
+            <Btn size="sm" variant="secondary" onClick={() => go("/safety")}>
+              Chi tiết
+            </Btn>
+          )}
+          {CloseBtn}
+        </div>
+      )
+    }
+
     return (
       <div
         className={cx(
@@ -239,6 +299,43 @@ export function PinDetailCard({
       : CLINICS.find((x) => x.id === sel.id)
   )
   if (!p) return null
+
+  if (compact) {
+    return (
+      <div
+        className={cx(
+          "absolute left-2 top-2 z-10 flex max-w-[calc(100%-2rem)] items-center gap-2.5 rounded-2xl border-2 border-brown bg-paper p-2 text-xs shadow-soft animate-[rise_.15s_both]",
+          className,
+        )}
+      >
+        <PetPhoto
+          src={p.photo}
+          species="Chó"
+          alt={p.name}
+          className="size-11 shrink-0 rounded-xl border border-brown object-cover"
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <p className="truncate font-extrabold text-brown">{p.name}</p>
+            {p.verified && <Verified />}
+          </div>
+          <p className="truncate text-brown-soft font-semibold">{p.district}</p>
+        </div>
+        {actions || (
+          <Btn
+            size="sm"
+            variant="secondary"
+            onClick={() =>
+              go(`/${sel.kind === "shelter" ? "shelters" : "clinics"}/${p.id}`)
+            }
+          >
+            Chi tiết
+          </Btn>
+        )}
+        {CloseBtn}
+      </div>
+    )
+  }
 
   return (
     <div className={cx(shell, className)}>

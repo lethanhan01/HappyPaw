@@ -4,14 +4,10 @@ import {
   Grid,
   Lock,
   Megaphone,
-  RotateCcw,
-  Search,
   ShieldAlert,
   ShieldCheck,
-  SlidersHorizontal,
   Sparkles,
   UserCheck,
-  X,
 } from "lucide-react"
 import { useApp } from "@/store"
 import CityMap, { ME_POS, type Sel } from "@/features/map"
@@ -23,7 +19,7 @@ import {
   Card,
   Check2,
   Field,
-  IconBtn,
+  FilterBar,
   Input,
   Note,
   PageHead,
@@ -35,10 +31,10 @@ import {
   UploadBox,
 } from "@ui"
 import { cx } from "@/lib"
+import { SearchInput } from "@/components/common"
 import { SectionTitle } from "./Shared"
 import { SafetyAlertCard } from "./SafetyAlertCard"
 import { SafetyAlertModal } from "./SafetyAlertModal"
-import { SafetyFilterModal } from "./SafetyFilterModal"
 
 const CATEGORIES: (AlertCategory | "Tất cả")[] = [
   "Tất cả",
@@ -48,6 +44,13 @@ const CATEGORIES: (AlertCategory | "Tất cả")[] = [
   "Điểm đen tai nạn",
   "Tài khoản khả nghi",
   "Khu vực nguy hiểm",
+]
+
+const SEVERITIES: (AlertSeverity | "Tất cả")[] = [
+  "Tất cả",
+  "Khẩn cấp",
+  "Cảnh giác",
+  "Đã khắc phục",
 ]
 
 
@@ -90,7 +93,6 @@ export function Safety() {
 
   // Map selection state
   const [mapSel, setMapSel] = useState<Sel | null>(null)
-  const [filterModalOpen, setFilterModalOpen] = useState(false)
 
   const activeFilterCount = useMemo(() => {
     let count = 0
@@ -248,108 +250,63 @@ export function Safety() {
             ]}
           />
 
-          {/* Quick Keyword Search + Filter Button */}
+          {/* Search Bar */}
           <div className="flex items-center gap-2 flex-1 sm:max-w-md w-full">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-brown-soft z-10" />
-              <Input
-                value={filter.search}
-                onChange={(e) => setFilter({ search: e.target.value })}
-                placeholder="Tìm theo khu vực, bả độc, lừa đảo…"
-                className="pl-10 pr-9 h-11 sm:h-12 rounded-2xl border-2 border-line bg-paper font-bold text-sm text-brown shadow-xs focus:border-brown focus:ring-4 focus:ring-butter/70"
-              />
-              {filter.search && (
-                <IconBtn
-                  label="Xóa tìm kiếm"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setFilter({ search: "" })}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 size-7 text-brown-soft hover:text-brown"
-                >
-                  <X className="size-3.5" />
-                </IconBtn>
-              )}
-            </div>
-
-            {/* Trigger Filter Popup */}
-            <Btn
-              variant={activeFilterCount > 0 ? "primary" : "secondary"}
-              onClick={() => setFilterModalOpen(true)}
-              icon={<SlidersHorizontal className="size-4" />}
-              className={cx(
-                "h-11 sm:h-12 px-3 sm:px-4 shrink-0 rounded-2xl font-extrabold flex items-center gap-1.5 transition",
-                activeFilterCount > 0
-                  ? "border-2 border-brown bg-butter text-brown shadow-[0_2px_0_var(--color-brown)]"
-                  : "border-2 border-line bg-paper text-brown hover:border-brown",
-              )}
-            >
-              <span className="hidden sm:inline">Bộ lọc</span>
-              {activeFilterCount > 0 && (
-                <span className="grid size-5 place-items-center rounded-full bg-coral text-[10px] font-black text-white">
-                  {activeFilterCount}
-                </span>
-              )}
-            </Btn>
+            <SearchInput
+              mode="simple"
+              value={filter.search}
+              onChange={(val) => setFilter({ search: val })}
+              placeholder="Tìm theo khu vực, bả độc, lừa đảo…"
+              className="flex-1"
+            />
           </div>
+
         </div>
 
-        {/* Active Filter Tags Row (Shown only when filters are active) */}
-        {activeFilterCount > 0 && (
-          <div className="flex flex-wrap items-center gap-2 pt-1 animate-[rise_.2s_both]">
-            <span className="text-xs font-extrabold text-brown-soft">Đang lọc:</span>
-            {filter.category !== "Tất cả" && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-brown/30 bg-butter/70 px-3 py-1 text-xs font-bold text-brown">
-                <span>{filter.category}</span>
-                <IconBtn
-                  label="Bỏ lọc danh mục"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setFilter({ category: "Tất cả" })}
-                  className="!size-4 p-0 text-brown-soft hover:text-brown"
-                >
-                  <X className="size-3" />
-                </IconBtn>
-              </span>
-            )}
-            {filter.district !== "Tất cả" && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-brown/30 bg-butter/70 px-3 py-1 text-xs font-bold text-brown">
-                <span>Quận: {filter.district}</span>
-                <IconBtn
-                  label="Bỏ lọc quận"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setFilter({ district: "Tất cả" })}
-                  className="!size-4 p-0 text-brown-soft hover:text-brown"
-                >
-                  <X className="size-3" />
-                </IconBtn>
-              </span>
-            )}
-            {filter.severity !== "Tất cả" && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-brown/30 bg-butter/70 px-3 py-1 text-xs font-bold text-brown">
-                <span>Mức: {filter.severity}</span>
-                <IconBtn
-                  label="Bỏ lọc mức độ"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setFilter({ severity: "Tất cả" })}
-                  className="!size-4 p-0 text-brown-soft hover:text-brown"
-                >
-                  <X className="size-3" />
-                </IconBtn>
-              </span>
-            )}
-            <Btn
-              size="sm"
-              variant="ghost"
-              onClick={resetFilter}
-              icon={<RotateCcw className="size-3" />}
-              className="h-7 px-2 text-xs font-extrabold text-coral hover:bg-coral-soft/50 ml-auto"
-            >
-              Xóa tất cả
-            </Btn>
-          </div>
-        )}
+        {/* Unified FilterBar */}
+        <FilterBar
+          activeCount={activeFilterCount}
+          onClear={resetFilter}
+          title="Bộ lọc cảnh báo an toàn"
+          className="w-full"
+        >
+          <Select
+            value={filter.category}
+            onChange={(e) => setFilter({ category: e.target.value as AlertCategory | "Tất cả" })}
+            aria-label="Danh mục cảnh báo"
+          >
+            <option value="Tất cả">Danh mục: Tất cả</option>
+            {CATEGORIES.filter((c) => c !== "Tất cả").map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </Select>
+          <Select
+            value={filter.district}
+            onChange={(e) => setFilter({ district: e.target.value })}
+            aria-label="Quận / Huyện"
+          >
+            <option value="Tất cả">Quận: Tất cả</option>
+            {DISTRICTS.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </Select>
+          <Select
+            value={filter.severity}
+            onChange={(e) => setFilter({ severity: e.target.value as AlertSeverity | "Tất cả" })}
+            aria-label="Mức độ nghiêm trọng"
+          >
+            <option value="Tất cả">Mức độ: Tất cả</option>
+            {SEVERITIES.filter((s) => s !== "Tất cả").map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </Select>
+        </FilterBar>
       </div>
 
       {/* Main Content Area based on View Mode */}
@@ -481,16 +438,6 @@ export function Safety() {
               }
             : undefined
         }
-      />
-
-      {/* Safety Filter Popup Modal */}
-      <SafetyFilterModal
-        open={filterModalOpen}
-        onClose={() => setFilterModalOpen(false)}
-        filter={filter}
-        onApply={(draft) => setFilter(draft)}
-        onReset={resetFilter}
-        alerts={alerts}
       />
     </div>
   )
