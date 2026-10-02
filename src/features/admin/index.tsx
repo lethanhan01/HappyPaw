@@ -837,7 +837,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
 
               <div className="mt-2 space-y-1">
                 {notes.map((n) => (
-                  <button
+                  <NavBtn
                     key={n.to}
                     type="button"
                     onClick={() => {
@@ -862,7 +862,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
                         {n.count}
                       </span>
                     )}
-                  </button>
+                  </NavBtn>
                 ))}
               </div>
             </div>
