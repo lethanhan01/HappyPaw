@@ -39,27 +39,8 @@ export function RatingModal({
   )
 }
 
-export function SectionTitle({
-  children,
-  sub,
-  right,
-}: {
-  children: ReactNode
-  sub?: string
-  right?: ReactNode
-}) {
-  return (
-    <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-      <div>
-        <h2 className="font-display text-2xl font-extrabold leading-tight">
-          {children}
-        </h2>
-        {sub && <p className="text-sm text-brown-soft">{sub}</p>}
-      </div>
-      {right}
-    </div>
-  )
-}
+export { SectionTitle } from "@ui"
+
 
 /** Simple elbow route from the user's position to a target point on the map. */
 export const routeTo = (x: number, y: number) => [
@@ -69,7 +50,7 @@ export const routeTo = (x: number, y: number) => [
 ]
 
 /** Deterministic pseudo QR drawn with SVG cells. */
-export function PseudoQR({ seed, size = 168 }: { seed: string size?: number }) {
+export function PseudoQR({ seed, size = 168 }: { seed: string; size?: number }) {
   const N = 25
   let h = 2166136261
   for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0

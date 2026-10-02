@@ -16,7 +16,7 @@ import {
 import { parsePath } from "@/lib"
 import { useApp } from "@/store"
 import type { User } from "@/types"
-import { Avatar, Badge, StatusBadge, Verified, Btn } from "@ui"
+import { Avatar, Badge, StatusBadge, Verified, Btn, Empty } from "@ui"
 import {
   setAdmin,
   setUserStatus,
@@ -34,7 +34,6 @@ import {
   SearchBox,
   SevChip,
   Title,
-  UserCell,
   typeLabel,
   useCases,
 } from "./AdminCommon"
@@ -71,7 +70,7 @@ function useUserActions() {
     },
   }
 }
-function UserActions({ u, view = true }: { u: User view?: boolean }) {
+function UserActions({ u, view = true }: { u: User; view?: boolean }) {
   const { go } = useApp()
   const a = useUserActions()
   return (
@@ -453,9 +452,12 @@ export function UserVerification() {
       />
       {queue.length === 0 ? (
         <Panel>
-          <p className="py-8 text-center font-bold">
-            Không còn tài khoản nào chờ xác minh.
-          </p>
+          <div className="py-8">
+            <Empty
+              title="Không còn tài khoản chờ xác minh"
+              body="Tất cả tài khoản gửi yêu cầu xác minh CCCD đã được xử lý."
+            />
+          </div>
         </Panel>
       ) : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

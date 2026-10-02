@@ -30,7 +30,7 @@ interface StoredSession {
   accountId?: string
 }
 
-const readSession = (): { auth: Auth account: Account | null } => {
+const readSession = (): { auth: Auth; account: Account | null } => {
   // 1. Kiểm tra query param ghi đè (?as=user hoặc ?as=admin)
   try {
     const urlAs = new URLSearchParams(window.location.search).get("as")

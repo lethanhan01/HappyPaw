@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react"
 import { cx } from "@/lib/cn"
 
-export type BtnVariant = "primary" | "secondary" | "soft" | "danger" | "ghost" | "dark" | "outline"
+export type BtnVariant = "primary" | "secondary" | "soft" | "danger" | "ghost" | "dark" | "outline" | "success"
 export type BtnSize = "sm" | "md" | "lg"
 
 const btnV: Record<BtnVariant, string> = {
@@ -14,6 +14,8 @@ const btnV: Record<BtnVariant, string> = {
   soft: "bg-cream-2 text-brown border-transparent hover:bg-peach active:scale-[0.98]",
   danger:
     "bg-coral text-white border-brown shadow-[0_4px_0_var(--color-brown)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none",
+  success:
+    "bg-sage-2 text-white border-brown shadow-[0_4px_0_var(--color-brown)] hover:-translate-y-0.5 hover:bg-sage-hover active:translate-y-1 active:shadow-none",
   dark: "bg-ink text-white border-ink hover:bg-brown active:scale-[0.98]",
   ghost:
     "bg-transparent text-brown border-transparent hover:bg-brown/10 active:scale-[0.98]",
@@ -112,3 +114,21 @@ export const IconBtn = forwardRef<HTMLButtonElement, IconBtnProps>(
     )
   },
 )
+
+export interface NavBtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  active?: boolean
+}
+
+export const NavBtn = forwardRef<HTMLButtonElement, NavBtnProps>(
+  function NavBtn({ className, type = "button", ...props }, ref) {
+    return (
+      <button
+        ref={ref}
+        type={type}
+        className={className}
+        {...props}
+      />
+    )
+  },
+)
+

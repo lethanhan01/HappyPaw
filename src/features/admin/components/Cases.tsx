@@ -15,7 +15,7 @@ import { useApp } from "@/store"
 import { SHELTERS, CLINICS, timeAgo, userById } from "@/constants"
 import type { Status } from "@/types"
 import CityMap from "@/features/map"
-import { Badge, Btn, PetPhoto, StatusBadge, Verified } from "@ui"
+import { Badge, Btn, PetPhoto, StatusBadge, Verified, Timeline } from "@ui"
 import { useAdmin, toggleIn } from "../store/adminStore"
 import CaseTable from "./CaseTable"
 import {
@@ -51,7 +51,6 @@ const DATE_OPTS: [string, string][] = [
 ]
 
 export function CaseList({ path }: { path: string }) {
-  const { go } = useApp()
   const cases = useCases()
   const risk = useRisk()
   const { query } = parsePath(path)
@@ -228,7 +227,7 @@ export function CaseList({ path }: { path: string }) {
   )
 }
 
-function Row({ k, children }: { k: string children: React.ReactNode }) {
+function Row({ k, children }: { k: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-3 border-b border-line/60 py-1.5 text-sm last:border-0">
       <dt className="w-32 shrink-0 text-brown-soft">{k}</dt>
@@ -316,9 +315,9 @@ export function CaseDetail({ id }: { id: string }) {
         }
       />
 
-      <div className="mb-4 flex flex-wrap gap-2 rounded-2xl border border-line bg-paper p-3">
+      <div className="mb-4 grid grid-cols-2 gap-2 rounded-[24px] border-2 border-line bg-paper p-3 shadow-soft sm:flex sm:flex-wrap">
         <ABtn
-          v="ok"
+          v="success"
           icon={<Check />}
           disabled={c.status === "resolved"}
           onClick={() => setStatus("resolved", `Đã duyệt case ${c.id}`)}
@@ -339,6 +338,7 @@ export function CaseDetail({ id }: { id: string }) {
           Reject
         </ABtn>
         <ABtn
+          v="outline"
           icon={<FileSearch />}
           onClick={() => {
             toggleIn("evidenceCases", c.id, true)
@@ -431,28 +431,13 @@ export function CaseDetail({ id }: { id: string }) {
               focusKey={c.id}
               showLabels={false}
             />
-            <ol className="mt-3 space-y-1.5 border-l-2 border-line pl-4">
-              {trail.map((t, i) => (
-                <li key={i} className="relative text-sm">
-                  <span className="absolute -left-[22px] top-1.5 size-2.5 rounded-full border-2 border-brown bg-butter" />
-                  <b>{t.t}</b> · {t.note}
-                </li>
-              ))}
-            </ol>
+            <div className="mt-3">
+              <Timeline items={trail.map((t) => ({ at: t.t, text: t.note }))} />
+            </div>
           </Panel>
 
           <Panel title="Timeline case">
-            <ol className="space-y-2 border-l-2 border-line pl-4">
-              {caseTimeline(c).map((t, i) => (
-                <li key={i} className="relative text-sm">
-                  <span className="absolute -left-[22px] top-1.5 size-2.5 rounded-full bg-brown" />
-                  <span className="mr-2 text-xs font-extrabold text-brown-soft">
-                    {t.at}
-                  </span>
-                  {t.text}
-                </li>
-              ))}
-            </ol>
+            <Timeline items={caseTimeline(c)} />
           </Panel>
         </div>
 

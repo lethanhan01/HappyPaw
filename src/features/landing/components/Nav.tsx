@@ -8,7 +8,7 @@ interface LandingNavProps {
   onOpenSos?: () => void
 }
 
-export default function LandingNav({ onOpenSos }: LandingNavProps) {
+export default function LandingNav({ onOpenSos: _onOpenSos }: LandingNavProps) {
   const { auth, account, go } = useApp()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const me = account || USERS[0]

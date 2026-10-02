@@ -1,6 +1,7 @@
 import { useAuth } from "./authStore"
 import { useNav } from "./navStore"
 import { useCasesStore } from "./casesStore"
+import { useSafetyStore } from "./safetyStore"
 import { useUI } from "./uiStore"
 
 // AppProvider & named hooks
@@ -9,6 +10,7 @@ export { useAuth, type Auth, type AuthCtx } from "./authStore"
 export { useNav, type GoOptions } from "./navStore"
 export { type Account } from "@/constants/mock/accounts"
 export { useCasesStore } from "./casesStore"
+export { useSafetyStore, type SafetyViewMode } from "./safetyStore"
 export { useUI, type Toast } from "./uiStore"
 
 // STATUS_META — giữ ở đây vì nhiều component import từ store
@@ -22,6 +24,7 @@ export function useApp() {
   const auth = useAuth()
   const nav = useNav()
   const cases = useCasesStore()
+  const safety = useSafetyStore()
   const ui = useUI()
-  return { ...auth, ...nav, ...cases, ...ui }
+  return { ...auth, ...nav, ...cases, ...safety, ...ui }
 }

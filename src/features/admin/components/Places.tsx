@@ -14,7 +14,8 @@ import {
 } from "lucide-react"
 import { useApp } from "@/store"
 import { DISTRICTS, userById } from "@/constants"
-import { Badge, Modal, Stars, UploadBox, Toggle } from "@ui"
+import { Badge, Modal, Stars, UploadBox, Toggle, Empty } from "@ui"
+import { PlaceCard } from "@/components/common"
 import {
   jitterXY,
   patchRating,
@@ -466,7 +467,26 @@ function PlaceCRUD({ kind }: { kind: "shelter" | "clinic" }) {
           <option value="rejected">Từ chối</option>
         </ASelect>
       </div>
-      <DataTable cols={cols} rows={rows} rowKey={(p) => p.id} />
+      <DataTable
+        cols={cols}
+        rows={rows}
+        rowKey={(p) => p.id}
+        card={(p) => (
+          <PlaceCard
+            p={p as any}
+            actions={
+              <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <ABtn s="xs" icon={<Pencil />} onClick={() => setEdit({ p })}>
+                  Sửa
+                </ABtn>
+                <ABtn s="xs" v="danger" icon={<Trash2 />} onClick={() => setDel(p)}>
+                  Xóa
+                </ABtn>
+              </div>
+            }
+          />
+        )}
+      />
       <Modal
         open={!!edit}
         onClose={() => setEdit(null)}
@@ -525,9 +545,12 @@ export function PlaceVerification() {
       />
       {queue.length === 0 ? (
         <Panel>
-          <p className="py-8 text-center font-bold">
-            Tất cả địa điểm đã được xử lý.
-          </p>
+          <div className="py-8">
+            <Empty
+              title="Tất cả địa điểm đã được xử lý"
+              body="Không còn mái ấm hoặc phòng khám nào đang chờ xác minh danh tính."
+            />
+          </div>
         </Panel>
       ) : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

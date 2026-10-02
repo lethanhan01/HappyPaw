@@ -12,8 +12,16 @@ import {
   Check,
   Upload as UploadIcon,
   X,
+  Star,
+  Maximize2,
+  Plus,
+  Play,
+  Loader2,
 } from "lucide-react"
 import { cx } from "@/lib/cn"
+import { useUI } from "@/store/uiStore"
+import { validateMediaFile, compressImageToBase64, isVideoUrl } from "@/lib/imageUtils"
+import { LightboxModal } from "./LightboxModal"
 
 /* ---------- Forms ---------- */
 export function Field({
@@ -135,7 +143,7 @@ export function Segmented<T extends string>({
 }: {
   value: T
   onChange: (v: T) => void
-  options: { v: T label: ReactNode }[]
+  options: { v: T; label: ReactNode }[]
   className?: string
 }) {
   return (
@@ -255,7 +263,19 @@ export function Check2({
   )
 }
 
-/* ---------- Upload (simulated) ---------- */
+/* ---------- Upload (Enhanced with Base64, Grid, Primary Selector, Lightbox, Clipboard Paste) ---------- */
+export interface UploadBoxProps {
+  label: string
+  hint?: string
+  max?: number
+  files: string[]
+  onChange: (f: string[]) => void
+  video?: boolean
+  primaryIndex?: number
+  onPrimaryChange?: (index: number) => void
+  disabled?: boolean
+}
+
 export function UploadBox({
   label,
   hint,
@@ -263,87 +283,306 @@ export function UploadBox({
   files,
   onChange,
   video,
-}: {
-  label: string
-  hint?: string
-  max?: number
-  files: string[]
-  onChange: (f: string[]) => void
-  video?: boolean
-}) {
+  primaryIndex,
+  onPrimaryChange,
+  disabled,
+}: UploadBoxProps) {
   const [over, setOver] = useState(false)
+  const [processing, setProcessing] = useState(false)
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null)
   const ref = useRef<HTMLInputElement>(null)
-  const add = (list: FileList | null) => {
-    if (!list) return
-    const urls = Array.from(list)
-      .slice(0, max - files.length)
-      .map((f) => URL.createObjectURL(f))
-    onChange([...files, ...urls])
+  const { toast } = useUI()
+
+  const add = async (list: FileList | File[] | null) => {
+    if (!list || list.length === 0 || disabled) return
+    const fileArray = Array.from(list)
+
+    const availableSlots = max - files.length
+    if (availableSlots <= 0) {
+      toast(`Đã đạt số lượng tối đa (${max} tệp).`, "warn")
+      return
+    }
+
+    if (fileArray.length > availableSlots) {
+      toast(`Chỉ nhận thêm tối đa ${availableSlots} tệp.`, "warn")
+    }
+
+    const filesToProcess = fileArray.slice(0, availableSlots)
+    const validFiles: File[] = []
+
+    for (const f of filesToProcess) {
+      const check = validateMediaFile(f, video)
+      if (!check.valid) {
+        toast(check.error || "Tệp không hợp lệ.", "err")
+      } else {
+        validFiles.push(f)
+      }
+    }
+
+    if (validFiles.length === 0) {
+      if (ref.current) ref.current.value = ""
+      return
+    }
+
+    setProcessing(true)
+    try {
+      const processedUrls: string[] = []
+      for (const f of validFiles) {
+        if (f.type.startsWith("video/") || f.name.match(/\.(mp4|webm|mov|m4v)$/i)) {
+          processedUrls.push(URL.createObjectURL(f))
+        } else {
+          const base64 = await compressImageToBase64(f, 1280, 0.82)
+          processedUrls.push(base64)
+        }
+      }
+      onChange([...files, ...processedUrls])
+      toast(`Đã tải lên ${processedUrls.length} tệp thành công!`, "ok")
+    } catch (err) {
+      console.error("Lỗi xử lý tệp:", err)
+      toast("Không thể xử lý một số tệp tải lên.", "err")
+    } finally {
+      setProcessing(false)
+      // Reset input value so re-uploading the same file always works!
+      if (ref.current) ref.current.value = ""
+    }
+  }
+
+  const removeFile = (idx: number) => {
+    const nextFiles = files.filter((_, i) => i !== idx)
+    onChange(nextFiles)
+    if (onPrimaryChange && primaryIndex !== undefined) {
+      if (primaryIndex === idx) {
+        onPrimaryChange(0)
+      } else if (primaryIndex > idx) {
+        onPrimaryChange(primaryIndex - 1)
+      }
+    }
+  }
+
+  // Handle Clipboard Paste (Ctrl+V)
+  const handlePaste = (e: React.ClipboardEvent) => {
+    if (!e.clipboardData || disabled) return
+    const items = Array.from(e.clipboardData.items)
+    const pastedFiles = items
+      .filter((it) => it.type.startsWith("image/") || (video && it.type.startsWith("video/")))
+      .map((it) => it.getAsFile())
+      .filter(Boolean) as File[]
+
+    if (pastedFiles.length > 0) {
+      e.preventDefault()
+      e.stopPropagation()
+      add(pastedFiles)
+    }
   }
 
   return (
-    <div>
-      <div
-        onDragOver={(e) => {
-          e.preventDefault()
-          setOver(true)
-        }}
-        onDragLeave={() => setOver(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setOver(false)
-          add(e.dataTransfer.files)
-        }}
-        onClick={() => ref.current?.click()}
-        className={cx(
-          "flex cursor-pointer flex-col items-center gap-1 rounded-3xl border-[2.5px] border-dashed px-4 py-6 text-center transition",
-          over
-            ? "border-brown bg-butter/50"
-            : "border-brown/40 bg-cream-2/60 hover:border-brown hover:bg-cream-2",
-        )}
-      >
-        <span className="grid size-12 place-items-center rounded-2xl border-2 border-brown bg-butter">
-          <UploadIcon className="size-6" />
-        </span>
-        <span className="text-[15px] font-extrabold">{label}</span>
-        <span className="text-sm text-brown-soft">
-          {hint || "Kéo thả hoặc bấm để chọn tệp"}
-        </span>
-        <input
-          ref={ref}
-          type="file"
-          hidden
-          multiple
-          accept={video ? "image/*,video/*" : "image/*"}
-          onChange={(e) => add(e.target.files)}
-        />
-      </div>
-      {files.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {files.map((f, i) => (
-            <span
-              key={f}
-              className="relative size-16 overflow-hidden rounded-2xl border-2 border-brown bg-cream-2"
-            >
-              <img
-                src={f}
-                alt={`Tệp ${i + 1}`}
-                className="size-full object-cover"
-              />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onChange(files.filter((x) => x !== f))
-                }}
-                aria-label="Xóa"
-                className="absolute right-0.5 top-0.5 grid size-5 place-items-center rounded-full bg-brown text-white"
-              >
-                <X className="size-3" />
-              </button>
+    <div className="w-full space-y-3" onPaste={handlePaste} tabIndex={0}>
+      <input
+        ref={ref}
+        type="file"
+        hidden
+        multiple={max > 1}
+        accept={video ? "image/*,video/*" : "image/*"}
+        onChange={(e) => add(e.target.files)}
+        disabled={disabled}
+      />
+
+      {/* When 0 files: Large inviting Retro-Warm Dropzone */}
+      {files.length === 0 ? (
+        <div
+          onDragOver={(e) => {
+            e.preventDefault()
+            if (!disabled) setOver(true)
+          }}
+          onDragLeave={() => setOver(false)}
+          onDrop={(e) => {
+            e.preventDefault()
+            setOver(false)
+            if (!disabled) add(e.dataTransfer.files)
+          }}
+          onClick={() => !disabled && ref.current?.click()}
+          className={cx(
+            "flex cursor-pointer flex-col items-center gap-2 rounded-3xl border-[2.5px] border-dashed px-5 py-8 text-center transition-all duration-200 select-none",
+            over
+              ? "border-brown bg-butter/50 ring-4 ring-butter/40 scale-[1.01]"
+              : "border-brown/40 bg-cream-2/60 hover:border-brown hover:bg-cream-2/90 shadow-sm",
+            disabled && "cursor-not-allowed opacity-60",
+          )}
+        >
+          <span className="grid size-14 place-items-center rounded-2xl border-2 border-brown bg-butter shadow-soft animate-[pop_.2s_ease-out]">
+            {processing ? (
+              <Loader2 className="size-7 animate-spin text-brown" />
+            ) : (
+              <UploadIcon className="size-7 text-brown" />
+            )}
+          </span>
+          <div className="space-y-0.5">
+            <span className="block text-[15px] font-extrabold text-brown">
+              {processing ? "Đang xử lý & tối ưu tệp..." : label}
             </span>
-          ))}
+            <span className="block text-xs font-semibold text-brown-soft">
+              {hint || "Kéo thả, bấm để chọn tệp hoặc ấn phím Ctrl + V để dán"}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] font-bold text-brown-soft">
+            <span className="rounded-full bg-cream-2 px-2.5 py-0.5 border border-line">
+              Tối đa {max} {video ? "ảnh/video" : "ảnh"}
+            </span>
+            <span className="rounded-full bg-cream-2 px-2.5 py-0.5 border border-line">
+              {video ? "Ảnh ≤ 10MB · Video ≤ 50MB" : "≤ 10MB / ảnh"}
+            </span>
+          </div>
+        </div>
+      ) : (
+        /* When >= 1 files: Dynamic Responsive Grid */
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs font-bold text-brown-soft px-1">
+            <span>
+              Đã tải lên <b className="text-brown">{files.length}</b>/{max} tệp
+            </span>
+            <span>Bấm vào ảnh để xem phóng to</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {files.map((f, i) => {
+              const isVid = isVideoUrl(f)
+              const isPrimary = onPrimaryChange && (primaryIndex === i || (primaryIndex === undefined && i === 0))
+
+              return (
+                <div
+                  key={f + i}
+                  onClick={() => setPreviewIndex(i)}
+                  className={cx(
+                    "group relative aspect-square overflow-hidden rounded-2xl border-2 bg-cream-2 cursor-pointer transition-all duration-200 shadow-soft hover:shadow-md",
+                    isPrimary
+                      ? "border-brown ring-4 ring-butter"
+                      : "border-brown hover:border-brown",
+                  )}
+                >
+                  {isVid ? (
+                    <div className="relative size-full bg-brown/10 flex items-center justify-center">
+                      <video
+                        src={f}
+                        className="size-full object-cover"
+                        preload="metadata"
+                      />
+                      <span className="absolute inset-0 grid place-items-center bg-brown/30">
+                        <span className="grid size-10 place-items-center rounded-full bg-butter border-2 border-brown text-brown shadow">
+                          <Play className="size-5 fill-brown ml-0.5" />
+                        </span>
+                      </span>
+                    </div>
+                  ) : (
+                    <img
+                      src={f}
+                      alt={`Tệp ${i + 1}`}
+                      className="size-full object-cover transition duration-300 group-hover:scale-105"
+                    />
+                  )}
+
+                  {/* Primary Badge or Select Button */}
+                  {onPrimaryChange && (
+                    <div className="absolute left-1.5 top-1.5 z-10">
+                      {isPrimary ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-brown bg-butter px-2 py-0.5 text-[11px] font-extrabold text-brown shadow-sm">
+                          <Star className="size-3 fill-brown" />
+                          Ảnh chính
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onPrimaryChange(i)
+                          }}
+                          title="Đặt làm ảnh đại diện"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity grid size-6 place-items-center rounded-full border border-brown bg-cream text-brown shadow-sm hover:bg-butter"
+                        >
+                          <Star className="size-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Top-right Actions: Zoom & Delete */}
+                  <div className="absolute right-1.5 top-1.5 z-10 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setPreviewIndex(i)
+                      }}
+                      title="Xem phóng to"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity grid size-6 place-items-center rounded-full border border-brown bg-cream text-brown shadow-sm hover:bg-butter"
+                    >
+                      <Maximize2 className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        removeFile(i)
+                      }}
+                      title="Xóa tệp này"
+                      className="grid size-6 place-items-center rounded-full border border-brown bg-coral text-white shadow-sm hover:bg-coral-dark active:scale-90 transition-transform"
+                    >
+                      <X className="size-3.5 stroke-[2.5]" />
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+
+            {/* "+ Add More" card if files.length < max */}
+            {files.length < max && (
+              <div
+                onClick={() => !disabled && !processing && ref.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  if (!disabled) setOver(true)
+                }}
+                onDragLeave={() => setOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  setOver(false)
+                  if (!disabled) add(e.dataTransfer.files)
+                }}
+                className={cx(
+                  "aspect-square rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 active:scale-95 select-none",
+                  over
+                    ? "border-brown bg-butter/50 ring-4 ring-butter/30"
+                    : "border-brown/40 bg-cream-2/50 hover:border-brown hover:bg-butter/40",
+                  processing && "opacity-75 cursor-wait",
+                )}
+              >
+                {processing ? (
+                  <Loader2 className="size-7 animate-spin text-brown" />
+                ) : (
+                  <span className="grid size-10 place-items-center rounded-xl border border-brown bg-butter text-brown shadow-sm">
+                    <Plus className="size-5 stroke-[2.5]" />
+                  </span>
+                )}
+                <span className="text-xs font-extrabold text-brown">
+                  {processing ? "Đang xử lý..." : "Thêm ảnh"}
+                </span>
+                <span className="text-[10px] font-bold text-brown-soft">
+                  (hoặc Ctrl + V)
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       )}
+
+      {/* Lightbox Modal */}
+      <LightboxModal
+        open={previewIndex !== null}
+        onClose={() => setPreviewIndex(null)}
+        items={files}
+        initialIndex={previewIndex ?? 0}
+        title={label}
+      />
     </div>
   )
 }
+

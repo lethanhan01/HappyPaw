@@ -3,7 +3,6 @@ import {
   Bell,
   Bookmark,
   Home,
-  Map as MapIcon,
   PawPrint,
   Plus,
   Users,

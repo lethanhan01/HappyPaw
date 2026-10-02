@@ -2,7 +2,6 @@ import {
   Map,
   Cpu,
   ShieldCheck,
-  HeartHandshake,
   CheckCircle2,
   ArrowRight,
 } from "lucide-react"
@@ -55,21 +54,6 @@ const FEATURES = [
     action: "Khám phá mạng lưới",
     route: "/shelters",
   },
-  {
-    id: "adoption",
-    title: "Nhận nuôi Văn minh & Chống Gian lận",
-    desc: "Xây dựng quy trình nhận nuôi an toàn, yêu cầu phỏng vấn cam kết và lưu trữ nhật ký sức khỏe, ngăn chặn tình trạng trục lợi thương mại.",
-    badge: "VÌ PHÚC LỢI ĐỘNG VẬT",
-    tone: "sage",
-    icon: HeartHandshake,
-    highlights: [
-      "Xác minh danh tính người nhận nuôi nghiêm ngặt",
-      "Theo dõi phục hồi sức khỏe sau khi về nhà mới",
-      "Hệ thống báo cáo tài khoản có dấu hiệu gian lận",
-    ],
-    action: "Tìm hiểu nhận nuôi",
-    route: "/community",
-  },
 ]
 
 export default function CoreFeatures() {
@@ -114,15 +98,14 @@ export default function CoreFeatures() {
               <div>
                 <div className="flex items-center justify-between gap-3">
                   <span
-                    className={`inline-grid size-14 place-items-center rounded-2xl border-2 border-brown shadow-soft ${
-                      f.tone === "sky"
+                    className={`inline-grid size-14 place-items-center rounded-2xl border-2 border-brown shadow-soft ${f.tone === "sky"
                         ? "bg-sky-soft text-sky-2"
                         : f.tone === "plum"
                           ? "bg-plum-soft text-plum"
                           : f.tone === "butter"
                             ? "bg-butter text-brown"
                             : "bg-sage-soft text-sage-2"
-                    }`}
+                      }`}
                   >
                     <f.icon className="size-7" />
                   </span>

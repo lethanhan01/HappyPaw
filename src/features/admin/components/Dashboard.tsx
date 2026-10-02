@@ -30,14 +30,15 @@ import {
 import { useApp } from "@/store"
 import { CLINICS, SHELTERS } from "@/constants"
 import CityMap, { MapLegend, type Sel } from "@/features/map"
-import { PetPhoto, Btn } from "@ui"
+import { Btn } from "@ui"
+import { PinDetailCard } from "@/components/common"
 import { useAdmin } from "../store/adminStore"
 import { ABtn, KpiCard, Panel, Title, useCases } from "./AdminCommon"
 import CaseTable from "./CaseTable"
 
 const C = {
   brown: "#6b4128",
-  butter: "#e3c23a",
+  butter: "#f6e04d",
   sage: "#4f7f3e",
   soft: "#e6d3ad",
   coral: "#d8503f",
@@ -149,7 +150,7 @@ export default function Dashboard() {
     },
     {
       n: pending || 2,
-      dotColor: "bg-amber-500",
+      dotColor: "bg-orange",
       t: "rescue chờ xác minh",
       to: "/admin/verification",
     },
@@ -180,8 +181,6 @@ export default function Dashboard() {
     { name: "Đã giải quyết", v: resolved },
     { name: "Đang mở", v: cases.length - resolved },
   ]
-  const selCase =
-    sel?.kind === "case" ? cases.find((c) => c.id === sel.id) : null
 
   return (
     <div className="min-w-0">
@@ -192,10 +191,10 @@ export default function Dashboard() {
 
       <section
         aria-label="Cần xử lý ngay"
-        className="mb-4 rounded-2xl border border-coral/40 bg-coral-soft/40"
+        className="mb-4 rounded-[24px] border-2 border-coral bg-coral-soft/50 p-1 shadow-soft"
       >
         <header className="flex items-center justify-between gap-2 px-3 pt-3 md:px-4">
-          <h2 className="font-display text-[15px] font-bold">Cần xử lý ngay</h2>
+          <h2 className="font-display text-[15px] font-bold text-brown">Cần xử lý ngay</h2>
           <ABtn
             s="sm"
             v="dark"
@@ -226,7 +225,7 @@ export default function Dashboard() {
         </ul>
       </section>
 
-      <div className="-mx-3 mb-4 flex snap-x snap-mandatory scroll-px-3 gap-2.5 overflow-x-auto px-3 pb-1 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 md:pb-0 xl:grid-cols-7 [&>*]:w-[44%] [&>*]:shrink-0 [&>*]:snap-start sm:[&>*]:w-[30%] md:[&>*]:w-auto">
+      <div className="-mx-3 mb-4 flex snap-x snap-mandatory scroll-px-3 gap-2.5 overflow-x-auto px-3 pb-1 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 md:pb-0 xl:grid-cols-7 [&>*]:w-[65%] [&>*]:shrink-0 [&>*]:snap-start sm:[&>*]:w-[42%] md:[&>*]:w-auto">
         <KpiCard
           icon={<PawPrint />}
           label="Tổng case"
@@ -322,28 +321,26 @@ export default function Dashboard() {
               revealIds={open.map((c) => c.id)}
               controlsClass="!bottom-2 !right-2 scale-90 origin-bottom-right"
             />
-            {selCase && (
-              <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-4rem)] items-center gap-2 rounded-xl border border-brown/40 bg-paper p-2 text-xs shadow">
-                <PetPhoto
-                  src={selCase.photo}
-                  species={selCase.species}
-                  alt={selCase.name}
-                  className="size-10 shrink-0 rounded-lg"
-                />
-                <div className="min-w-0">
-                  <p className="truncate font-bold">
-                    {selCase.id} · {selCase.name}
-                  </p>
-                  <p className="truncate text-brown-soft">{selCase.district}</p>
-                </div>
-                <ABtn
-                  s="xs"
-                  v="dark"
-                  onClick={() => go("/admin/cases/" + selCase.id)}
-                >
-                  Chi tiết
-                </ABtn>
-              </div>
+            {sel && (
+              <PinDetailCard
+                sel={sel}
+                compact
+                onClose={() => setSel(null)}
+                actions={
+                  <ABtn
+                    s="xs"
+                    v="dark"
+                    onClick={() => {
+                      if (sel.kind === "case") go("/admin/cases/" + sel.id)
+                      else if (sel.kind === "shelter" || sel.kind === "clinic")
+                        go("/admin/places?q=" + sel.id)
+                      else go("/admin/risk")
+                    }}
+                  >
+                    Chi tiết
+                  </ABtn>
+                }
+              />
             )}
           </div>
           <MapLegend defaultOpen={false} className="mt-2 !rounded-xl !border" />

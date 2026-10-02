@@ -8,10 +8,7 @@ import {
   USERS,
 } from "@/constants"
 import type {
-  Clinic,
   Report,
-  Risk,
-  Shelter,
   User,
   Verify,
   PlaceStatus,
@@ -332,7 +329,7 @@ export const jitterXY = (district: string): [number, number] => {
     y + Math.round((Math.random() - 0.5) * 40),
   ]
 }
-export const DUP_PHONES: Record<string, { name: string note: string }[]> = {
+export const DUP_PHONES: Record<string, { name: string; note: string }[]> = {
   u14: [
     { name: "tai.duong2", note: "Tạo 02/2026 - bị khóa" },
     { name: "Dương Tài Official", note: "Tạo 03/2026 - 1 report" },

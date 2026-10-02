@@ -21,9 +21,10 @@ import {
   Link2,
   Sparkles,
   Siren,
-  PawPrint,
   CheckCircle2,
   FlaskConical,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 import UserShell from "@/layouts/UserShell"
 import { useApp } from "@/store"
@@ -34,6 +35,7 @@ import type { Case } from "@/types"
 import {
   Badge,
   Btn,
+  IconBtn,
   Card,
   Check2,
   Confetti,
@@ -51,6 +53,7 @@ import {
   MatchBadge,
   Segmented,
   Paw,
+  LightboxModal,
 } from "@ui"
 import {
   MismatchCard,
@@ -131,10 +134,13 @@ export function CaseDetail({
   const [accept, setAccept] = useState(false)
   const [seen, setSeen] = useState(false)
   const [ok, setOk] = useState(false)
+  const [photoIdx, setPhotoIdx] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
   useEffect(() => {
     if (query.help === "1") setAccept(true)
   }, [query.help])
   if (!c) return <NotFound />
+  const allPhotos = c.photos && c.photos.length > 0 ? c.photos : [c.photo]
   const mine = c.assignee === me
   const isOwner = c.reporter === me
   const hidden = c.critical && c.status === "active" && !mine
@@ -297,28 +303,98 @@ export function CaseDetail({
 
         <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
           <div className="space-y-5">
-            <div className="relative overflow-hidden rounded-[32px] border-2 border-brown bg-cream-2 shadow-soft">
-              <PetPhoto
-                src={c.photo}
-                species={c.species}
-                alt={`${c.species} ${c.color} tên ${c.name}`}
-                className="aspect-[4/3] w-full"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brown/80 to-transparent p-5 text-white">
-                <p className="text-sm font-bold opacity-90">{typeLabel(c)}</p>
-                <h1 className="font-display text-4xl font-extrabold leading-none">
-                  {c.name.toUpperCase()}
-                </h1>
+            {/* Hero photo with Gallery */}
+            <div className="space-y-3">
+              <div
+                onClick={() => setLightboxOpen(true)}
+                className="group relative cursor-pointer overflow-hidden rounded-[32px] border-2 border-brown bg-cream-2 shadow-soft select-none"
+              >
+                <PetPhoto
+                  src={allPhotos[photoIdx] || c.photo}
+                  species={c.species}
+                  alt={`${c.species} ${c.color} tên ${c.name}`}
+                  className="aspect-[4/3] w-full transition duration-300 group-hover:scale-[1.02]"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brown/85 via-brown/40 to-transparent p-5 text-white">
+                  <p className="text-sm font-bold opacity-90">{typeLabel(c)}</p>
+                  <h1 className="font-display text-4xl font-extrabold leading-none">
+                    {c.name.toUpperCase()}
+                  </h1>
+                </div>
+
+                {/* Left/Right Arrows on Hero if > 1 photos */}
+                {allPhotos.length > 1 && (
+                  <>
+                    <IconBtn
+                      label="Ảnh trước"
+                      variant="ghost"
+                      size="md"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setPhotoIdx((i) => (i > 0 ? i - 1 : allPhotos.length - 1))
+                      }}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 !size-10 !rounded-full !border-2 !border-brown !bg-cream/90 !text-brown shadow hover:!bg-butter active:scale-95 transition"
+                    >
+                      <ChevronLeft className="size-6" />
+                    </IconBtn>
+                    <IconBtn
+                      label="Ảnh tiếp theo"
+                      variant="ghost"
+                      size="md"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setPhotoIdx((i) => (i < allPhotos.length - 1 ? i + 1 : 0))
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 !size-10 !rounded-full !border-2 !border-brown !bg-cream/90 !text-brown shadow hover:!bg-butter active:scale-95 transition"
+                    >
+                      <ChevronRight className="size-6" />
+                    </IconBtn>
+                    <span className="absolute right-4 bottom-5 z-10 rounded-full border border-brown bg-butter px-2.5 py-0.5 text-xs font-extrabold text-brown shadow">
+                      {photoIdx + 1} / {allPhotos.length}
+                    </span>
+                  </>
+                )}
+
+                <div className="absolute right-4 top-4 flex gap-2">
+                  <SaveBtn id={c.id} />
+                </div>
+                {c.match && (
+                  <div className="absolute left-4 top-4">
+                    <MatchBadge v={c.match} />
+                  </div>
+                )}
               </div>
-              <div className="absolute right-4 top-4 flex gap-2">
-                <SaveBtn id={c.id} />
-              </div>
-              {c.match && (
-                <div className="absolute left-4 top-4">
-                  <MatchBadge v={c.match} />
+
+              {/* Thumbnail Strip underneath when multiple photos */}
+              {allPhotos.length > 1 && (
+                <div className="no-scrollbar flex items-center gap-2 overflow-x-auto py-1">
+                  {allPhotos.map((p, idx) => (
+                    <Btn
+                      key={p + idx}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setPhotoIdx(idx)}
+                      className={cx(
+                        "relative !size-16 shrink-0 overflow-hidden !rounded-2xl !p-0 !border-2 transition-all duration-200",
+                        photoIdx === idx
+                          ? "!border-brown ring-4 ring-butter scale-105"
+                          : "!border-line opacity-70 hover:opacity-100",
+                      )}
+                    >
+                      <img src={p} alt="" className="size-full object-cover" />
+                    </Btn>
+                  ))}
                 </div>
               )}
             </div>
+
+            <LightboxModal
+              open={lightboxOpen}
+              onClose={() => setLightboxOpen(false)}
+              items={allPhotos}
+              initialIndex={photoIdx}
+              title={`${c.species} ${c.name}`}
+            />
 
             <Card className="p-5">
               <h2 className="mb-3 font-display text-xl font-extrabold">
@@ -660,7 +736,7 @@ export function CaseDetail({
 export function UpdateLocation({ id }: { id: string }) {
   const { getCase, updateCase, back, go, toast } = useApp()
   const c = getCase(id)
-  const [pin, setPin] = useState<{ x: number y: number } | null>(null)
+  const [pin, setPin] = useState<{ x: number; y: number } | null>(null)
   const [time, setTime] = useState("20:40")
   const [desc, setDesc] = useState("")
   const [files, setFiles] = useState<string[]>([])

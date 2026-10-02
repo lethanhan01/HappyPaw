@@ -10,7 +10,7 @@ import {
 import { useApp } from "@/store"
 import { SHELTERS, timeAgo, userById } from "@/constants"
 import type { Case } from "@/types"
-import { Badge, Note, PetPhoto } from "@ui"
+import { Badge, Note, PetPhoto, Empty } from "@ui"
 import { addReport, toggleIn, useAdmin } from "../store/adminStore"
 import {
   ABtn,
@@ -87,6 +87,41 @@ function ProofCard({ c }: { c: Case }) {
     },
   )
   const rescuer = userById(c.assignee)
+
+  const cmpItems = [
+    {
+      label: "Nơi bàn giao",
+      left: shelter.name,
+      right: conf
+        ? shelter.name
+        : mis
+          ? "Không ghi nhận bé này"
+          : "Chưa xác nhận",
+      st: rowSt(),
+    },
+    {
+      label: "Pet",
+      left: `${c.species} · ${c.color}`,
+      right: conf
+        ? `${c.species} · ${c.color}`
+        : mis
+          ? `${c.species} · khác đặc điểm`
+          : "—",
+      st: rowSt(),
+    },
+    {
+      label: "Thời điểm",
+      left: when,
+      right: conf ? when : "—",
+      st: rowSt(),
+    },
+    {
+      label: "Tình trạng",
+      left: c.condition || "Ổn định",
+      right: conf ? "Đã tiếp nhận, sức khỏe ổn" : "—",
+      st: rowSt(),
+    },
+  ]
 
   return (
     <Panel>
@@ -187,10 +222,70 @@ function ProofCard({ c }: { c: Case }) {
         </div>
 
         <div>
-          <div className="overflow-x-auto rounded-xl border border-line">
+          {/* Mobile Comparison Cards (zero horizontal scroll) */}
+          <div className="space-y-2.5 md:hidden">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-brown-soft">
+              Đối chiếu dữ liệu
+            </p>
+            {cmpItems.map((item, idx) => {
+              const statusMeta = {
+                match: {
+                  icon: <CheckCircle2 className="size-3.5 text-sage-2" />,
+                  text: "Khớp",
+                  color: "text-sage-2 bg-sage-soft",
+                },
+                mismatch: {
+                  icon: <AlertTriangle className="size-3.5 text-coral" />,
+                  text: "Không khớp",
+                  color: "text-coral bg-coral-soft",
+                },
+                wait: {
+                  icon: <Clock className="size-3.5 text-orange" />,
+                  text: "Chờ phản hồi",
+                  color: "text-orange bg-orange-soft",
+                },
+              }[item.st]
+
+              return (
+                <div
+                  key={idx}
+                  className="rounded-xl border border-line bg-paper p-3 text-xs"
+                >
+                  <div className="mb-2 flex items-center justify-between border-b border-line/60 pb-1.5">
+                    <span className="font-extrabold uppercase text-brown-soft">
+                      {item.label}
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-bold ${statusMeta.color}`}
+                    >
+                      {statusMeta.icon}
+                      {statusMeta.text}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[12.5px]">
+                    <div>
+                      <span className="block font-semibold text-brown-soft">
+                        Người cứu hộ gửi:
+                      </span>
+                      <span className="font-bold text-brown">{item.left}</span>
+                    </div>
+                    <div>
+                      <span className="block font-semibold text-brown-soft">
+                        Mái ấm phản hồi:
+                      </span>
+                      <span className="font-bold text-brown">{item.right}</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Desktop Comparison Table */}
+          <div className="hidden overflow-x-auto rounded-xl border border-line md:block">
             <table className="w-full min-w-[420px] text-left text-[13px]">
               <thead>
-                <tr className="bg-cream-2/70 text-[11px] uppercase text-brown-soft">
+                <tr className="bg-cream-2/70 text-[11px] uppercase text-brown-soft font-extrabold">
                   <th className="p-2" />
                   <th className="p-2">Dữ liệu người cứu hộ gửi</th>
                   <th className="p-2">Xác nhận từ mái ấm</th>
@@ -198,42 +293,15 @@ function ProofCard({ c }: { c: Case }) {
                 </tr>
               </thead>
               <tbody className="px-2 [&_td:first-child]:pl-2 [&_td:last-child]:pr-2">
-                <CmpRow
-                  label="Nơi bàn giao"
-                  left={shelter.name}
-                  right={
-                    conf
-                      ? shelter.name
-                      : mis
-                        ? "Không ghi nhận bé này"
-                        : "Chưa xác nhận"
-                  }
-                  st={rowSt()}
-                />
-                <CmpRow
-                  label="Pet"
-                  left={`${c.species} · ${c.color}`}
-                  right={
-                    conf
-                      ? `${c.species} · ${c.color}`
-                      : mis
-                        ? `${c.species} · khác đặc điểm`
-                        : "—"
-                  }
-                  st={rowSt()}
-                />
-                <CmpRow
-                  label="Thời điểm"
-                  left={when}
-                  right={conf ? when : "—"}
-                  st={rowSt()}
-                />
-                <CmpRow
-                  label="Tình trạng"
-                  left={c.condition || "Ổn định"}
-                  right={conf ? "Đã tiếp nhận, sức khỏe ổn" : "—"}
-                  st={rowSt()}
-                />
+                {cmpItems.map((item, idx) => (
+                  <CmpRow
+                    key={idx}
+                    label={item.label}
+                    left={item.left}
+                    right={item.right}
+                    st={item.st}
+                  />
+                ))}
               </tbody>
             </table>
           </div>
@@ -260,9 +328,9 @@ function ProofCard({ c }: { c: Case }) {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-2 border-t border-line pt-3 sm:flex-row sm:flex-wrap">
+      <div className="mt-4 grid grid-cols-1 gap-2 border-t border-line pt-3 sm:flex sm:flex-wrap">
         <ABtn
-          v="ok"
+          v="success"
           icon={<CheckCircle2 />}
           onClick={() => {
             updateCase(c.id, { status: "resolved" })
@@ -274,6 +342,7 @@ function ProofCard({ c }: { c: Case }) {
           Xác nhận cứu hộ
         </ABtn>
         <ABtn
+          v="outline"
           icon={<FilePlus2 />}
           onClick={() => {
             setProof(c.id, { needMore: true })
@@ -327,17 +396,13 @@ export default function Verification() {
       </div>
       {queue.length === 0 ? (
         <Panel>
-          <div className="flex flex-col items-center gap-2 py-10 text-center">
-            <CheckCircle2 className="size-10 text-sage-2" />
-            <h3 className="font-display text-lg font-extrabold">
-              Không còn case nào chờ xác minh
-            </h3>
-            <p className="text-sm text-brown-soft">
-              Các case mới sẽ xuất hiện khi người cứu hộ gửi bằng chứng.
-            </p>
-            <ABtn onClick={() => go("/admin/cases?status=resolved")}>
-              Xem case đã giải quyết
-            </ABtn>
+          <div className="py-8">
+            <Empty
+              title="Không còn case nào chờ xác minh"
+              body="Tất cả ca cứu hộ đã được đối chiếu bằng chứng hoàn tất. Các case mới sẽ xuất hiện khi người cứu hộ gửi bằng chứng."
+              cta="Xem case đã giải quyết"
+              onCta={() => go("/admin/cases?status=resolved")}
+            />
           </div>
         </Panel>
       ) : (
