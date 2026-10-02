@@ -37,7 +37,7 @@ import CaseTable from "./CaseTable"
 
 const C = {
   brown: "#6b4128",
-  butter: "#e3c23a",
+  butter: "#f6e04d",
   sage: "#4f7f3e",
   soft: "#e6d3ad",
   coral: "#d8503f",
@@ -149,7 +149,7 @@ export default function Dashboard() {
     },
     {
       n: pending || 2,
-      dotColor: "bg-amber-500",
+      dotColor: "bg-orange",
       t: "rescue chờ xác minh",
       to: "/admin/verification",
     },
@@ -192,10 +192,10 @@ export default function Dashboard() {
 
       <section
         aria-label="Cần xử lý ngay"
-        className="mb-4 rounded-2xl border border-coral/40 bg-coral-soft/40"
+        className="mb-4 rounded-[24px] border-2 border-coral bg-coral-soft/50 p-1 shadow-soft"
       >
         <header className="flex items-center justify-between gap-2 px-3 pt-3 md:px-4">
-          <h2 className="font-display text-[15px] font-bold">Cần xử lý ngay</h2>
+          <h2 className="font-display text-[15px] font-bold text-brown">Cần xử lý ngay</h2>
           <ABtn
             s="sm"
             v="dark"
@@ -226,7 +226,7 @@ export default function Dashboard() {
         </ul>
       </section>
 
-      <div className="-mx-3 mb-4 flex snap-x snap-mandatory scroll-px-3 gap-2.5 overflow-x-auto px-3 pb-1 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 md:pb-0 xl:grid-cols-7 [&>*]:w-[44%] [&>*]:shrink-0 [&>*]:snap-start sm:[&>*]:w-[30%] md:[&>*]:w-auto">
+      <div className="-mx-3 mb-4 flex snap-x snap-mandatory scroll-px-3 gap-2.5 overflow-x-auto px-3 pb-1 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 md:pb-0 xl:grid-cols-7 [&>*]:w-[65%] [&>*]:shrink-0 [&>*]:snap-start sm:[&>*]:w-[42%] md:[&>*]:w-auto">
         <KpiCard
           icon={<PawPrint />}
           label="Tổng case"

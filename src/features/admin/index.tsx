@@ -36,8 +36,8 @@ import {
   Building2,
   ShieldQuestion,
 } from "lucide-react"
-import { parsePath, cx } from "@/lib"
-import { useApp } from "@/store"
+import { parsePath, cx } from "@lib"
+import { useApp } from "@store"
 import { Logo, Btn, IconBtn, Input } from "@ui"
 import { USERS } from "@/constants"
 import { MOCK_ADMIN_ACCOUNT } from "@/constants/mock/accounts"
@@ -255,7 +255,7 @@ function Sidebar({
     <div className="flex h-full flex-col bg-ink text-cream">
       <div
         className={cx(
-          "flex h-14 shrink-0 items-center gap-1.5 border-b border-white/10 px-3",
+          "flex h-14 shrink-0 items-center gap-1.5 border-b border-cream/15 px-3",
           slim && "justify-center",
         )}
       >
@@ -269,7 +269,7 @@ function Sidebar({
           />
         </div>
         {!slim && (
-          <span className="shrink-0 rounded bg-white/10 px-1.5 py-0.5 font-display text-[10px] font-bold text-butter uppercase tracking-wider">
+          <span className="shrink-0 rounded bg-cream/15 px-1.5 py-0.5 font-display text-[10px] font-bold text-butter uppercase tracking-wider">
             Admin
           </span>
         )}
@@ -282,9 +282,9 @@ function Sidebar({
           <div key={gi} className="mb-3">
             {g.title &&
               (slim ? (
-                <div className="mx-3 mb-1 border-t border-white/10" />
+                <div className="mx-3 mb-1 border-t border-cream/15" />
               ) : (
-                <p className="mb-1 px-3 text-[10.5px] font-bold uppercase tracking-[0.12em] text-cream/50">
+                <p className="mb-1 px-3 text-[10.5px] font-bold uppercase tracking-[0.12em] text-cream/60">
                   {g.title}
                 </p>
               ))}
@@ -305,11 +305,11 @@ function Sidebar({
                     onNav()
                   }}
                   className={cx(
-                    "mb-0.5 flex h-auto min-h-11 w-full items-center justify-start gap-2.5 rounded-lg px-3 py-1.5 text-left text-[13.5px] font-semibold transition lg:min-h-9",
+                    "mb-0.5 flex h-auto min-h-11 w-full items-center justify-start gap-2.5 rounded-xl px-3 py-2 text-left text-[13.5px] font-semibold transition lg:min-h-9 lg:py-1.5",
                     slim && "justify-center px-0",
                     act
-                      ? "bg-butter text-brown font-bold"
-                      : "text-cream/80 hover:bg-white/10 hover:text-white",
+                      ? "bg-butter text-brown font-black shadow-[0_2px_0_var(--color-brown)]"
+                      : "text-cream/80 hover:bg-cream/10 hover:text-white",
                   )}
                 >
                   {it.icon}
@@ -317,7 +317,7 @@ function Sidebar({
                   {!slim && bd > 0 && (
                     <span
                       className={cx(
-                        "rounded-full px-1.5 text-[11px] font-extrabold",
+                        "rounded-full px-1.5 text-[11px] font-black",
                         act ? "bg-brown text-butter" : "bg-coral text-white",
                       )}
                     >
@@ -334,7 +334,7 @@ function Sidebar({
         <Btn
           variant="ghost"
           onClick={onToggle}
-          className="hidden h-10 shrink-0 items-center justify-center gap-2 border-t border-white/10 text-xs font-bold text-cream/70 hover:text-white lg:flex"
+          className="hidden h-10 shrink-0 items-center justify-center gap-2 border-t border-cream/15 text-xs font-bold text-cream/70 hover:text-white lg:flex"
           aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
         >
           {collapsed ? (
@@ -351,7 +351,13 @@ function Sidebar({
   )
 }
 
-function GlobalSearch() {
+function GlobalSearch({
+  autoFocus,
+  onClose,
+}: {
+  autoFocus?: boolean
+  onClose?: () => void
+}) {
   const { go } = useApp()
   const cases = useCases()
   const { users } = useAdmin()
@@ -380,12 +386,14 @@ function GlobalSearch() {
     go(to)
     setOpen(false)
     setQ("")
+    onClose?.()
   }
   return (
     <div ref={ref} className="relative min-w-0 flex-1 md:max-w-md">
       <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brown-soft" />
       <Input
         size="sm"
+        autoFocus={autoFocus}
         value={q}
         onChange={(e) => {
           setQ(e.target.value)
@@ -442,6 +450,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   const cases = useCases()
   const [bell, setBell] = useState(false)
   const [menu, setMenu] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const pendingRescue = cases.filter((c) => c.status === "pending").length
   const newReports = reports.filter((r) => r.status === "Mới").length
   const suspicious = users.filter(
@@ -466,12 +475,32 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
     },
   ]
   const cr = crumbs(path)
+
+  if (mobileSearchOpen) {
+    return (
+      <header className="sticky top-0 z-40 flex min-h-12 items-center gap-2 border-b border-line bg-cream/95 px-2.5 py-1.5 backdrop-blur-sm md:px-5">
+        <GlobalSearch
+          autoFocus
+          onClose={() => setMobileSearchOpen(false)}
+        />
+        <IconBtn
+          variant="ghost"
+          label="Đóng tìm kiếm"
+          onClick={() => setMobileSearchOpen(false)}
+          className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:hidden"
+        >
+          <X className="size-5" />
+        </IconBtn>
+      </header>
+    )
+  }
+
   return (
     <header className="sticky top-0 z-40 flex min-h-12 items-center gap-x-2 md:gap-x-3 border-b border-line bg-cream/95 px-2.5 py-1.5 backdrop-blur-sm md:px-5">
       <IconBtn
         variant="ghost"
+        label="Mở menu điều hướng"
         onClick={onMenu}
-        aria-label="Mở menu"
         className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:size-9 lg:hidden"
       >
         <Menu className="size-5" />
@@ -501,15 +530,25 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
         ))}
       </nav>
       <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 md:flex-none">
-        <GlobalSearch />
+        <div className="hidden md:block">
+          <GlobalSearch />
+        </div>
+        <IconBtn
+          variant="ghost"
+          label="Tìm kiếm toàn hệ thống"
+          onClick={() => setMobileSearchOpen(true)}
+          className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper md:hidden"
+        >
+          <Search className="size-5" />
+        </IconBtn>
         <div className="relative">
           <IconBtn
             variant="ghost"
+            label={`Thông báo (${total})`}
             onClick={() => {
               setBell(!bell)
               setMenu(false)
             }}
-            aria-label={`Thông báo (${total})`}
             className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-paper hover:border-brown md:size-9"
           >
             <Bell className="size-[18px]" />
@@ -545,11 +584,11 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
         <div className="relative">
           <IconBtn
             variant="ghost"
+            label="Menu quản trị viên"
             onClick={() => {
               setMenu(!menu)
               setBell(false)
             }}
-            aria-label="Menu quản trị viên"
             className="grid size-11 shrink-0 place-items-center rounded-full border border-brown bg-ink font-display text-sm font-bold text-butter md:size-9"
           >
             AD
@@ -656,9 +695,9 @@ export default function AdminApp({ path }: { path: string }) {
             <Sidebar collapsed={false} drawer onNav={() => setDrawer(false)} />
             <IconBtn
               variant="ghost"
+              label="Đóng menu"
               onClick={() => setDrawer(false)}
-              aria-label="Đóng menu"
-              className="!absolute right-2 top-1.5 grid size-11 place-items-center rounded-lg text-cream hover:bg-white/10"
+              className="!absolute right-2 top-1.5 grid size-11 place-items-center rounded-lg text-cream hover:bg-cream/15"
             >
               <X className="size-5" />
             </IconBtn>

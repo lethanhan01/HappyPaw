@@ -219,7 +219,7 @@ export default function RiskPage() {
         <div className="min-w-0">
           <div className="relative overflow-hidden rounded-2xl border-2 border-line">
             <CityMap
-              className="h-[420px] lg:h-[560px]"
+              className="h-[340px] sm:h-[420px] lg:h-[560px]"
               risks={circles}
               selected={sel}
               onSelect={(s) => {
@@ -396,8 +396,8 @@ export default function RiskPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setDel(r)}
-                        aria-label={`Xóa ${r.title}`}
-                        className="size-7 text-coral hover:bg-coral-soft"
+                        label={`Xóa ${r.title}`}
+                        className="size-8 text-coral hover:bg-coral-soft"
                       >
                         <Trash2 className="size-4" />
                       </IconBtn>

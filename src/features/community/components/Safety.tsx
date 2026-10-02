@@ -15,9 +15,9 @@ import {
 } from "lucide-react"
 import { useApp } from "@/store"
 import CityMap, { ME_POS, type Sel } from "@/features/map"
-import { DISTRICTS, REASONS, USERS } from "@/constants"
+import { DISTRICTS, DISTRICT_XY, REASONS, USERS } from "@/constants"
 import type { Risk } from "@/types"
-import type { AlertCategory, AlertSeverity, SafetyAlertStory } from "@/types/safety"
+import type { AlertCategory, AlertSeverity, SafetyAlertStory, SafetyViewMode } from "@/types/safety"
 import {
   Btn,
   Card,
@@ -554,6 +554,10 @@ export function SafetyReport({
       severity,
       district,
       address: address.trim(),
+      coordinates: {
+        x: DISTRICT_XY[district]?.[0] || 450,
+        y: DISTRICT_XY[district]?.[1] || 340,
+      },
       excerpt,
       fullStory: fullStory.trim(),
       photos,

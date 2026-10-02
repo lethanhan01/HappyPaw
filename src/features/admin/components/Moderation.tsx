@@ -305,7 +305,7 @@ export function ReportQueue() {
                 placeholder="Ghi chú nội bộ…"
               />
             </FormRow>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:flex-wrap">
               <ABtn icon={<X />} onClick={() => act(cur, "dismiss")}>
                 Dismiss
               </ABtn>
@@ -329,7 +329,7 @@ export function ReportQueue() {
                       cur.severity === "Critical" || cur.severity === "High"
                         ? "Khẩn cấp"
                         : "Cảnh giác",
-                    district: reported?.district || "Đống Đa",
+                    district: reported?.area || "Đống Đa",
                     address: `Liên quan tài khoản ${reported?.name || "khả nghi"}`,
                     excerpt:
                       cur.note || `Báo cáo về hành vi ${cur.reason} từ người dùng.`,
@@ -511,7 +511,7 @@ function FraudDetail({ uid }: { uid: string }) {
           </>
         }
       />
-      <div className="mb-4 flex flex-wrap gap-2 rounded-2xl border-2 border-line bg-paper p-3">
+      <div className="mb-4 grid grid-cols-2 gap-2 rounded-[24px] border-2 border-line bg-paper p-3 shadow-soft sm:flex sm:flex-wrap">
         <ABtn
           icon={<X />}
           onClick={() => setSt("Đã bỏ qua", "Đã bỏ qua hồ sơ điều tra")}

@@ -160,7 +160,7 @@ export default function MapManagement({ path }: { path: string }) {
         <div className="min-w-0">
           <div className="overflow-hidden rounded-2xl border-2 border-line">
             <CityMap
-              className="h-[460px] lg:h-[600px]"
+              className="h-[340px] sm:h-[460px] lg:h-[600px]"
               cases={mapCases}
               shelters={mapShelters}
               clinics={mapClinics}
@@ -215,8 +215,8 @@ export default function MapManagement({ path }: { path: string }) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setSel(null)}
-                    aria-label="Bỏ chọn"
-                    className="size-7"
+                    label="Bỏ chọn"
+                    className="size-8"
                   >
                     <X className="size-4" />
                   </IconBtn>

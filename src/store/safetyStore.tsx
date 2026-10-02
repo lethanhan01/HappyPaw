@@ -186,6 +186,10 @@ export function SafetyProvider({ children }: { children: ReactNode }) {
       severity,
       district,
       address,
+      coordinates: {
+        x: DISTRICT_XY[district]?.[0] || 450,
+        y: DISTRICT_XY[district]?.[1] || 340,
+      },
       excerpt,
       fullStory,
       photos: photos || [],

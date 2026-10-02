@@ -15,6 +15,8 @@ export interface AlertTimelineItem {
   author: string
 }
 
+export type SafetyViewMode = "feed" | "map"
+
 export interface SafetyAlertStory {
   id: string
   title: string

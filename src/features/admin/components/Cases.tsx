@@ -315,9 +315,9 @@ export function CaseDetail({ id }: { id: string }) {
         }
       />
 
-      <div className="mb-4 flex flex-wrap gap-2 rounded-2xl border border-line bg-paper p-3">
+      <div className="mb-4 grid grid-cols-2 gap-2 rounded-[24px] border-2 border-line bg-paper p-3 shadow-soft sm:flex sm:flex-wrap">
         <ABtn
-          v="ok"
+          v="success"
           icon={<Check />}
           disabled={c.status === "resolved"}
           onClick={() => setStatus("resolved", `Đã duyệt case ${c.id}`)}
@@ -338,6 +338,7 @@ export function CaseDetail({ id }: { id: string }) {
           Reject
         </ABtn>
         <ABtn
+          v="outline"
           icon={<FileSearch />}
           onClick={() => {
             toggleIn("evidenceCases", c.id, true)

@@ -53,7 +53,7 @@ export type FraudStatus = "Đang điều tra" | "Theo dõi" | "Hạn chế" | "�
 
 export interface AdminState {
   users: User[]
-  reports: Report & { adminNote?: string }[]
+  reports: (Report & { adminNote?: string })[]
   blacklist: BlackRec[]
   risks: ARisk[]
   shelters: AShelter[]

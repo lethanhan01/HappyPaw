@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 import { useApp } from "@/store"
 import { DISTRICTS, userById } from "@/constants"
-import { Badge, Modal, Stars, UploadBox, Toggle } from "@ui"
+import { Badge, Modal, Stars, UploadBox, Toggle, Empty } from "@ui"
 import {
   jitterXY,
   patchRating,
@@ -525,9 +525,12 @@ export function PlaceVerification() {
       />
       {queue.length === 0 ? (
         <Panel>
-          <p className="py-8 text-center font-bold">
-            Tất cả địa điểm đã được xử lý.
-          </p>
+          <div className="py-8">
+            <Empty
+              title="Tất cả địa điểm đã được xử lý"
+              body="Không còn mái ấm hoặc phòng khám nào đang chờ xác minh danh tính."
+            />
+          </div>
         </Panel>
       ) : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

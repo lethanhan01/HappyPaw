@@ -12,6 +12,7 @@ import {
   AlertCircle,
   AlertTriangle,
   ArrowDown,
+  ArrowLeft,
   ArrowUp,
   ChevronsUpDown,
   Info,
@@ -19,22 +20,28 @@ import {
   OctagonAlert,
   Search,
   SlidersHorizontal,
+  TrendingDown,
+  TrendingUp,
   X,
 } from "lucide-react"
-import { useApp } from "@/store"
+import { useApp } from "@store"
 import type { Case, Report } from "@/types"
 import { userById } from "@/constants"
 import {
   Avatar,
   Badge,
-  Modal,
   Btn,
+  Card,
+  Empty,
+  Field,
   IconBtn,
   Input,
+  Modal,
   Select,
   Textarea,
+  type BtnVariant,
 } from "@ui"
-import { cx } from "@/lib"
+import { cx } from "@lib"
 import { useAdmin } from "../store/adminStore"
 
 /* ---------- layout primitives ---------- */
@@ -54,19 +61,19 @@ export function Panel({
   return (
     <section
       className={cx(
-        "min-w-0 rounded-2xl border border-line bg-paper",
+        "min-w-0 rounded-[24px] border-2 border-line bg-paper shadow-soft",
         className,
       )}
     >
       {(title || right) && (
-        <header className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3.5">
-          <h2 className="font-display text-[15px] font-bold leading-tight">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-line/40 px-4 py-3 sm:px-5 sm:py-4">
+          <h2 className="font-display text-base font-extrabold text-brown leading-tight">
             {title}
           </h2>
           {right}
         </header>
       )}
-      <div className={cx(pad ? "p-4" : "", title && pad ? "pt-3" : "")}>
+      <div className={cx(pad ? "p-3.5 sm:p-5" : "")}>
         {children}
       </div>
     </section>
@@ -85,22 +92,23 @@ export function Title({
   back?: () => void
 }) {
   return (
-    <div className="mb-3 flex flex-wrap items-end md:mb-4 justify-between gap-3">
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
         {back && (
           <Btn
             variant="ghost"
             size="sm"
             onClick={back}
-            className="mb-0.5 inline h-auto p-0 text-xs font-extrabold text-brown-soft hover:text-brown"
+            icon={<ArrowLeft className="size-4" />}
+            className="mb-1.5 h-auto p-0 text-xs font-extrabold text-brown-soft hover:text-brown"
           >
-            ← Quay lại
+            Quay lại
           </Btn>
         )}
-        <h1 className="font-display text-xl font-bold leading-tight md:text-2xl">
+        <h1 className="font-display text-xl font-black text-brown leading-tight md:text-2xl">
           {title}
         </h1>
-        {sub && <p className="text-sm text-brown-soft">{sub}</p>}
+        {sub && <p className="mt-0.5 text-sm text-brown-soft font-semibold">{sub}</p>}
       </div>
       {right && (
         <div className="flex flex-wrap items-center gap-2">{right}</div>
@@ -109,16 +117,8 @@ export function Title({
   )
 }
 
-type V = "dark" | "primary" | "outline" | "danger" | "ghost" | "soft" | "ok"
-const bv: Record<V, string> = {
-  dark: "bg-ink text-white border-ink hover:bg-brown",
-  primary: "bg-butter text-brown border-brown hover:bg-butter-2",
-  outline: "bg-paper text-brown border-line hover:border-brown",
-  danger: "bg-coral text-white border-coral hover:bg-coral-hover",
-  ghost: "bg-transparent text-brown border-transparent hover:bg-brown/10",
-  soft: "bg-cream-2 text-brown border-transparent hover:bg-peach",
-  ok: "bg-sage-2 text-white border-sage-2 hover:bg-sage-hover",
-}
+type V = "dark" | "primary" | "outline" | "danger" | "ghost" | "soft" | "ok" | "success"
+
 export function ABtn({
   v = "outline",
   s = "md",
@@ -132,9 +132,9 @@ export function ABtn({
   icon?: ReactNode
 }) {
   const bSize = s === "md" ? "md" : "sm"
-  const bVar =
-    v === "ok"
-      ? "ghost"
+  const bVar: BtnVariant =
+    v === "ok" || v === "success"
+      ? "success"
       : v === "primary"
         ? "primary"
         : v === "dark"
@@ -153,11 +153,9 @@ export function ABtn({
       icon={icon}
       {...p}
       className={cx(
-        "shrink-0 border-[1.5px]",
-        s === "xs" && "h-11 px-2.5 text-xs md:h-7 md:px-2 [&_svg]:size-3.5",
-        s === "sm" && "h-11 px-3 text-[13px] md:h-8",
-        s === "md" && "h-11 px-3.5 text-sm md:h-9",
-        bv[v],
+        s === "xs" && "min-h-11 sm:min-h-8 px-2.5 text-xs md:h-8 md:px-2 [&_svg]:size-3.5",
+        s === "sm" && "min-h-11 sm:min-h-9 px-3.5 text-sm",
+        s === "md" && "min-h-11 px-4 text-[15px]",
         className,
       )}
     >
@@ -166,13 +164,11 @@ export function ABtn({
   )
 }
 
-const inp =
-  "h-11 w-full md:h-9 rounded-xl border-[1.5px] border-line bg-white px-3 text-sm font-semibold text-brown placeholder:font-medium placeholder:text-brown/45 focus:border-brown focus:outline-none focus:ring-2 focus:ring-butter"
 export const AInput = ({
   className,
   ...p
 }: Omit<InputHTMLAttributes<HTMLInputElement>, "size">) => (
-  <Input size="sm" {...p} className={cx(inp, className)} />
+  <Input size="sm" {...p} className={cx("bg-paper", className)} />
 )
 export const ASelect = ({
   className,
@@ -182,7 +178,7 @@ export const ASelect = ({
   <Select
     size="sm"
     {...p}
-    className={cx(inp, "cursor-pointer pr-2", className)}
+    className={cx("bg-paper", className)}
   >
     {children}
   </Select>
@@ -194,7 +190,7 @@ export const ATextarea = ({
   <Textarea
     size="sm"
     {...p}
-    className={cx(inp, "h-auto min-h-20 py-2", className)}
+    className={cx("bg-paper min-h-20", className)}
   />
 )
 export function FormRow({
@@ -207,15 +203,9 @@ export function FormRow({
   hint?: string
 }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-extrabold uppercase tracking-wide text-brown-soft">
-        {label}
-      </span>
+    <Field label={label} helper={hint}>
       {children}
-      {hint && (
-        <span className="mt-0.5 block text-xs text-brown-soft">{hint}</span>
-      )}
-    </label>
+    </Field>
   )
 }
 export function SearchBox({
@@ -231,12 +221,13 @@ export function SearchBox({
 }) {
   return (
     <div className={cx("relative min-w-[180px] flex-1 sm:max-w-xs", className)}>
-      <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-brown-soft" />
-      <AInput
+      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brown-soft" />
+      <Input
+        size="sm"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="pl-8"
+        className="bg-paper pl-9 font-semibold text-brown"
         aria-label={placeholder}
       />
     </div>
@@ -282,9 +273,9 @@ export function DataTable<T>({
   const act = cols.find((c) => c.key === "act")
   const main = cols.filter((c) => c.key !== "act")
   const empt = (
-    <p className="px-3 py-10 text-center text-sm font-semibold text-brown-soft">
-      {empty}
-    </p>
+    <div className="py-8">
+      <Empty title="Không có dữ liệu" body={empty} species="Chó" />
+    </div>
   )
   return (
     <>
@@ -293,7 +284,7 @@ export function DataTable<T>({
           <div
             key={rowKey(r)}
             onClick={onRow && (() => onRow(r))}
-            className="rounded-2xl border border-line bg-paper p-3"
+            className="rounded-2xl border-2 border-line bg-paper p-3.5 shadow-soft transition-all duration-200"
           >
             {card ? (
               card(r)
@@ -310,13 +301,13 @@ export function DataTable<T>({
                     </div>
                   )}
                 </div>
-                <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[13px]">
+                <dl className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-2 text-[13px] border-t border-line/60 pt-2">
                   {main.slice(1).map((c) => (
                     <div key={c.key} className="min-w-0">
-                      <dt className="text-[11px] font-bold uppercase text-brown-soft">
+                      <dt className="text-[11px] font-extrabold uppercase text-brown-soft">
                         {c.label}
                       </dt>
-                      <dd className="min-w-0 break-words font-semibold">
+                      <dd className="min-w-0 break-words font-bold text-brown">
                         {c.render(r)}
                       </dd>
                     </div>
@@ -327,18 +318,18 @@ export function DataTable<T>({
           </div>
         ))}
         {sorted.length === 0 && (
-          <div className="rounded-2xl border border-line bg-paper">{empt}</div>
+          <div className="rounded-2xl border-2 border-line bg-paper p-4 shadow-soft">{empt}</div>
         )}
       </div>
-      <div className="hidden overflow-x-auto rounded-2xl border border-line bg-paper md:block">
+      <div className="hidden overflow-x-auto rounded-[24px] border-2 border-line bg-paper shadow-soft md:block">
         <table className="w-full border-collapse text-left text-[13px]">
           <thead>
-            <tr className="border-b border-line bg-cream-2/50 text-[11px] uppercase tracking-wide text-brown-soft">
+            <tr className="border-b-2 border-line bg-cream-2/70 text-[11px] uppercase tracking-wide text-brown font-extrabold">
               {cols.map((c) => (
                 <th
                   key={c.key}
                   className={cx(
-                    "whitespace-nowrap px-1.5 py-2 font-bold",
+                    "whitespace-nowrap px-3 py-3 font-extrabold",
                     c.className,
                   )}
                   aria-sort={
@@ -362,17 +353,17 @@ export function DataTable<T>({
                             : { key: c.key, dir: 1 },
                         )
                       }
-                      className="inline-flex h-auto p-0 items-center gap-1 uppercase hover:text-brown font-bold text-[11px]"
+                      className="inline-flex h-auto p-0 items-center gap-1 uppercase hover:text-brown font-black text-[11px]"
                     >
                       {c.label}
                       {sort?.key === c.key ? (
                         sort.dir === 1 ? (
-                          <ArrowUp className="size-3" />
+                          <ArrowUp className="size-3.5 text-brown" />
                         ) : (
-                          <ArrowDown className="size-3" />
+                          <ArrowDown className="size-3.5 text-brown" />
                         )
                       ) : (
-                        <ChevronsUpDown className="size-3 opacity-40" />
+                        <ChevronsUpDown className="size-3.5 opacity-40" />
                       )}
                     </Btn>
                   ) : (
@@ -388,16 +379,16 @@ export function DataTable<T>({
                 key={rowKey(r)}
                 onClick={onRow && (() => onRow(r))}
                 className={cx(
-                  "border-b border-line/60 last:border-0",
-                  onRow && "cursor-pointer hover:bg-butter/20",
+                  "border-b border-line/60 last:border-0 transition",
+                  onRow && "cursor-pointer hover:bg-butter/25",
                 )}
               >
                 {cols.map((c) => (
                   <td
                     key={c.key}
                     className={cx(
-                      "px-1.5 align-middle",
-                      dense ? "py-1.5" : "py-2",
+                      "px-3 align-middle",
+                      dense ? "py-2" : "py-3",
                       c.className,
                     )}
                   >
@@ -442,54 +433,59 @@ export function KpiCard({
 }) {
   const good =
     delta === undefined || delta === 0 ? null : delta > 0 === goodWhenUp
-  const Tag = onClick ? "button" : "div"
   return (
-    <Tag
+    <Card
+      hover={!!onClick}
       onClick={onClick}
       className={cx(
-        "min-w-0 rounded-2xl border border-line bg-paper p-3 text-left",
-        onClick && "hover:border-brown/50",
+        "min-w-0 !p-3.5 sm:!p-4 text-left transition duration-150",
+        onClick && "cursor-pointer active:translate-y-0.5",
         className,
       )}
     >
       <div className="flex items-center gap-2">
         <span
           className={cx(
-            "grid size-7 shrink-0 place-items-center rounded-lg [&_svg]:size-4",
+            "grid size-8 shrink-0 place-items-center rounded-xl border border-brown/20 [&_svg]:size-4",
             tone,
           )}
         >
           {icon}
         </span>
-        <span className="truncate text-xs font-bold text-brown-soft">
+        <span className="truncate text-xs font-extrabold uppercase tracking-wide text-brown-soft">
           {label}
         </span>
       </div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <span className="font-display text-[26px] font-bold leading-none">
+      <div className="mt-2.5 flex items-baseline gap-2">
+        <span className="font-display text-[26px] font-black text-brown leading-none">
           {value}
         </span>
         {delta !== undefined && (
           <span
             className={cx(
-              "inline-flex items-center gap-0.5 text-[11px] font-bold",
+              "inline-flex items-center gap-0.5 text-[11px] font-extrabold px-1.5 py-0.5 rounded-full",
               good === null
-                ? "text-brown-soft"
+                ? "text-brown-soft bg-cream-2"
                 : good
-                  ? "text-sage-2"
-                  : "text-coral",
+                  ? "text-sage-dark bg-sage-soft"
+                  : "text-coral-dark bg-coral-soft",
             )}
           >
-            {delta >= 0 ? "▲" : "▼"} {Math.abs(delta)}%
+            {delta >= 0 ? (
+              <TrendingUp className="size-3" />
+            ) : (
+              <TrendingDown className="size-3" />
+            )}
+            {Math.abs(delta)}%
           </span>
         )}
       </div>
       {hint && (
-        <p className="mt-1 line-clamp-1 text-[11.5px] text-brown-soft">
+        <p className="mt-1 line-clamp-1 text-xs text-brown-soft font-semibold">
           {hint}
         </p>
       )}
-    </Tag>
+    </Card>
   )
 }
 export const KpiRow = ({
@@ -548,12 +544,13 @@ export function ActionMenu({
   return (
     <>
       <IconBtn
-        variant="ghost"
+        variant="default"
+        size="sm"
         ref={btn}
         onClick={openMenu}
-        aria-label={label}
+        label={label}
         aria-haspopup="menu"
-        className="grid size-11 place-items-center rounded-xl border border-line bg-paper hover:border-brown md:size-8"
+        className="size-11 sm:size-9"
       >
         <MoreVertical className="size-4" />
       </IconBtn>
@@ -572,7 +569,7 @@ export function ActionMenu({
               top: pos.y,
               transform: pos.up ? "translateY(-100%)" : undefined,
             }}
-            className="absolute w-44 rounded-xl border border-brown/40 bg-paper p-1 shadow-lg"
+            className="absolute w-48 rounded-2xl border-2 border-brown bg-paper p-1.5 shadow-xl animate-[pop_.15s_ease-out]"
           >
             {items.map((it) => (
               <Btn
@@ -587,8 +584,8 @@ export function ActionMenu({
                   it.onClick()
                 }}
                 className={cx(
-                  "flex min-h-11 w-full items-center justify-start gap-2 rounded-lg px-2.5 text-left text-sm font-bold hover:bg-butter/40 disabled:opacity-40 disabled:hover:bg-transparent md:min-h-9 [&_svg]:size-4",
-                  it.danger && "text-coral",
+                  "flex min-h-11 w-full items-center justify-start gap-2.5 rounded-xl px-3 text-left text-sm font-bold hover:bg-butter/40 disabled:opacity-40 disabled:hover:bg-transparent md:min-h-9 [&_svg]:size-4",
+                  it.danger && "text-coral hover:bg-coral-soft",
                 )}
               >
                 {it.icon}
@@ -618,33 +615,35 @@ export function FilterBar({
       <div className="mb-3 hidden flex-wrap items-center gap-2 md:flex">
         {children}
         {active > 0 && onClear && (
-          <ABtn v="ghost" s="sm" onClick={onClear}>
+          <Btn variant="ghost" size="sm" onClick={onClear}>
             Xóa lọc
-          </ABtn>
+          </Btn>
         )}
       </div>
       <div className="mb-3 md:hidden">
-        <ABtn
-          className="w-full"
-          icon={<SlidersHorizontal />}
+        <Btn
+          variant="outline"
+          size="md"
+          full
+          icon={<SlidersHorizontal className="size-4" />}
           onClick={() => setOpen(true)}
         >
           Bộ lọc{active > 0 ? ` (${active})` : ""}
-        </ABtn>
+        </Btn>
       </div>
-      <Modal open={open} onClose={() => setOpen(false)} title="Bộ lọc">
-        <div className="flex flex-col gap-3 [&>*]:!w-full [&>*]:!max-w-none">
+      <Modal open={open} onClose={() => setOpen(false)} title="Bộ lọc tìm kiếm">
+        <div className="flex flex-col gap-3.5 [&>*]:!w-full [&>*]:!max-w-none">
           {children}
         </div>
-        <div className="mt-4 flex gap-2">
+        <div className="mt-5 flex gap-2">
           {onClear && (
-            <ABtn className="flex-1" onClick={onClear}>
+            <Btn variant="outline" size="md" className="flex-1" onClick={onClear}>
               Xóa lọc
-            </ABtn>
+            </Btn>
           )}
-          <ABtn v="dark" className="flex-1" onClick={() => setOpen(false)}>
+          <Btn variant="dark" size="md" className="flex-1" onClick={() => setOpen(false)}>
             Áp dụng
-          </ABtn>
+          </Btn>
         </div>
       </Modal>
     </>
@@ -666,7 +665,7 @@ export function Drawer({
   if (!open) return null
   return (
     <div
-      className="fixed inset-0 z-[80] flex justify-end bg-brown/40"
+      className="fixed inset-0 z-[80] flex justify-end bg-brown/50 backdrop-blur-[2px]"
       onClick={onClose}
       role="dialog"
       aria-modal
@@ -674,15 +673,15 @@ export function Drawer({
     >
       <aside
         onClick={(e) => e.stopPropagation()}
-        className="flex h-full w-full max-w-md animate-[rise_.2s_ease-out] flex-col overflow-y-auto border-l-2 border-brown bg-paper p-5"
+        className="flex h-full w-full max-w-full sm:max-w-md animate-[rise_.2s_ease-out] flex-col overflow-y-auto border-l-2 border-brown bg-paper p-4 sm:p-5 shadow-2xl"
       >
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <h3 className="font-display text-xl font-extrabold">{title}</h3>
+        <div className="mb-4 flex items-start justify-between gap-3 border-b-2 border-line/50 pb-3">
+          <h3 className="font-display text-xl font-black text-brown">{title}</h3>
           <IconBtn
             variant="ghost"
+            size="sm"
             onClick={onClose}
-            aria-label="Đóng"
-            className="grid size-8 place-items-center rounded-lg hover:bg-brown/10"
+            label="Đóng cửa sổ"
           >
             <X className="size-5" />
           </IconBtn>
@@ -708,19 +707,20 @@ export function Confirm({
   okLabel?: string
 }) {
   return (
-    <Modal open={open} onClose={onClose} title={title} sheet={false}>
-      <p className="mb-4 text-sm">{body}</p>
-      <div className="flex justify-end gap-2">
-        <ABtn onClick={onClose}>Hủy</ABtn>
-        <ABtn
-          v="danger"
+    <Modal open={open} onClose={onClose} title={title}>
+      <div className="mb-5 text-sm font-semibold text-brown">{body}</div>
+      <div className="flex justify-end gap-2.5">
+        <Btn variant="outline" size="md" onClick={onClose}>Hủy</Btn>
+        <Btn
+          variant="danger"
+          size="md"
           onClick={() => {
             onOk()
             onClose()
           }}
         >
           {okLabel}
-        </ABtn>
+        </Btn>
       </div>
     </Modal>
   )
