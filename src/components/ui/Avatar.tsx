@@ -36,7 +36,7 @@ export function Avatar({
   )
 }
 
-export const UserAvatar = ({ id, size }: { id?: string size?: number }) => {
+export const UserAvatar = ({ id, size }: { id?: string; size?: number }) => {
   const u = USERS.find((x) => x.id === id)
   return <Avatar name={u?.name || "?"} tone={u?.avatar} size={size} />
 }

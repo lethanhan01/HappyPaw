@@ -18,7 +18,7 @@ export function BottomSheet({
   className?: string
 }) {
   const box = useRef<HTMLDivElement>(null)
-  const start = useRef<{ y: number h: number moved: boolean } | null>(null)
+  const start = useRef<{ y: number; h: number; moved: boolean } | null>(null)
   const [drag, setDrag] = useState<number | null>(null)
 
   const heights = () => {

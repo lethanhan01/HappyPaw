@@ -333,7 +333,7 @@ const STOCK = {
   Khác: photo("pup"),
 } as const
 
-function Species({ v, set }: { v: string set: (s: any) => void }) {
+function Species({ v, set }: { v: string; set: (s: any) => void }) {
   const avatars = {
     Chó: puddleApricot,
     Mèo: photo("cat1"),
@@ -375,7 +375,7 @@ function Species({ v, set }: { v: string set: (s: any) => void }) {
   )
 }
 
-function Done({ c, kind }: { c: Case kind: "lost" | "found" | "rescue" }) {
+function Done({ c, kind }: { c: Case; kind: "lost" | "found" | "rescue" }) {
   const { go, toggleFollow, following, toast } = useApp()
   const notified = kind === "rescue" ? 64 : kind === "lost" ? 128 : 47
   return (
@@ -511,7 +511,7 @@ export function LostWizard() {
     phone: "",
     useAcc: true,
   })
-  const [pin, setPin] = useState<{ x: number y: number } | null>(null)
+  const [pin, setPin] = useState<{ x: number; y: number } | null>(null)
   const u = USERS[0]
   const p =
     <K extends keyof typeof d>(k: K) =>
@@ -550,7 +550,8 @@ export function LostWizard() {
       updatedAgo: 0,
       desc: d.note || `${d.name} bị lạc gần ${d.landmark || d.street}.`,
       traits: d.traits || "Chưa có mô tả",
-      photo: d.photos[d.avatar] || STOCK[(d.species as "Chó")],
+      photo: d.photos[d.avatar] || d.photos[0] || STOCK[(d.species as "Chó")],
+      photos: d.photos.length > 0 ? d.photos : [d.photos[d.avatar] || STOCK[(d.species as "Chó")]],
       reward: d.reward,
       weight: d.weight,
       reporter: me,
@@ -621,39 +622,17 @@ export function LostWizard() {
           </Field>
           <Field
             label="Ảnh của bé"
-            helper="Tải lên 1–5 ảnh. Bấm vào ảnh để chọn làm ảnh đại diện tờ rơi."
+            helper="Tải lên 1–5 ảnh. Bấm vào ngôi sao để chọn làm ảnh đại diện tờ rơi."
           >
             <UploadBox
               label="Kéo thả ảnh vào đây"
               max={5}
               files={d.photos}
               onChange={p("photos")}
+              primaryIndex={d.avatar}
+              onPrimaryChange={p("avatar")}
             />
           </Field>
-          {d.photos.length > 1 && (
-            <div className="flex gap-2">
-              {d.photos.map((f, i) => (
-                <IconBtn
-                  key={f}
-                  label={`Chọn ảnh ${i + 1} làm ảnh tờ rơi`}
-                  variant="ghost"
-                  size="md"
-                  onClick={() => p("avatar")(i)}
-                  className={cx(
-                    "relative !size-16 overflow-hidden !rounded-2xl border-2",
-                    d.avatar === i
-                      ? "!border-brown ring-4 ring-butter"
-                      : "!border-line",
-                  )}
-                >
-                  <img src={f} alt="" className="size-full object-cover" />
-                  {d.avatar === i && (
-                    <Check className="absolute right-1 top-1 size-4 rounded-full bg-butter p-0.5" />
-                  )}
-                </IconBtn>
-              ))}
-            </div>
-          )}
           <Field label="Video ngắn (tuỳ chọn)">
             <UploadBox
               label="Tải video"
@@ -815,7 +794,7 @@ export function FoundWizard() {
     breed: "",
     traits: "",
   })
-  const [pin, setPin] = useState<{ x: number y: number } | null>(null)
+  const [pin, setPin] = useState<{ x: number; y: number } | null>(null)
   const p =
     <K extends keyof typeof d>(k: K) =>
     (v: typeof d[K]) =>
@@ -869,6 +848,7 @@ export function FoundWizard() {
       desc: `Bé ${d.species.toLowerCase()} ${d.color.toLowerCase()} được báo thấy gần ${d.landmark || d.street}.`,
       traits: d.traits || d.collar || "Chưa có mô tả",
       photo: d.photos[0] || STOCK[(d.species as "Chó")],
+      photos: d.photos.length > 0 ? d.photos : [d.photos[0] || STOCK[(d.species as "Chó")]],
       critical: hurt,
       condition: hurt
         ? "Bị thương"
@@ -1030,7 +1010,7 @@ export function RescueForm() {
     desc: "",
     phone: "0912 *** 345",
   })
-  const [pin, setPin] = useState<{ x: number y: number } | null>(null)
+  const [pin, setPin] = useState<{ x: number; y: number } | null>(null)
   const [tried, setTried] = useState(false)
   if (done) return <Done c={done} kind="rescue" />
   const bad = !d.district || !d.street || !d.cond
@@ -1055,6 +1035,7 @@ export function RescueForm() {
       desc: d.desc || d.cond,
       traits: d.cond,
       photo: d.photos[0] || STOCK[(d.species as "Chó")],
+      photos: d.photos.length > 0 ? d.photos : [d.photos[0] || STOCK[(d.species as "Chó")]],
       critical: urgent === "critical",
       condition: d.cond,
       reporter: me,

@@ -27,7 +27,7 @@ interface UICtx {
   }>
   setProof: (
     id: string,
-    p: { shelterConfirmed?: boolean mismatch?: boolean needMore?: boolean },
+    p: { shelterConfirmed?: boolean; mismatch?: boolean; needMore?: boolean },
   ) => void
 }
 

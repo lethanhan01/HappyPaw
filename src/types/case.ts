@@ -19,6 +19,7 @@ export interface Case {
   desc: string
   traits: string
   photo: string
+  photos?: string[]
   critical?: boolean
   condition?: string
   assignee?: string
@@ -28,5 +29,5 @@ export interface Case {
   weight?: string
   age?: string
   shelterId?: string
-  trail?: { x: number y: number t: string note: string }[]
+  trail?: { x: number; y: number; t: string; note: string }[]
 }

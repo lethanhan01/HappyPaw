@@ -11,6 +11,7 @@ export * from "./Stars"
 export * from "./Feedback"
 export * from "./Layout"
 export * from "./BottomSheet"
+export * from "./LightboxModal"
 
 // Utilities & hooks for backward compatibility
 export { cx } from "@/lib/cn"

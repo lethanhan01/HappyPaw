@@ -23,7 +23,7 @@ import {
   Badge,
 } from "@/components/ui"
 
-export function SaveBtn({ id, className }: { id: string className?: string }) {
+export function SaveBtn({ id, className }: { id: string; className?: string }) {
   const { saved, toggleSave, toast } = useApp()
   const on = saved.includes(id)
   return (
