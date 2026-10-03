@@ -6,6 +6,7 @@ import {
   type MutableRefObject,
   type ReactNode,
 } from "react"
+import maplibregl from "@openmapvn/openmapvn-gl"
 import {
   Plus,
   Minus,
@@ -15,11 +16,17 @@ import {
   PawPrint,
 } from "lucide-react"
 import type { Case, Clinic, Risk, Shelter } from "@/types"
-import { DISTRICT_XY } from "@/constants/districts"
 import { Btn, IconBtn, cx } from "@ui"
+import {
+  xyToLngLat,
+  lngLatToXY,
+  kmFromGeo,
+  createGeoJSONCircle,
+  HANOI_CENTER,
+} from "@/utils/geoConverter"
 
 export const ME_POS = { x: 345, y: 285 }
-export const KM = 62 // map units per km
+export const KM = 62 // Map units per km (kept for backwards compatibility)
 
 export type PinKind = "case" | "shelter" | "clinic" | "risk"
 export interface Sel {
@@ -27,51 +34,24 @@ export interface Sel {
   id: string
 }
 
-/** The five pin types of the public map. Icon + shape + colour so meaning never relies on colour alone. */
 export type PinType = "rescue" | "lost" | "shelter" | "clinic" | "warning"
-export const PIN_META: Record<PinType, {
-  color: string
-  label: string
-  shape: "drop" | "square" | "tri"
-}> = {
+export const PIN_META: Record<
+  PinType,
+  {
+    color: string
+    label: string
+    shape: "drop" | "square" | "tri"
+  }
+> = {
   rescue: { color: "#d8503f", label: "Cần cứu hộ", shape: "drop" },
   lost: { color: "#e8892c", label: "Pet thất lạc", shape: "drop" },
   shelter: { color: "#6fae5c", label: "Mái ấm", shape: "square" },
   clinic: { color: "#4f93b5", label: "Phòng khám", shape: "square" },
   warning: { color: "#8a63ab", label: "Cảnh báo", shape: "tri" },
 }
+
 export const caseType = (c: Case): PinType =>
   c.type === "rescue" ? "rescue" : "lost"
-
-function PawG({ s = 1, fill = "#fff" }: { s?: number; fill?: string }) {
-  return (
-    <g transform={`scale(${s})`} fill={fill}>
-      <ellipse
-        cx="-8"
-        cy="-3"
-        rx="2.6"
-        ry="3.4"
-        transform="rotate(-20 -8 -3)"
-      />
-      <ellipse
-        cx="-3.2"
-        cy="-8"
-        rx="2.6"
-        ry="3.5"
-        transform="rotate(-6 -3.2 -8)"
-      />
-      <ellipse
-        cx="3.2"
-        cy="-8"
-        rx="2.6"
-        ry="3.5"
-        transform="rotate(6 3.2 -8)"
-      />
-      <ellipse cx="8" cy="-3" rx="2.6" ry="3.4" transform="rotate(20 8 -3)" />
-      <path d="M0 -1.5c-4 0-8 4.5-8 7.6 0 2.4 2 3.4 3.6 3.4 1.5 0 2.6-.7 4.4-.7s2.9.7 4.4.7c1.6 0 3.6-1 3.6-3.4 0-3.1-4-7.6-8-7.6z" />
-    </g>
-  )
-}
 
 const SHAPE = {
   drop: {
@@ -86,199 +66,39 @@ const SHAPE = {
 }
 const TEAR = SHAPE.drop.d
 
-function Glyph({ type, color }: { type: PinType; color: string }) {
-  switch (type) {
-    case "rescue":
-      return <PawG s={1} />
-    case "lost":
-      return (
-        <g>
-          <circle
-            cx={-2}
-            cy={-2}
-            r={7}
-            fill="none"
-            stroke="#fff"
-            strokeWidth={3}
-          />
-          <path
-            d="M3 3 L9 9"
-            stroke="#fff"
-            strokeWidth={3.4}
-            strokeLinecap="round"
-          />
-          <g transform="translate(-2 -1.5)">
-            <PawG s={0.4} />
-          </g>
-        </g>
-      )
-    case "shelter":
-      return (
-        <g>
-          <path
-            d="M-10 4V-3L0 -11L10 -3V4Z"
-            fill="#fff"
-            stroke="#fff"
-            strokeWidth={1.5}
-            strokeLinejoin="round"
-          />
-          <g transform="translate(0 0.5)">
-            <PawG s={0.42} fill={color} />
-          </g>
-        </g>
-      )
-    case "clinic":
-      return (
-        <path
-          d="M-3.5 -10h7v6.5h6.5v7h-6.5v6.5h-7v-6.5h-6.5v-7h6.5z"
-          fill="#fff"
-          stroke="#fff"
-          strokeWidth={1}
-          strokeLinejoin="round"
-        />
-      )
-    default:
-      return (
-        <g>
-          <rect x={-2} y={-11} width={4} height={10} rx={2} fill="#fff" />
-          <circle cy={5} r={2.3} fill="#fff" />
-        </g>
-      )
-  }
+function pawSvg(s = 1, fill = "#fff") {
+  return `<g transform="scale(${s})" fill="${fill}">
+    <ellipse cx="-8" cy="-3" rx="2.6" ry="3.4" transform="rotate(-20 -8 -3)" />
+    <ellipse cx="-3.2" cy="-8" rx="2.6" ry="3.5" transform="rotate(-6 -3.2 -8)" />
+    <ellipse cx="3.2" cy="-8" rx="2.6" ry="3.5" transform="rotate(6 3.2 -8)" />
+    <ellipse cx="8" cy="-3" rx="2.6" ry="3.4" transform="rotate(20 8 -3)" />
+    <path d="M0 -1.5c-4 0-8 4.5-8 7.6 0 2.4 2 3.4 3.6 3.4 1.5 0 2.6-.7 4.4-.7s2.9.7 4.4.7c1.6 0 3.6-1 3.6-3.4 0-3.1-4-7.6-8-7.6z" />
+  </g>`
 }
 
-export function Pin({
-  x,
-  y,
-  k,
-  type = "rescue",
-  selected,
-  hovered,
-  onClick,
-  onHover,
-  label,
-  sub,
-  pulse,
-  progress,
-}: {
-  x: number
-  y: number
-  k: number
-  type?: PinType
-  selected?: boolean
-  hovered?: boolean
-  onClick?: () => void
-  onHover?: (h: boolean) => void
-  label?: string
-  sub?: string
-  pulse?: boolean
-  progress?: boolean
-}) {
-  const m = PIN_META[type]
-  const sh = SHAPE[m.shape]
-  const s = selected ? 1.22 : hovered ? 0.95 : 0.74
-  const tw = Math.max((label?.length ?? 0) * 6.6, (sub?.length ?? 0) * 5.8) + 22
-  return (
-    <g
-      transform={`translate(${x} ${y}) scale(${1 / k})`}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => {
-        e.stopPropagation()
-        onClick?.()
-      }}
-      onPointerEnter={() => onHover?.(true)}
-      onPointerLeave={() => onHover?.(false)}
-      style={{ cursor: onClick ? "pointer" : "default" }}
-      role={onClick ? "button" : undefined}
-      aria-label={label}
-    >
-      {pulse && (
-        <circle
-          cy={sh.gy * s}
-          r={16}
-          fill={m.color}
-          opacity={0.35}
-          pointerEvents="none"
-        >
-          <animate
-            attributeName="r"
-            values="14;30"
-            dur="2.4s"
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values="0.35;0"
-            dur="2.4s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      )}
-      <g transform={`scale(${s})`} style={{ transition: "transform .15s" }}>
-        <ellipse cy={1} rx={8} ry={2.6} fill="#6b4128" opacity={0.22} />
-        {selected && <circle cy={sh.gy} r={27} fill="#fff27a" opacity={0.65} />}
-        <path
-          d={sh.d}
-          fill={m.color}
-          stroke="#6b4128"
-          strokeWidth={3.2}
-          strokeLinejoin="round"
-        />
-        <g transform={`translate(0 ${sh.gy})`}>
-          <Glyph type={type} color={m.color} />
-        </g>
-        {progress && (
-          <g transform="translate(15 -46)">
-            <circle r={9} fill="#f6e04d" stroke="#6b4128" strokeWidth={2.4} />
-            <path
-              d="M0 -4.5V0.5L3.5 2.5"
-              fill="none"
-              stroke="#6b4128"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </g>
-        )}
-      </g>
-      {hovered && !selected && label && (
-        <g transform={`translate(0 ${-(50 * s) - 12})`} pointerEvents="none">
-          <rect
-            x={-tw / 2}
-            y={sub ? -36 : -24}
-            width={tw}
-            height={sub ? 38 : 26}
-            rx={11}
-            fill="#fffaf0"
-            stroke="#6b4128"
-            strokeWidth={2}
-          />
-          <text
-            y={sub ? -19 : -6}
-            textAnchor="middle"
-            fontSize={12.5}
-            fontWeight={800}
-            fill="#6b4128"
-            fontFamily="Nunito, sans-serif"
-          >
-            {label}
-          </text>
-          {sub && (
-            <text
-              y={-5}
-              textAnchor="middle"
-              fontSize={11}
-              fontWeight={700}
-              fill="#8f6a55"
-              fontFamily="Nunito, sans-serif"
-            >
-              {sub}
-            </text>
-          )}
-        </g>
-      )}
-    </g>
-  )
+function glyphHtml(type: PinType, color: string) {
+  switch (type) {
+    case "rescue":
+      return pawSvg(1, "#fff")
+    case "lost":
+      return `<g>
+        <circle cx="-2" cy="-2" r="7" fill="none" stroke="#fff" stroke-width="3" />
+        <path d="M3 3 L9 9" stroke="#fff" stroke-width="3.4" stroke-linecap="round" />
+        <g transform="translate(-2 -1.5)">${pawSvg(0.4, "#fff")}</g>
+      </g>`
+    case "shelter":
+      return `<g>
+        <path d="M-10 4V-3L0 -11L10 -3V4Z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" />
+        <g transform="translate(0 0.5)">${pawSvg(0.42, color)}</g>
+      </g>`
+    case "clinic":
+      return `<path d="M-3.5 -10h7v6.5h6.5v7h-6.5v6.5h-7v-6.5h-6.5v-7h6.5z" fill="#fff" stroke="#fff" stroke-width="1" stroke-linejoin="round" />`
+    default:
+      return `<g>
+        <rect x="-2" y="-11" width="4" height="10" rx="2" fill="#fff" />
+        <circle cy="5" r="2.3" fill="#fff" />
+      </g>`
+  }
 }
 
 function hashOff(id: string) {
@@ -286,6 +106,7 @@ function hashOff(id: string) {
   for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) % 997
   return [(h % 24) - 12, ((h >> 3) % 24) - 12]
 }
+
 const ago = (m: number) =>
   m < 60
     ? `${m} phút trước`
@@ -329,569 +150,581 @@ export interface CityMapProps {
 }
 
 export default function CityMap(p: CityMapProps) {
-  const { center = { x: 450, y: 340, k: 1 } } = p
-  const k0 = center.k ?? 1
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const mapRef = useRef<maplibregl.Map | null>(null)
+  const markersRef = useRef<maplibregl.Marker[]>([])
+  const [mapLoaded, setMapLoaded] = useState(false)
   const [hov, setHov] = useState<string | null>(null)
-  const [v, setV] = useState({
-    k: k0,
-    tx: 500 - center.x * k0,
-    ty: 360 - center.y * k0,
-  })
-  const svg = useRef<SVGSVGElement>(null)
-  const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null)
 
-  const recenter = useCallback((c: { x: number; y: number; k?: number }) => {
-    const k = c.k ?? 1.4
-    setV({ k, tx: 500 - c.x * k, ty: 360 - c.y * k })
-  }, [])
-  useEffect(() => {
-    recenter(center) /* eslint-disable-next-line */
-  }, [p.focusKey])
-
-  const pt = (e: { clientX: number; clientY: number }) => {
-    const s = svg.current!
-    const m = s.getScreenCTM()!.inverse()
-    const q = s.createSVGPoint()
-    q.x = e.clientX
-    q.y = e.clientY
-    const r = q.matrixTransform(m)
-    return { x: r.x, y: r.y }
-  }
-  const zoomAt = (f: number) =>
-    setV((o) => {
-      const k = Math.min(3.2, Math.max(0.75, o.k * f))
-      const r = k / o.k
-      return { k, tx: 500 - (500 - o.tx) * r, ty: 360 - (360 - o.ty) * r }
-    })
-
-  useEffect(() => {
-    if (p.apiRef)
-      p.apiRef.current = {
-        zoom: zoomAt,
-        locate: () => recenter({ ...(p.me || ME_POS), k: 1.5 }),
-        focus: (x, y, kk) => recenter({ x, y, k: kk }),
-      }
-  })
-  const k = v.k
   const sel = p.selected
   const hoverNow = p.hoverId ?? hov
-  const setHover = (id: string, h: boolean) => {
-    setHov(h ? id : null)
-    p.onHover?.(h ? id : null)
-  }
-  const caseMap = p.cases || []
+
+  // 1. Initialize OpenMapVN GL
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const initialCenter = p.center
+      ? xyToLngLat(p.center.x, p.center.y)
+      : HANOI_CENTER
+    const initialZoom = p.center?.k
+      ? Math.max(10, Math.min(18, 12.5 + (p.center.k - 1) * 2.5))
+      : 13.5
+
+    const apiKey = import.meta.env.VITE_OPENMAP_API_KEY
+    const styleUrl = apiKey
+      ? `https://maptiles.ndamaps.vn/styles/day-v2/style.json?apikey=${apiKey}`
+      : "https://tiles.openmap.vn/styles/day-v1/style.json"
+
+    const map = new maplibregl.Map({
+      container: containerRef.current,
+      style: styleUrl,
+      center: initialCenter,
+      zoom: initialZoom,
+      attributionControl: false,
+    })
+
+    map.on("load", () => {
+      setMapLoaded(true)
+    })
+
+    map.on("click", (e) => {
+      const { lng, lat } = e.lngLat
+      const xy = lngLatToXY(lng, lat)
+      if (p.onMapClick) {
+        p.onMapClick(xy.x, xy.y)
+      } else {
+        p.onSelect?.(null)
+      }
+    })
+
+    mapRef.current = map
+
+    return () => {
+      map.remove()
+      mapRef.current = null
+      setMapLoaded(false)
+    }
+  }, [])
+
+  // 2. Handle Focus Key & Center Updates
+  useEffect(() => {
+    if (!mapRef.current || !p.center) return
+    const target = xyToLngLat(p.center.x, p.center.y)
+    const zoom = p.center.k
+      ? Math.max(10, Math.min(18, 12.5 + (p.center.k - 1) * 2.5))
+      : 14
+    mapRef.current.flyTo({ center: target, zoom, duration: 800 })
+  }, [p.focusKey, p.center?.x, p.center?.y, p.center?.k])
+
+  // 3. Expose MapApi ref
+  const zoomAt = useCallback((f: number) => {
+    if (!mapRef.current) return
+    if (f > 1) {
+      mapRef.current.zoomIn()
+    } else {
+      mapRef.current.zoomOut()
+    }
+  }, [])
+
+  const locateUser = useCallback(() => {
+    if (!mapRef.current) return
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userLngLat: [number, number] = [
+            pos.coords.longitude,
+            pos.coords.latitude,
+          ]
+          mapRef.current?.flyTo({ center: userLngLat, zoom: 15, duration: 1000 })
+        },
+        () => {
+          // Fallback to configured me position
+          const fallback = xyToLngLat(
+            (p.me || ME_POS).x,
+            (p.me || ME_POS).y,
+          )
+          mapRef.current?.flyTo({ center: fallback, zoom: 14.5, duration: 1000 })
+        },
+        { enableHighAccuracy: true, timeout: 4000 },
+      )
+    } else {
+      const fallback = xyToLngLat((p.me || ME_POS).x, (p.me || ME_POS).y)
+      mapRef.current.flyTo({ center: fallback, zoom: 14.5, duration: 1000 })
+    }
+  }, [p.me])
+
+  useEffect(() => {
+    if (p.apiRef) {
+      p.apiRef.current = {
+        zoom: zoomAt,
+        locate: locateUser,
+        focus: (x, y, kk) => {
+          if (!mapRef.current) return
+          const target = xyToLngLat(x, y)
+          const zoom = kk ? 12.5 + (kk - 1) * 2.5 : 14.5
+          mapRef.current.flyTo({ center: target, zoom, duration: 900 })
+        },
+      }
+    }
+  }, [zoomAt, locateUser, p.apiRef])
+
+  // 4. Render Markers (Cases, Shelters, Clinics, Risks, User, DropPin, Dest)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+
+    // Clear existing DOM markers
+    markersRef.current.forEach((m) => m.remove())
+    markersRef.current = []
+
+    const addMarker = ({
+      lngLat,
+      type,
+      id,
+      kind,
+      label,
+      sub,
+      selected,
+      hovered,
+      pulse,
+      progress,
+      onClick,
+    }: {
+      lngLat: [number, number]
+      type: PinType
+      id?: string
+      kind?: PinKind
+      label?: string
+      sub?: string
+      selected?: boolean
+      hovered?: boolean
+      pulse?: boolean
+      progress?: boolean
+      onClick?: () => void
+    }) => {
+      const m = PIN_META[type]
+      const sh = SHAPE[m.shape]
+
+      const el = document.createElement("div")
+      el.className = "happypaw-marker group relative cursor-pointer select-none"
+      el.style.width = "40px"
+      el.style.height = "52px"
+
+      // Scale up if selected or hovered
+      const scale = selected ? 1.25 : hovered ? 1.12 : 1
+      el.style.transform = `scale(${scale})`
+      el.style.zIndex = selected ? "100" : hovered ? "80" : "10"
+
+      const pulseHtml = pulse
+        ? `<div class="happypaw-pulse absolute rounded-full pointer-events-none" style="width: 42px; height: 42px; left: -1px; top: ${sh.gy + 10}px; background: ${m.color}; opacity: 0.5;"></div>`
+        : ""
+
+      const selectedHalo = selected
+        ? `<circle cy="${sh.gy}" r="27" fill="#fff27a" opacity="0.75" />`
+        : ""
+
+      const progressHtml = progress
+        ? `<g transform="translate(15, -46)">
+            <circle r="8" fill="#f6e04d" stroke="#6b4128" stroke-width="2.2" />
+            <path d="M0 -4V0.5L3 2" fill="none" stroke="#6b4128" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>`
+        : ""
+
+      const tooltipHtml = label
+        ? `<div class="happypaw-tooltip pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 rounded-xl border-2 border-line bg-paper px-3 py-1 shadow-md text-center whitespace-nowrap transition-all duration-150 ${
+            hovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }">
+            <div class="text-xs font-black text-brown font-display">${label}</div>
+            ${sub ? `<div class="text-[10px] font-bold text-brown-soft">${sub}</div>` : ""}
+          </div>`
+        : ""
+
+      el.innerHTML = `
+        ${pulseHtml}
+        <svg viewBox="-24 -54 48 58" class="size-full overflow-visible drop-shadow-sm transition-transform">
+          <ellipse cy="1" rx="8" ry="2.6" fill="#6b4128" opacity="0.25" />
+          ${selectedHalo}
+          <path d="${sh.d}" fill="${m.color}" stroke="#6b4128" stroke-width="3" stroke-linejoin="round" />
+          <g transform="translate(0, ${sh.gy})">${glyphHtml(type, m.color)}</g>
+          ${progressHtml}
+        </svg>
+        ${tooltipHtml}
+      `
+
+      el.addEventListener("click", (e) => {
+        e.stopPropagation()
+        onClick?.()
+      })
+
+      el.addEventListener("mouseenter", () => {
+        if (id) {
+          setHov(id)
+          p.onHover?.(id)
+        }
+      })
+
+      el.addEventListener("mouseleave", () => {
+        if (id) {
+          setHov(null)
+          p.onHover?.(null)
+        }
+      })
+
+      const marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
+        .setLngLat(lngLat)
+        .addTo(map)
+
+      markersRef.current.push(marker)
+    }
+
+    // Shelters
+    for (const s of p.shelters || []) {
+      const isSelected = sel?.kind === "shelter" && sel?.id === s.id
+      const isHov = hoverNow === s.id
+      addMarker({
+        lngLat: xyToLngLat(s.x, s.y),
+        type: "shelter",
+        id: s.id,
+        kind: "shelter",
+        label: s.name,
+        sub: `Mái ấm · ${s.district}`,
+        selected: isSelected,
+        hovered: isHov,
+        onClick: () => p.onSelect?.({ kind: "shelter", id: s.id }),
+      })
+    }
+
+    // Clinics
+    for (const c of p.clinics || []) {
+      const isSelected = sel?.kind === "clinic" && sel?.id === c.id
+      const isHov = hoverNow === c.id
+      addMarker({
+        lngLat: xyToLngLat(c.x, c.y),
+        type: "clinic",
+        id: c.id,
+        kind: "clinic",
+        label: c.name,
+        sub: `Phòng khám · ${c.district}`,
+        selected: isSelected,
+        hovered: isHov,
+        onClick: () => p.onSelect?.({ kind: "clinic", id: c.id }),
+      })
+    }
+
+    // Cases
+    for (const c of p.cases || []) {
+      const isSelected = sel?.kind === "case" && sel?.id === c.id
+      const isHov = hoverNow === c.id
+      const isCritical =
+        c.critical &&
+        c.status === "active" &&
+        !(p.revealIds || []).includes(c.id)
+
+      const [ox, oy] = isCritical ? hashOff(c.id) : [0, 0]
+      const [lng, lat] = xyToLngLat(c.x + ox, c.y + oy)
+      const prog = c.status === "progress" || c.status === "pending"
+
+      addMarker({
+        lngLat: [lng, lat],
+        type: caseType(c),
+        id: c.id,
+        kind: "case",
+        label: isCritical
+          ? `${c.name} · khu vực xấp xỉ`
+          : `${c.name} · ${c.district}`,
+        sub: `${prog ? "Đang xử lý" : PIN_META[caseType(c)].label} · ${ago(c.minutesAgo)}`,
+        selected: isSelected,
+        hovered: isHov,
+        pulse: isCritical || c.type === "rescue",
+        progress: prog,
+        onClick: () => p.onSelect?.({ kind: "case", id: c.id }),
+      })
+    }
+
+    // User location (me)
+    if (p.me || ME_POS) {
+      const pos = p.me || ME_POS
+      const userLngLat = xyToLngLat(pos.x, pos.y)
+      const el = document.createElement("div")
+      el.className = "relative flex items-center justify-center select-none pointer-events-none"
+      el.style.width = "40px"
+      el.style.height = "40px"
+      el.innerHTML = `
+        <div class="happypaw-pulse absolute size-9 rounded-full bg-sky-2/40"></div>
+        <div class="size-4.5 rounded-full bg-sky-2 border-2.5 border-white shadow-md"></div>
+      `
+      const meMarker = new maplibregl.Marker({ element: el, anchor: "center" })
+        .setLngLat(userLngLat)
+        .addTo(map)
+      markersRef.current.push(meMarker)
+    }
+
+    // Drop Pin (when user clicks on map or places a pin)
+    if (p.dropPin) {
+      const dropLngLat = xyToLngLat(p.dropPin.x, p.dropPin.y)
+      addMarker({
+        lngLat: dropLngLat,
+        type: "lost",
+        selected: true,
+        label: "Điểm đã chọn",
+      })
+    }
+
+    // Destination Pin (dest)
+    if (p.dest) {
+      const destLngLat = xyToLngLat(p.dest.x, p.dest.y)
+      const el = document.createElement("div")
+      el.className = "relative cursor-pointer select-none"
+      el.style.width = "36px"
+      el.style.height = "46px"
+      el.innerHTML = `
+        <svg viewBox="-24 -54 48 58" class="size-full overflow-visible drop-shadow-sm">
+          <ellipse cy="1" rx="8" ry="2.6" fill="#6b4128" opacity="0.25" />
+          <path d="${TEAR}" fill="#a9cc94" stroke="#6b4128" stroke-width="3.5" />
+          <g transform="translate(0, -30)">
+            <path d="M-9 1 V-4 L0 -11 L9 -4 V1Z" fill="#fff" stroke="#6b4128" stroke-width="1.8" stroke-linejoin="round" />
+          </g>
+        </svg>
+      `
+      const destMarker = new maplibregl.Marker({ element: el, anchor: "bottom" })
+        .setLngLat(destLngLat)
+        .addTo(map)
+      markersRef.current.push(destMarker)
+    }
+
+    // Trail timestamps
+    if (p.trail && p.trail.length > 0) {
+      p.trail.forEach((pt) => {
+        const ptLngLat = xyToLngLat(pt.x, pt.y)
+        const el = document.createElement("div")
+        el.className = "pointer-events-none select-none flex flex-col items-center"
+        el.innerHTML = `
+          <div class="px-1.5 py-0.5 rounded-md bg-paper border border-brown text-[10px] font-black text-brown shadow-sm leading-none mb-1">
+            ${pt.t}
+          </div>
+          <div class="size-3 rounded-full bg-butter border-2 border-brown"></div>
+        `
+        const m = new maplibregl.Marker({ element: el, anchor: "center" })
+          .setLngLat(ptLngLat)
+          .addTo(map)
+        markersRef.current.push(m)
+      })
+    }
+  }, [
+    mapLoaded,
+    p.cases,
+    p.shelters,
+    p.clinics,
+    sel,
+    hoverNow,
+    p.revealIds,
+    p.me,
+    p.dropPin,
+    p.dest,
+    p.trail,
+  ])
+
+  // 5. Render GeoJSON Vector Layers (Radius, Risks, Predicted, Trail, Route)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapLoaded) return
+
+    // Helper to safely update or add GeoJSON source and layer
+    const updateSource = (
+      id: string,
+      data: GeoJSON.FeatureCollection | GeoJSON.Feature,
+    ) => {
+      const src = map.getSource(id) as maplibregl.GeoJSONSource | undefined
+      if (src) {
+        src.setData(data)
+      } else {
+        map.addSource(id, { type: "geojson", data })
+      }
+    }
+
+    // 5.1 Search Radius Circle
+    if (p.radius) {
+      const center = xyToLngLat(p.radius.x, p.radius.y)
+      const circleGeoJSON = createGeoJSONCircle(center, p.radius.km)
+      updateSource("search-radius-source", circleGeoJSON)
+
+      if (!map.getLayer("search-radius-fill")) {
+        map.addLayer({
+          id: "search-radius-fill",
+          type: "fill",
+          source: "search-radius-source",
+          paint: {
+            "fill-color": "#f6e04d",
+            "fill-opacity": 0.18,
+          },
+        })
+        map.addLayer({
+          id: "search-radius-line",
+          type: "line",
+          source: "search-radius-source",
+          paint: {
+            "line-color": "#6b4128",
+            "line-width": 2.2,
+            "line-dasharray": [3, 3],
+          },
+        })
+      }
+    } else {
+      if (map.getLayer("search-radius-fill")) map.removeLayer("search-radius-fill")
+      if (map.getLayer("search-radius-line")) map.removeLayer("search-radius-line")
+      if (map.getSource("search-radius-source")) map.removeSource("search-radius-source")
+    }
+
+    // 5.2 Predicted Zone
+    if (p.predicted) {
+      const center = xyToLngLat(p.predicted.x, p.predicted.y)
+      const radiusKm = p.predicted.r / KM
+      const circleGeoJSON = createGeoJSONCircle(center, radiusKm)
+      updateSource("predicted-source", circleGeoJSON)
+
+      if (!map.getLayer("predicted-fill")) {
+        map.addLayer({
+          id: "predicted-fill",
+          type: "fill",
+          source: "predicted-source",
+          paint: {
+            "fill-color": "#fff27a",
+            "fill-opacity": 0.35,
+          },
+        })
+        map.addLayer({
+          id: "predicted-line",
+          type: "line",
+          source: "predicted-source",
+          paint: {
+            "line-color": "#e8892c",
+            "line-width": 2.5,
+            "line-dasharray": [3, 2],
+          },
+        })
+      }
+    } else {
+      if (map.getLayer("predicted-fill")) map.removeLayer("predicted-fill")
+      if (map.getLayer("predicted-line")) map.removeLayer("predicted-line")
+      if (map.getSource("predicted-source")) map.removeSource("predicted-source")
+    }
+
+    // 5.3 Risk Zones
+    if (p.risks && p.risks.length > 0) {
+      const riskFeatures: GeoJSON.Feature[] = p.risks.map((r) => {
+        const center = xyToLngLat(r.x, r.y)
+        const radiusKm = r.r / KM
+        const circle = createGeoJSONCircle(center, radiusKm)
+        circle.properties = {
+          id: r.id,
+          color: r.severity === "Cao" ? "#d8503f" : "#8a63ab",
+          opacity: sel?.id === r.id ? 0.35 : 0.2,
+        }
+        return circle
+      })
+
+      const featureCollection: GeoJSON.FeatureCollection = {
+        type: "FeatureCollection",
+        features: riskFeatures,
+      }
+      updateSource("risk-zones-source", featureCollection)
+
+      if (!map.getLayer("risk-zones-fill")) {
+        map.addLayer({
+          id: "risk-zones-fill",
+          type: "fill",
+          source: "risk-zones-source",
+          paint: {
+            "fill-color": ["get", "color"],
+            "fill-opacity": ["get", "opacity"],
+          },
+        })
+        map.addLayer({
+          id: "risk-zones-line",
+          type: "line",
+          source: "risk-zones-source",
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": 2.5,
+            "line-dasharray": [4, 3],
+          },
+        })
+      }
+    } else {
+      if (map.getLayer("risk-zones-fill")) map.removeLayer("risk-zones-fill")
+      if (map.getLayer("risk-zones-line")) map.removeLayer("risk-zones-line")
+      if (map.getSource("risk-zones-source")) map.removeSource("risk-zones-source")
+    }
+
+    // 5.4 Pet Trail
+    if (p.trail && p.trail.length > 1) {
+      const lineCoords = p.trail.map((pt) => xyToLngLat(pt.x, pt.y))
+      const trailGeoJSON: GeoJSON.Feature = {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: lineCoords,
+        },
+        properties: {},
+      }
+      updateSource("pet-trail-source", trailGeoJSON)
+
+      if (!map.getLayer("pet-trail-line")) {
+        map.addLayer({
+          id: "pet-trail-line",
+          type: "line",
+          source: "pet-trail-source",
+          paint: {
+            "line-color": "#6b4128",
+            "line-width": 3,
+            "line-dasharray": [3, 3],
+          },
+        })
+      }
+    } else {
+      if (map.getLayer("pet-trail-line")) map.removeLayer("pet-trail-line")
+      if (map.getSource("pet-trail-source")) map.removeSource("pet-trail-source")
+    }
+
+    // 5.5 Route
+    if (p.route && p.route.length > 1) {
+      const routeCoords = p.route.map((pt) => xyToLngLat(pt.x, pt.y))
+      const routeGeoJSON: GeoJSON.Feature = {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: routeCoords,
+        },
+        properties: {},
+      }
+      updateSource("route-source", routeGeoJSON)
+
+      if (!map.getLayer("route-line")) {
+        map.addLayer({
+          id: "route-line",
+          type: "line",
+          source: "route-source",
+          paint: {
+            "line-color": "#3f82a5",
+            "line-width": 4,
+            "line-dasharray": [4, 4],
+          },
+        })
+      }
+    } else {
+      if (map.getLayer("route-line")) map.removeLayer("route-line")
+      if (map.getSource("route-source")) map.removeSource("route-source")
+    }
+  }, [mapLoaded, p.radius, p.predicted, p.risks, p.trail, p.route, sel])
 
   return (
-    <div className={cx("relative overflow-hidden bg-map-sand", p.className)}>
-      <svg
-        ref={svg}
-        viewBox="0 0 1000 720"
-        preserveAspectRatio="xMidYMid slice"
-        className="map-grab size-full select-none"
-        onPointerDown={(e) => {
-          drag.current = { ...pt(e), moved: false }
-          ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
-        }}
-        onPointerMove={(e) => {
-          if (!drag.current) return
-          const q = pt(e)
-          const dx = q.x - drag.current.x
-          const dy = q.y - drag.current.y
-          if (Math.abs(dx) + Math.abs(dy) > 3) drag.current.moved = true
-          if (drag.current.moved) {
-            drag.current.x = q.x
-            drag.current.y = q.y
-            setV((o) => ({ ...o, tx: o.tx + dx, ty: o.ty + dy }))
-          }
-        }}
-        onPointerUp={(e) => {
-          const d = drag.current
-          drag.current = null
-          if (d && !d.moved) {
-            const q = pt(e)
-            if (p.onMapClick)
-              p.onMapClick((q.x - v.tx) / v.k, (q.y - v.ty) / v.k)
-            else p.onSelect?.(null)
-          }
-        }}
-        onWheel={(e) => zoomAt(e.deltaY < 0 ? 1.12 : 0.89)}
-      >
-        <defs>
-          <pattern
-            id="blocks"
-            width="38"
-            height="38"
-            patternUnits="userSpaceOnUse"
-          >
-            <rect width="38" height="38" fill="#efe5c4" />
-            <rect x="3" y="3" width="32" height="32" rx="9" fill="#f8f1da" />
-          </pattern>
-          <pattern
-            id="stripe"
-            width="8"
-            height="8"
-            patternUnits="userSpaceOnUse"
-            patternTransform="rotate(45)"
-          >
-            <rect width="4" height="8" fill="#d8503f" opacity=".16" />
-          </pattern>
-        </defs>
-        <g transform={`translate(${v.tx} ${v.ty}) scale(${k})`}>
-          <rect
-            x="-600"
-            y="-500"
-            width="2200"
-            height="1800"
-            fill="url(#blocks)"
-          />
-          {/* water */}
-          <path
-            d="M760 -200 C 820 100, 735 300, 800 430 S 850 700, 810 950"
-            fill="none"
-            stroke="#d3e7ee"
-            strokeWidth="78"
-            strokeLinecap="round"
-          />
-          <path
-            d="M760 -200 C 820 100, 735 300, 800 430 S 850 700, 810 950"
-            fill="none"
-            stroke="#c4dfe9"
-            strokeWidth="6"
-            strokeDasharray="2 14"
-            strokeLinecap="round"
-          />
-          <ellipse
-            cx="540"
-            cy="92"
-            rx="92"
-            ry="46"
-            fill="#d3e7ee"
-            stroke="#c0dce7"
-            strokeWidth="4"
-          />
-          <ellipse cx="618" cy="352" rx="13" ry="22" fill="#d3e7ee" />
-          <ellipse cx="590" cy="440" rx="22" ry="14" fill="#d3e7ee" />
-          <ellipse cx="615" cy="650" rx="40" ry="22" fill="#d3e7ee" />
-          <ellipse cx="445" cy="340" rx="20" ry="11" fill="#d3e7ee" />
-          {/* parks */}
-          {[
-            [400, 305, 30, 18],
-            [520, 212, 34, 20],
-            [300, 315, 26, 16],
-            [280, 175, 40, 24],
-            [705, 690, 46, 24],
-            [690, 520, 28, 18],
-            [160, 420, 34, 22],
-            [440, 560, 28, 18],
-          ].map(([x, y, rx, ry], i) => (
-            <ellipse
-              key={i}
-              cx={x}
-              cy={y}
-              rx={rx}
-              ry={ry}
-              fill="#d6e6c3"
-              stroke="#c4daad"
-              strokeWidth="3"
-            />
-          ))}
-          {/* roads */}
-          <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-            {[
-              "M250 570 C 200 400, 260 250, 400 200 S 690 210, 730 380 S 630 650, 470 650 S 280 650, 250 570",
-              "M120 580 C 60 380, 120 170, 330 70 S 690 30, 740 120",
-              "M150 640 C 330 720, 560 740, 760 660",
-              "M60 330 C 220 340, 420 360, 740 340",
-              "M580 -20 C 570 150, 600 300, 610 420 S 590 600, 620 760",
-              "M180 740 C 260 620, 340 520, 470 400 S 600 300, 650 250",
-              "M300 -20 C 300 120, 320 220, 380 330 S 450 480, 470 740",
-              "M440 100 C 470 180, 480 260, 560 330",
-            ].map((d, i) => (
-              <g key={i}>
-                <path d={d} stroke="#ead9ae" strokeWidth={i < 3 ? 17 : 14} />
-                <path d={d} stroke="#fffdf4" strokeWidth={i < 3 ? 11 : 8} />
-              </g>
-            ))}
-            {[
-              [690, 66, 860, 78],
-              [740, 330, 860, 330],
-              [740, 470, 860, 480],
-            ].map(([a, b, c, d], i) => (
-              <path
-                key={i}
-                d={`M${a} ${b} L${c} ${d}`}
-                stroke="#ead9ae"
-                strokeWidth="11"
-              />
-            ))}
-            {[
-              [690, 66, 860, 78],
-              [740, 330, 860, 330],
-              [740, 470, 860, 480],
-            ].map(([a, b, c, d], i) => (
-              <path
-                key={i}
-                d={`M${a} ${b} L${c} ${d}`}
-                stroke="#fffdf4"
-                strokeWidth="6"
-              />
-            ))}
-          </g>
-          {p.showLabels !== false && (
-            <g
-              fontFamily="Nunito, sans-serif"
-              fontWeight="800"
-              textAnchor="middle"
-              fill="#8f6a55"
-              pointerEvents="none"
-            >
-              {Object.entries(DISTRICT_XY).map(([n, [x, y]]) => (
-                <text
-                  key={n}
-                  x={n === "Tây Hồ" ? 690 : x}
-                  y={
-                    n === "Tây Hồ"
-                      ? 170
-                      : y +
-                        (n === "Hoàn Kiếm"
-                          ? 50
-                          : n === "Cầu Giấy"
-                            ? -45
-                            : n === "Ba Đình"
-                              ? -38
-                              : -50)
-                  }
-                  fontSize={13 / Math.min(k, 1.3)}
-                  opacity={0.75}
-                  letterSpacing=".04em"
-                >
-                  {n.toUpperCase()}
-                </text>
-              ))}
-              <text
-                x="540"
-                y="96"
-                fontSize="11"
-                fill="#4f93b5"
-                fontStyle="italic"
-              >
-                Hồ Tây
-              </text>
-              <text
-                x="628"
-                y="392"
-                fontSize="9"
-                fill="#4f93b5"
-                fontStyle="italic"
-              >
-                Hồ Gươm
-              </text>
-              <text
-                x="790"
-                y="250"
-                fontSize="11"
-                fill="#4f93b5"
-                fontStyle="italic"
-                transform="rotate(88 790 250)"
-              >
-                Sông Hồng
-              </text>
-            </g>
-          )}
+    <div className={cx("relative size-full overflow-hidden bg-map-sand", p.className)}>
+      {/* MapLibre WebGL container */}
+      <div ref={containerRef} className="size-full map-grab" />
 
-          {p.extras}
+      {p.extras}
 
-          {/* risk zones */}
-          {(p.risks || []).map((r) => (
-            <g
-              key={r.id}
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation()
-                p.onSelect?.({ kind: "risk", id: r.id })
-              }}
-              style={{ cursor: "pointer" }}
-            >
-              <circle
-                cx={r.x}
-                cy={r.y}
-                r={r.r}
-                fill={r.severity === "Cao" ? "#d8503f" : "#8a63ab"}
-                opacity={sel?.id === r.id ? 0.3 : 0.17}
-              />
-              <circle cx={r.x} cy={r.y} r={r.r} fill="url(#stripe)" />
-              <circle
-                cx={r.x}
-                cy={r.y}
-                r={r.r}
-                fill="none"
-                stroke={r.severity === "Cao" ? "#d8503f" : "#8a63ab"}
-                strokeWidth={2.5}
-                strokeDasharray="7 6"
-              />
-            </g>
-          ))}
-
-          {/* radius circle */}
-          {p.radius && (
-            <g pointerEvents="none">
-              <circle
-                cx={p.radius.x}
-                cy={p.radius.y}
-                r={p.radius.km * KM}
-                fill="#f6e04d"
-                opacity=".18"
-              />
-              <circle
-                cx={p.radius.x}
-                cy={p.radius.y}
-                r={p.radius.km * KM}
-                fill="none"
-                stroke="#6b4128"
-                strokeWidth={2.2}
-                strokeDasharray="6 6"
-              />
-            </g>
-          )}
-
-          {/* predicted area */}
-          {p.predicted && (
-            <g pointerEvents="none">
-              <circle
-                cx={p.predicted.x}
-                cy={p.predicted.y}
-                r={p.predicted.r}
-                fill="#fff27a"
-                opacity=".35"
-              />
-              <circle
-                cx={p.predicted.x}
-                cy={p.predicted.y}
-                r={p.predicted.r}
-                fill="none"
-                stroke="#e8892c"
-                strokeWidth={2.5}
-                strokeDasharray="5 5"
-              />
-            </g>
-          )}
-
-          {/* trail */}
-          {p.trail && p.trail.length > 1 && (
-            <g pointerEvents="none">
-              <path
-                d={p.trail
-                  .map((pt, i) => `${i === 0 ? "M" : "L"}${pt.x} ${pt.y}`)
-                  .join(" ")}
-                fill="none"
-                stroke="#6b4128"
-                strokeWidth={3}
-                strokeDasharray="6 6"
-                strokeLinecap="round"
-              />
-              {p.trail.map((pt, i) => (
-                <g
-                  key={i}
-                  transform={`translate(${pt.x} ${pt.y}) scale(${1 / k})`}
-                >
-                  <circle
-                    r={6}
-                    fill="#fff27a"
-                    stroke="#6b4128"
-                    strokeWidth={2.4}
-                  />
-                  <text
-                    y={-10}
-                    textAnchor="middle"
-                    fontSize={10}
-                    fontWeight={800}
-                    fill="#6b4128"
-                    fontFamily="Nunito, sans-serif"
-                  >
-                    {pt.t}
-                  </text>
-                </g>
-              ))}
-            </g>
-          )}
-
-          {/* route */}
-          {p.route && p.route.length > 1 && (
-            <path
-              d={p.route
-                .map((pt, i) => `${i === 0 ? "M" : "L"}${pt.x} ${pt.y}`)
-                .join(" ")}
-              fill="none"
-              stroke="#3f82a5"
-              strokeWidth={4}
-              strokeLinecap="round"
-              strokeDasharray="8 8"
-              pointerEvents="none"
-            />
-          )}
-
-          {/* pins sorted so selected/hovered is on top */}
-          {(() => {
-            const items: { id: string; node: (h: boolean) => ReactNode }[] = []
-            for (const s of p.shelters || []) {
-              items.push({
-                id: s.id,
-                node: (h) => (
-                  <Pin
-                    key={s.id}
-                    x={s.x}
-                    y={s.y}
-                    k={k}
-                    type="shelter"
-                    selected={sel?.id === s.id}
-                    hovered={h}
-                    label={s.name}
-                    sub={`Mái ấm · ${s.district}`}
-                    onClick={() => p.onSelect?.({ kind: "shelter", id: s.id })}
-                    onHover={(x) => setHover(s.id, x)}
-                  />
-                ),
-              })
-            }
-            for (const s2 of p.clinics || []) {
-              items.push({
-                id: s2.id,
-                node: (h) => (
-                  <Pin
-                    key={s2.id}
-                    x={s2.x}
-                    y={s2.y}
-                    k={k}
-                    type="clinic"
-                    selected={sel?.id === s2.id}
-                    hovered={h}
-                    label={s2.name}
-                    sub={`Phòng khám · ${s2.district}`}
-                    onClick={() => p.onSelect?.({ kind: "clinic", id: s2.id })}
-                    onHover={(x) => setHover(s2.id, x)}
-                  />
-                ),
-              })
-            }
-            for (const c of caseMap) {
-              if (
-                c.critical &&
-                c.status === "active" &&
-                !(p.revealIds || []).includes(c.id)
-              ) {
-                const [ox, oy] = hashOff(c.id)
-                items.push({
-                  id: c.id,
-                  node: (h) => (
-                    <g key={c.id}>
-                      <circle
-                        cx={c.x + ox}
-                        cy={c.y + oy}
-                        r={40}
-                        fill="#d8503f"
-                        opacity={sel?.id === c.id || h ? 0.3 : 0.16}
-                        pointerEvents="none"
-                      />
-                      <circle
-                        cx={c.x + ox}
-                        cy={c.y + oy}
-                        r={40}
-                        fill="none"
-                        stroke="#d8503f"
-                        strokeWidth={2}
-                        strokeDasharray="3 7"
-                        strokeLinecap="round"
-                        pointerEvents="none"
-                      />
-                      <Pin
-                        x={c.x + ox}
-                        y={c.y + oy}
-                        k={k}
-                        type="rescue"
-                        pulse
-                        selected={sel?.id === c.id}
-                        hovered={h}
-                        label={`${c.name} · khu vực xấp xỉ`}
-                        sub={`Cần cứu hộ · ${ago(c.minutesAgo)}`}
-                        onClick={() => p.onSelect?.({ kind: "case", id: c.id })}
-                        onHover={(x) => setHover(c.id, x)}
-                      />
-                    </g>
-                  ),
-                })
-              } else {
-                const prog = c.status === "progress" || c.status === "pending"
-                items.push({
-                  id: c.id,
-                  node: (h) => (
-                    <Pin
-                      key={c.id}
-                      x={c.x}
-                      y={c.y}
-                      k={k}
-                      type={caseType(c)}
-                      progress={prog}
-                      selected={sel?.id === c.id}
-                      hovered={h || p.hoverId === c.id}
-                      label={`${c.name} · ${c.district}`}
-                      sub={`${
-                        prog ? "Đang xử lý" : PIN_META[caseType(c)].label
-                      } · ${ago(c.minutesAgo)}`}
-                      onClick={() => p.onSelect?.({ kind: "case", id: c.id })}
-                      onHover={(x) => setHover(c.id, x)}
-                    />
-                  ),
-                })
-              }
-            }
-            const top = (id: string) =>
-              sel?.id === id ? 2 : hoverNow === id ? 1 : 0
-            return items
-              .sort((a2, b2) => top(a2.id) - top(b2.id))
-              .map((it) => it.node(hoverNow === it.id))
-          })()}
-
-          {p.dest && (
-            <g transform={`translate(${p.dest.x} ${p.dest.y}) scale(${1 / k})`}>
-              <path
-                d={TEAR}
-                fill="#a9cc94"
-                stroke="#6b4128"
-                strokeWidth="3.5"
-              />
-              <g transform="translate(0 -30)">
-                <path
-                  d="M-9 1 V-4 L0 -11 L9 -4 V1Z"
-                  fill="#fff"
-                  stroke="#6b4128"
-                  strokeWidth="1.8"
-                  strokeLinejoin="round"
-                />
-              </g>
-            </g>
-          )}
-          {p.dropPin && (
-            <Pin x={p.dropPin.x} y={p.dropPin.y} k={k} type="lost" selected />
-          )}
-          {p.me && (
-            <g
-              transform={`translate(${p.me.x} ${p.me.y}) scale(${1 / k})`}
-              pointerEvents="none"
-            >
-              <circle r={22} fill="#4f93b5" opacity=".2">
-                <animate
-                  attributeName="r"
-                  values="10;28"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              <circle r={9} fill="#3f82a5" stroke="#fff" strokeWidth={3.5} />
-            </g>
-          )}
-        </g>
-      </svg>
-
+      {/* Floating Map Controls */}
       {p.controls !== false && (
         <div
           className={cx(
@@ -921,7 +754,7 @@ export default function CityMap(p: CityMapProps) {
             label="Vị trí hiện tại"
             variant="primary"
             size="md"
-            onClick={() => recenter({ ...(p.me || ME_POS), k: 1.5 })}
+            onClick={locateUser}
             className="shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"
           >
             <LocateFixed className="size-5" />
@@ -929,11 +762,12 @@ export default function CityMap(p: CityMapProps) {
         </div>
       )}
 
-      {p.loading && (
-        <div className="absolute inset-0 z-20 grid place-items-center bg-cream/85">
+      {/* Loading overlay */}
+      {(p.loading || !mapLoaded) && (
+        <div className="absolute inset-0 z-30 grid place-items-center bg-cream/85 backdrop-blur-[2px] transition-opacity">
           <div className="flex flex-col items-center gap-2 font-extrabold text-brown">
-            <PawPrint className="size-10 text-terracotta animate-bounce-soft" />
-            Đang tải bản đồ…
+            <PawPrint className="size-10 text-coral animate-bounce-soft" />
+            Đang tải bản đồ số OpenMapVN…
           </div>
         </div>
       )}
@@ -942,6 +776,7 @@ export default function CityMap(p: CityMapProps) {
 }
 
 const LEGEND: PinType[] = ["rescue", "lost", "shelter", "clinic", "warning"]
+
 export function LegendSwatch({ type }: { type: PinType }) {
   const m = PIN_META[type]
   return (
@@ -958,7 +793,7 @@ export function LegendSwatch({ type }: { type: PinType }) {
     />
   )
 }
-/** Collapsible legend with exactly the five pin types. Optional `hidden` + `onToggle` turn rows into layer toggles. */
+
 export function MapLegend({
   className,
   defaultOpen = true,
@@ -1032,5 +867,8 @@ export function MapLegend({
   )
 }
 
+/**
+ * Calculate distance in km from user position using Haversine formula
+ */
 export const kmFrom = (x: number, y: number, from = ME_POS) =>
-  Math.round((Math.hypot(x - from.x, y - from.y) / KM) * 10) / 10
+  kmFromGeo(x, y, from)

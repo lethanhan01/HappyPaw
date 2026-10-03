@@ -11,6 +11,7 @@
 /* --- Section 1: Font Imports --- */
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
+@import '@openmapvn/openmapvn-gl/dist/maplibre-gl.css';
 
 /* --- Section 2: Design Tokens --- */
 @theme {
@@ -166,6 +167,27 @@ button:disabled { cursor: not-allowed; }
 
 .map-grab { cursor: grab; touch-action: none; }
 .map-grab:active { cursor: grabbing; }
+
+/* OpenMapVN GL Customization */
+.maplibregl-canvas-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+.maplibregl-canvas {
+  outline: none;
+}
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-bottom-left {
+  display: none !important;
+}
+
+@keyframes marker-pulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.happypaw-pulse {
+  animation: marker-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
 
 /* --- Section 6: Performance & Motion --- */
 .animate-bounce-soft,
