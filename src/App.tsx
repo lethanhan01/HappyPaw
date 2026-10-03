@@ -19,6 +19,7 @@ const USER_SEGMENTS = new Set([
   "states",
   "report",
   "case",
+  "track",
 ])
 
 const COMMUNITY_SEGMENTS = new Set([

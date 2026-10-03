@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   Clock,
   Globe,
@@ -30,8 +30,17 @@ import {
   Verified,
   Note,
 } from "@ui"
-import { PlaceCard } from "@/components/common"
-import { RatingModal, SectionTitle, routeTo } from "./Shared"
+import { PlaceCard, OpenBadge } from "@/components/common"
+import { RatingModal, SectionTitle } from "./Shared"
+import { NavigationSheet } from "@/components/common/NavigationSheet"
+import {
+  fetchRoute,
+  getGoogleMapsDirectionsUrl,
+  type RouteData,
+  type RoutingProfile,
+} from "@/services/routingService"
+import { useLiveTracking } from "@/hooks/useLiveTracking"
+import { xyToLngLat } from "@/utils/geoConverter"
 
 type Kind = "shelter" | "clinic"
 const isShelter = (p: Place): p is Shelter => "needs" in p
@@ -247,10 +256,50 @@ export function Directory({ kind }: { kind: Kind }) {
 export function PlaceDetail({ kind, id }: { kind: Kind; id: string }) {
   const { go, toast, back } = useApp()
   const [rate, setRate] = useState(false)
-  const [route, setRoute] = useState(false)
+  const [routeData, setRouteData] = useState<RouteData | null>(null)
+  const [profile, setProfile] = useState<RoutingProfile>("driving")
+  const [showNavSheet, setShowNavSheet] = useState(false)
+  const [navLoading, setNavLoading] = useState(false)
+
   const p: Place | undefined = (kind === "shelter" ? SHELTERS : CLINICS).find(
     (x) => x.id === id,
   )
+
+  const {
+    isLive,
+    isSimulating,
+    rescuerPos,
+    heading,
+    speedMultiplier,
+    progressPercent,
+    hasArrived,
+    setSpeedMultiplier,
+    startSimulation,
+    stopLiveTracking,
+    startLiveGps,
+  } = useLiveTracking({ caseId: p?.id || "place" })
+
+  useEffect(() => {
+    if (!showNavSheet || !p) return
+    let active = true
+    setNavLoading(true)
+    const start = xyToLngLat(ME_POS.x, ME_POS.y)
+    const end = xyToLngLat(p.x, p.y)
+    fetchRoute(start, end, profile)
+      .then((res) => {
+        if (active) {
+          setRouteData(res)
+          setNavLoading(false)
+        }
+      })
+      .catch(() => {
+        if (active) setNavLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [showNavSheet, profile, p])
+
   if (!p)
     return (
       <Empty
@@ -304,42 +353,30 @@ export function PlaceDetail({ kind, id }: { kind: Kind; id: string }) {
             {p.address} · cách bạn {p.distance} km
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
-            {s ? (
-              <>
-                <Btn
-                  icon={<HandHeart className="size-5" />}
-                  onClick={() => go(`/donate/money?shelter=${p.id}`)}
-                >
-                  Donate
-                </Btn>
-                <Btn
-                  variant="secondary"
-                  icon={<Star className="size-5" />}
-                  onClick={() => setRate(true)}
-                >
-                  Đánh giá
-                </Btn>
-              </>
-            ) : (
-              <>
-                <Btn
-                  icon={<Navigation className="size-5" />}
-                  onClick={() => {
-                    setRoute(true)
-                    toast("Đã hiện đường đi trên bản đồ")
-                  }}
-                >
-                  Chỉ đường
-                </Btn>
-                <Btn
-                  variant="secondary"
-                  icon={<Star className="size-5" />}
-                  onClick={() => setRate(true)}
-                >
-                  Đánh giá
-                </Btn>
-              </>
+            {s && (
+              <Btn
+                icon={<HandHeart className="size-5" />}
+                onClick={() => go(`/donate/money?shelter=${p.id}`)}
+              >
+                Donate
+              </Btn>
             )}
+            <Btn
+              icon={<Navigation className="size-5" />}
+              onClick={() => {
+                setShowNavSheet(true)
+                toast("Đã bật tìm đường thực tế OSRM")
+              }}
+            >
+              Chỉ đường
+            </Btn>
+            <Btn
+              variant="secondary"
+              icon={<Star className="size-5" />}
+              onClick={() => setRate(true)}
+            >
+              Đánh giá
+            </Btn>
           </div>
         </div>
       </div>
@@ -432,19 +469,83 @@ export function PlaceDetail({ kind, id }: { kind: Kind; id: string }) {
         </div>
 
         <div className="space-y-6">
-          <div className="overflow-hidden rounded-[24px] border-2 border-brown shadow-soft">
+          <div className="relative overflow-hidden rounded-[24px] border-2 border-brown shadow-soft">
             <CityMap
-              className="h-64 w-full"
+              className="h-80 w-full"
               me={ME_POS}
               shelters={s ? [s] : undefined}
               clinics={c ? [c] : undefined}
-              route={route ? routeTo(p.x, p.y) : undefined}
+              dest={{ x: p.x, y: p.y, label: p.name }}
+              routeCoords={showNavSheet ? routeData?.coordinates : undefined}
+              routeColor="#2563eb"
+              liveRescuer={
+                rescuerPos
+                  ? {
+                      lng: rescuerPos[0],
+                      lat: rescuerPos[1],
+                      heading,
+                      name: "Bạn",
+                      vehicleType: profile === "walking" ? "Đi bộ" : "Xe máy",
+                      isLive,
+                    }
+                  : null
+              }
               center={{
-                x: (p.x + (route ? ME_POS.x : p.x)) / 2,
-                y: (p.y + (route ? ME_POS.y : p.y)) / 2,
-                k: route ? 0.9 : 1.5,
+                x: (p.x + (showNavSheet ? ME_POS.x : p.x)) / 2,
+                y: (p.y + (showNavSheet ? ME_POS.y : p.y)) / 2,
+                k: showNavSheet ? 1.2 : 1.5,
               }}
-              focusKey={`${p.id}${route}`}
+              focusKey={`${p.id}${showNavSheet}`}
+              extras={
+                showNavSheet ? (
+                  <NavigationSheet
+                    destinationName={p.name}
+                    destinationAddress={p.address || p.district}
+                    routeData={routeData}
+                    loading={navLoading}
+                    profile={profile}
+                    onProfileChange={setProfile}
+                    isSimulating={isSimulating}
+                    speedMultiplier={speedMultiplier}
+                    onToggleSimulation={() => {
+                      if (isSimulating) stopLiveTracking()
+                      else if (routeData) {
+                        startSimulation(
+                          p.id,
+                          routeData.coordinates,
+                          routeData.distanceKm,
+                          routeData.durationMinutes,
+                        )
+                      }
+                    }}
+                    onSpeedChange={setSpeedMultiplier}
+                    isLive={isLive}
+                    onStartLiveGps={() => startLiveGps(p.id, xyToLngLat(p.x, p.y))}
+                    onShareLiveLink={() => {
+                      const url = getGoogleMapsDirectionsUrl(
+                        xyToLngLat(ME_POS.x, ME_POS.y),
+                        xyToLngLat(p.x, p.y),
+                        profile,
+                      )
+                      window.open(url, "_blank")
+                    }}
+                    onOpenGoogleMaps={() => {
+                      const url = getGoogleMapsDirectionsUrl(
+                        xyToLngLat(ME_POS.x, ME_POS.y),
+                        xyToLngLat(p.x, p.y),
+                        profile,
+                      )
+                      window.open(url, "_blank")
+                    }}
+                    onClose={() => {
+                      setShowNavSheet(false)
+                      stopLiveTracking()
+                    }}
+                    progressPercent={progressPercent}
+                    hasArrived={hasArrived}
+                  />
+                ) : null
+              }
             />
           </div>
           <Card>

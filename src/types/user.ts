@@ -40,3 +40,16 @@ export interface Story {
   author: string
   place: string
 }
+
+export interface RescuerProfile {
+  id: string
+  name: string
+  phone: string
+  avatar: string
+  role: "Chuyên viên cứu hộ" | "Tình nguyện viên" | "Bác sĩ thú y lưu động"
+  vehicleType: "Xe máy" | "Ô tô cứu trợ" | "Bán tải cứu hộ"
+  vehiclePlate: string
+  rating: number
+  rescuesCount: number
+  currentStatus: "sẵn sàng" | "đang làm nhiệm vụ" | "ngoại tuyến"
+}

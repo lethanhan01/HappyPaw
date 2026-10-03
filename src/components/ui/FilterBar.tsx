@@ -2,7 +2,6 @@ import { useState, type ReactNode } from "react"
 import { SlidersHorizontal } from "lucide-react"
 import { Btn } from "./Button"
 import { Modal } from "./Modal"
-import { BottomSheet } from "./BottomSheet"
 
 export interface FilterBarProps {
   children: ReactNode
@@ -75,23 +74,14 @@ export function FilterBar({
       </div>
 
       {/* Mobile popup */}
-      {sheetType === "bottomSheet" ? (
-        <BottomSheet
-          open={open}
-          onClose={() => setOpen(false)}
-          title={title}
-        >
-          {content}
-        </BottomSheet>
-      ) : (
-        <Modal
-          open={open}
-          onClose={() => setOpen(false)}
-          title={title}
-        >
-          {content}
-        </Modal>
-      )}
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title={title}
+        sheet={sheetType === "bottomSheet"}
+      >
+        {content}
+      </Modal>
     </div>
   )
 }

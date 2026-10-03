@@ -14,6 +14,7 @@
     "check:conventions": "node scripts/check-conventions.mjs"
   },
   "dependencies": {
+    "@openmapvn/openmapvn-gl": "1.0.1",
     "heic2any": "^0.0.4",
     "lucide-react": "^1.49.0",
     "react": "^19.0.0",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.0.0",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
