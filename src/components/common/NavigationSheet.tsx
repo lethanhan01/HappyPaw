@@ -25,6 +25,8 @@ import type { RouteData, RouteStep, RoutingProfile } from "@/services/routingSer
 import { formatDistance, formatDuration } from "@/services/routingService"
 
 export interface NavigationContentProps {
+  destinationName?: string
+  destinationAddress?: string
   routeData: RouteData | null
   loading?: boolean
   profile: RoutingProfile
@@ -40,6 +42,7 @@ export interface NavigationContentProps {
   progressPercent?: number
   hasArrived?: boolean
   defaultShowSteps?: boolean
+  onClose?: () => void
 }
 
 function getStepIcon(step: RouteStep) {

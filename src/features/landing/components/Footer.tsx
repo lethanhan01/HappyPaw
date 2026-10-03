@@ -1,4 +1,4 @@
-import { Heart, MapPin, Phone, Mail } from "lucide-react"
+import { Heart, MapPin, Phone, Mail, Palette } from "lucide-react"
 import { useApp } from "@/store"
 import { Logo, Btn } from "@/components/ui"
 
@@ -169,6 +169,17 @@ export default function LandingFooter() {
                   Chính sách cộng đồng Happy Paws
                 </span>
               </li>
+              <li className="pt-1">
+                <Btn
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => go("/styleguide")}
+                  className="h-auto p-0 font-bold text-coral hover:text-coral-dark justify-start"
+                >
+                  <Palette className="size-4 mr-1.5" />
+                  Design System & Style Guide
+                </Btn>
+              </li>
             </ul>
           </div>
         </div>
@@ -179,10 +190,21 @@ export default function LandingFooter() {
             © 2026 Happy Paws Hanoi. Dự án cộng đồng phi lợi nhuận vì phúc lợi
             động vật.
           </p>
-          <p className="flex items-center gap-1">
-            Được xây dựng với tất cả tình yêu dành cho các bé bốn chân
-            <Heart className="size-3.5 fill-coral text-coral inline" />
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Btn
+              variant="outline"
+              size="sm"
+              icon={<Palette className="size-3.5" />}
+              onClick={() => go("/styleguide")}
+              className="text-xs !h-8 !px-3 !rounded-xl"
+            >
+              Style Guide & Tokens
+            </Btn>
+            <p className="flex items-center gap-1">
+              Được xây dựng với tất cả tình yêu dành cho các bé bốn chân
+              <Heart className="size-3.5 fill-coral text-coral inline" />
+            </p>
+          </div>
         </div>
       </div>
     </footer>
