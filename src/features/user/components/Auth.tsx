@@ -4,9 +4,6 @@ import {
   EyeOff,
   Loader2,
   ArrowLeft,
-  User,
-  Shield,
-  Sparkles,
 } from "lucide-react"
 import pawsImg from "@/assets/paws.png"
 import puddleApricot from "@/assets/puddle_vang_mo.jpg"
@@ -20,7 +17,6 @@ import {
   Field,
   Input,
   Select,
-  Badge,
 } from "@ui"
 import {
   MOCK_USER_ACCOUNT,
@@ -68,19 +64,6 @@ export default function Auth({ mode }: { mode: "login" | "register" }) {
   const [agree, setAgree] = useState(false)
   const [err, setErr] = useState<Record<string, string>>({})
   const reg = mode === "register"
-
-  const handleQuickLogin = (
-    role: "user" | "admin",
-    accountId: string,
-    label: string,
-  ) => {
-    setBusy(true)
-    setTimeout(() => {
-      setBusy(false)
-      toast(`Đã đăng nhập thành công với vai trò ${label}`)
-      login(role, accountId)
-    }, 400)
-  }
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
