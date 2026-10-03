@@ -4,9 +4,6 @@ import {
   EyeOff,
   Loader2,
   ArrowLeft,
-  User,
-  Shield,
-  Sparkles,
 } from "lucide-react"
 import pawsImg from "@/assets/paws.png"
 import puddleApricot from "@/assets/puddle_vang_mo.jpg"
@@ -20,7 +17,6 @@ import {
   Field,
   Input,
   Select,
-  Badge,
 } from "@ui"
 import {
   MOCK_USER_ACCOUNT,
@@ -69,19 +65,6 @@ export default function Auth({ mode }: { mode: "login" | "register" }) {
   const [err, setErr] = useState<Record<string, string>>({})
   const reg = mode === "register"
 
-  const handleQuickLogin = (
-    role: "user" | "admin",
-    accountId: string,
-    label: string,
-  ) => {
-    setBusy(true)
-    setTimeout(() => {
-      setBusy(false)
-      toast(`Đã đăng nhập thành công với vai trò ${label}`)
-      login(role, accountId)
-    }, 400)
-  }
-
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
     const er: Record<string, string> = {}
@@ -120,9 +103,8 @@ export default function Auth({ mode }: { mode: "login" | "register" }) {
       toast(
         reg
           ? "Đăng ký thành công! Chào mừng bạn đến với Happy Paws."
-          : `Đăng nhập thành công với vai trò ${
-              isAdminEmail ? "Quản trị viên" : "Thành viên"
-            }`,
+          : `Đăng nhập thành công với vai trò ${isAdminEmail ? "Quản trị viên" : "Thành viên"
+          }`,
       )
       login(role, accountId)
     }, 500)
@@ -426,63 +408,6 @@ export default function Auth({ mode }: { mode: "login" | "register" }) {
           >
             {reg ? "Đăng ký với Google" : "Tiếp tục với Google"}
           </Btn>
-
-          {/* 4. ĐĂNG NHẬP NHANH DEMO Ở CUỐI */}
-          <div className="mt-5 rounded-2xl border-2 border-line bg-paper/90 p-3.5 shadow-soft">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-black uppercase tracking-wider text-brown-soft flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-orange" />
-                {reg
-                  ? "Trải nghiệm nhanh bằng tài khoản Demo"
-                  : "Đăng nhập nhanh Demo"}
-              </span>
-              <Badge tone="butter">Kiểm thử</Badge>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Btn
-                variant="secondary"
-                size="sm"
-                disabled={busy}
-                onClick={() =>
-                  handleQuickLogin(
-                    "user",
-                    MOCK_USER_ACCOUNT.id,
-                    "Tình nguyện viên",
-                  )
-                }
-                icon={<User className="size-4 text-coral shrink-0" />}
-                className="!h-auto !py-2 !px-2.5 !justify-start text-left flex-col !items-start hover:!bg-white"
-              >
-                <span className="text-xs font-extrabold text-brown leading-none">
-                  Tình nguyện viên
-                </span>
-                <span className="text-[11px] font-semibold text-brown-soft leading-tight mt-1 truncate max-w-full">
-                  {MOCK_USER_ACCOUNT.name}
-                </span>
-              </Btn>
-              <Btn
-                variant="secondary"
-                size="sm"
-                disabled={busy}
-                onClick={() =>
-                  handleQuickLogin(
-                    "admin",
-                    MOCK_ADMIN_ACCOUNT.id,
-                    "Quản trị viên",
-                  )
-                }
-                icon={<Shield className="size-4 text-plum shrink-0" />}
-                className="!h-auto !py-2 !px-2.5 !justify-start text-left flex-col !items-start hover:!bg-white"
-              >
-                <span className="text-xs font-extrabold text-brown leading-none">
-                  Quản trị viên
-                </span>
-                <span className="text-[11px] font-semibold text-brown-soft leading-tight mt-1 truncate max-w-full">
-                  Admin Dashboard
-                </span>
-              </Btn>
-            </div>
-          </div>
 
           {/* 5. FOOTER LINK */}
           <p className="mt-5 text-center text-sm font-bold">
