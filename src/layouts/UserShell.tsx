@@ -10,6 +10,7 @@ import {
   User,
   LogOut,
   Settings2,
+  Palette,
 } from "lucide-react"
 import { useApp } from "@/store"
 import { Avatar, Btn, IconBtn, Logo, cx } from "@ui"
@@ -195,6 +196,7 @@ export default function UserShell({
                         ["/profile", "Hồ sơ của tôi", User],
                         ["/saved", "Bài đã lưu & theo dõi", Bookmark],
                         ["/leaderboard", "Bảng vinh danh", Users],
+                        ["/styleguide", "Style Guide & Tokens", Palette],
                       ].map(([to, l, I]: any) => (
                         <Btn
                           key={to}

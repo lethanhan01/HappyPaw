@@ -14,6 +14,8 @@ export function ToastHost() {
         >
           {t.tone === "ok" ? (
             <CheckCircle2 className="size-5 text-sage" />
+          ) : t.tone === "err" ? (
+            <AlertCircle className="size-5 text-coral" />
           ) : (
             <AlertCircle className="size-5 text-butter" />
           )}

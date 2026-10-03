@@ -8,6 +8,7 @@ const LandingPage = lazy(() => import("@/features/landing"))
 const AdminApp = lazy(() => import("@/features/admin"))
 const UserApp = lazy(() => import("@/features/user/UserApp"))
 const CommunityApp = lazy(() => import("@/features/community/CommunityApp"))
+const StyleGuidePage = lazy(() => import("@/features/styleguide/StyleGuidePage"))
 
 const USER_SEGMENTS = new Set([
   "login",
@@ -39,7 +40,8 @@ function Router() {
   const { seg, query } = parsePath(path)
   const isLanding = seg.length === 0 || seg[0] === "landing"
   const isAuthPage = seg[0] === "login" || seg[0] === "register"
-  const isPublic = isLanding || isAuthPage
+  const isStyleGuide = seg[0] === "styleguide"
+  const isPublic = isLanding || isAuthPage || isStyleGuide
 
   useEffect(() => {
     // 1. Khách chưa đăng nhập cố truy cập route được bảo vệ
@@ -51,7 +53,7 @@ function Router() {
 
     // 2. Tài khoản Admin: Bị cô lập hoàn toàn trong không gian /admin/*
     if (auth === "admin") {
-      if (seg[0] !== "admin") {
+      if (seg[0] !== "admin" && !isStyleGuide) {
         go("/admin/dashboard", { replace: true })
         return
       }
@@ -88,6 +90,8 @@ function Router() {
       }
     }
   }, [auth, path])
+
+  if (isStyleGuide) return <StyleGuidePage />
 
   if (auth === "guest" && !isPublic) return null
 

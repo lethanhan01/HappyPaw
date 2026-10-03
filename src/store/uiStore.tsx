@@ -12,7 +12,7 @@ import type { Notif } from "@/types/user"
 export interface Toast {
   id: number
   msg: string
-  tone: "ok" | "warn" | "err"
+  tone: "ok" | "warn" | "err" | "info"
 }
 
 interface UICtx {
