@@ -25,6 +25,13 @@ import {
   FlaskConical,
   ChevronLeft,
   ChevronRight,
+  Play,
+  Square,
+  Radio,
+  Bike,
+  Footprints,
+  ExternalLink,
+  Share2,
 } from "lucide-react"
 import UserShell from "@/layouts/UserShell"
 import { useApp } from "@/store"
@@ -32,6 +39,18 @@ import { parsePath, cx } from "@/lib"
 import CityMap, { ME_POS, kmFrom } from "@/features/map"
 import { SHELTERS, timeAgo, userById } from "@/constants"
 import type { Case } from "@/types"
+import {
+  fetchRoute,
+  getGoogleMapsDirectionsUrl,
+  type RouteData,
+  type RoutingProfile,
+  formatDistance,
+  formatDuration,
+} from "@/services/routingService"
+import { useLiveTracking } from "@/hooks/useLiveTracking"
+import { xyToLngLat } from "@/utils/geoConverter"
+import { LiveTrackingModal } from "@/components/common/LiveTrackingModal"
+import LiveTrackingView from "./LiveTrackingView"
 import {
   Badge,
   Btn,
@@ -871,6 +890,37 @@ export function RescueProgress({ id }: { id: string }) {
     findPlace(saved.handoff)?.kind ?? "shelter",
   )
   const [pick, setPick] = useState<string | null>(saved.handoff ?? null)
+  const [routeData, setRouteData] = useState<RouteData | null>(null)
+  const [profile, setProfile] = useState<RoutingProfile>("driving")
+  const [showShareModal, setShowShareModal] = useState(false)
+
+  const {
+    isLive,
+    isSimulating,
+    rescuerPos,
+    heading,
+    speedMultiplier,
+    progressPercent,
+    hasArrived,
+    setSpeedMultiplier,
+    startSimulation,
+    stopLiveTracking,
+    startLiveGps,
+  } = useLiveTracking({ caseId: id })
+
+  useEffect(() => {
+    if (!c) return
+    let active = true
+    const start = xyToLngLat(ME_POS.x, ME_POS.y)
+    const end = xyToLngLat(c.x, c.y)
+    fetchRoute(start, end, profile).then((res) => {
+      if (active) setRouteData(res)
+    })
+    return () => {
+      active = false
+    }
+  }, [c?.x, c?.y, profile])
+
   if (!c) return <NotFound />
   if (c.assignee !== me)
     return (
@@ -882,13 +932,30 @@ export function RescueProgress({ id }: { id: string }) {
         />
       </UserShell>
     )
-  const route = [
-    { ...ME_POS },
-    { x: (ME_POS.x + c.x) / 2 + 20, y: (ME_POS.y + c.y) / 2 - 15 },
-    { x: c.x, y: c.y },
-  ]
+
   const dist = kmFrom(c.x, c.y)
   const places = placesOf(kind)
+
+  const handleToggleSimulation = () => {
+    if (isSimulating) {
+      stopLiveTracking()
+    } else if (routeData) {
+      startSimulation(
+        c.id,
+        routeData.coordinates,
+        routeData.distanceKm,
+        routeData.durationMinutes,
+      )
+    }
+  }
+
+  const handleOpenGoogleMaps = () => {
+    const start = xyToLngLat(ME_POS.x, ME_POS.y)
+    const end = xyToLngLat(c.x, c.y)
+    const url = getGoogleMapsDirectionsUrl(start, end, profile)
+    window.open(url, "_blank", "noopener,noreferrer")
+  }
+
   const confirmHandoff = () => {
     if (!pick) return
     setProof(c.id, flowPatch({ handoff: pick, progress: 4 }))
@@ -934,26 +1001,166 @@ export function RescueProgress({ id }: { id: string }) {
                 cases={[c]}
                 revealIds={[c.id]}
                 me={ME_POS}
-                route={route}
                 dest={{ x: c.x, y: c.y, label: c.name }}
                 center={{
                   x: (ME_POS.x + c.x) / 2,
                   y: (ME_POS.y + c.y) / 2,
                   k: 1.5,
                 }}
+                routeCoords={routeData?.coordinates}
+                routeColor="#2563eb"
+                liveRescuer={
+                  rescuerPos
+                    ? {
+                        lng: rescuerPos[0],
+                        lat: rescuerPos[1],
+                        heading,
+                        name: "Bạn (Cứu hộ)",
+                        vehicleType: profile === "walking" ? "Đi bộ" : "Xe máy",
+                        isLive,
+                      }
+                    : null
+                }
               />
             </div>
-            <div className="space-y-1 p-4 text-sm font-extrabold">
+            <div className="space-y-3 p-4 bg-paper border-t border-brown/10 text-sm">
               <div className="flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2">
-                  <Navigation className="size-4" />
-                  Cách bạn {dist} km
+                <span className="flex items-center gap-2 font-black text-brown">
+                  <Navigation className="size-4 text-emerald-700" />
+                  {routeData ? formatDistance(routeData.distanceMeters) : `Cách bạn ${dist} km`}
                 </span>
-                <span>~{Math.max(3, Math.round(dist * 6))} phút di chuyển</span>
+                <span className="font-display font-black text-emerald-700">
+                  ~{routeData ? formatDuration(routeData.durationSeconds) : `${Math.max(3, Math.round(dist * 6))} phút`} di chuyển
+                </span>
               </div>
-              <p className="text-xs font-bold text-brown-soft">
-                Bản đồ hiển thị vị trí của bạn, vị trí cứu hộ và lộ trình gợi ý.
-              </p>
+
+              {/* Vehicle profile tabs */}
+              <div className="flex rounded-xl bg-brown/10 p-1 gap-1">
+                <Btn
+                  type="button"
+                  size="sm"
+                  variant={profile === "driving" ? "secondary" : "ghost"}
+                  onClick={() => setProfile("driving")}
+                  className={cx(
+                    "!h-7 flex-1 !border-none !shadow-none text-xs font-extrabold",
+                    profile === "driving"
+                      ? "!bg-paper !text-brown"
+                      : "!text-brown-soft hover:!text-brown",
+                  )}
+                  icon={<Bike className="size-3.5" />}
+                >
+                  Xe máy / Ô tô
+                </Btn>
+                <Btn
+                  type="button"
+                  size="sm"
+                  variant={profile === "walking" ? "secondary" : "ghost"}
+                  onClick={() => setProfile("walking")}
+                  className={cx(
+                    "!h-7 flex-1 !border-none !shadow-none text-xs font-extrabold",
+                    profile === "walking"
+                      ? "!bg-paper !text-brown"
+                      : "!text-brown-soft hover:!text-brown",
+                  )}
+                  icon={<Footprints className="size-3.5" />}
+                >
+                  Đi bộ
+                </Btn>
+              </div>
+
+              {/* Simulation Progress bar */}
+              {(isSimulating || isLive) && (
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] font-extrabold text-brown">
+                    <span className="flex items-center gap-1 text-emerald-700">
+                      <Radio className="size-3 animate-pulse" />
+                      {hasArrived ? "Đã tới hiện trường!" : "Đang di chuyển"}
+                    </span>
+                    <span>{progressPercent}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-brown/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-600 transition-all duration-300"
+                      style={{ width: `${Math.min(100, Math.max(5, progressPercent))}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <Btn
+                  size="sm"
+                  variant={isSimulating ? "danger" : "primary"}
+                  onClick={handleToggleSimulation}
+                  icon={isSimulating ? <Square className="size-4" /> : <Play className="size-4" />}
+                  className="font-extrabold text-xs shadow-[0_3px_0_var(--color-brown)] active:translate-y-0.5 active:shadow-none"
+                >
+                  {isSimulating ? "Dừng mô phỏng" : "Mô phỏng chạy"}
+                </Btn>
+                <Btn
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setShowShareModal(true)}
+                  icon={<Share2 className="size-4" />}
+                  className="font-extrabold text-xs"
+                >
+                  Chia sẻ vị trí
+                </Btn>
+              </div>
+
+              {/* Speed controls when simulating */}
+              {isSimulating && (
+                <div className="flex items-center justify-between px-2 py-1 rounded-xl bg-butter/50 border border-brown/15 text-xs font-bold">
+                  <span className="text-brown text-[11px]">Tốc độ:</span>
+                  <div className="flex gap-1">
+                    {[1, 2, 5, 10].map((s) => (
+                      <Btn
+                        key={s}
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setSpeedMultiplier(s)}
+                        className={cx(
+                          "!h-5 !px-1.5 !py-0 !border-none !shadow-none !rounded-md text-[10px] font-black transition",
+                          speedMultiplier === s
+                            ? "!bg-brown !text-white"
+                            : "!bg-paper !text-brown hover:!bg-brown/10",
+                        )}
+                      >
+                        {s}x
+                      </Btn>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Google Maps link & Real GPS */}
+              <div className="flex items-center justify-between pt-1 border-t border-brown/10 text-xs">
+                <Btn
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => startLiveGps(c.id, xyToLngLat(c.x, c.y))}
+                  className={cx(
+                    "!h-6 !px-1 !border-none !shadow-none font-extrabold text-xs",
+                    isLive ? "!text-emerald-700" : "!text-brown-soft hover:!text-brown",
+                  )}
+                  icon={<Radio className="size-3" />}
+                >
+                  {isLive ? "Đang bật GPS thật" : "Bật GPS thật"}
+                </Btn>
+                <Btn
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleOpenGoogleMaps}
+                  className="!h-6 !px-1 !border-none !shadow-none !text-sky-700 hover:!text-sky-800 font-extrabold text-xs"
+                >
+                  Google Maps
+                  <ExternalLink className="size-3" />
+                </Btn>
+              </div>
             </div>
           </div>
 
@@ -1166,6 +1373,14 @@ export function RescueProgress({ id }: { id: string }) {
           </Btn>
         </div>
       </Modal>
+
+      <LiveTrackingModal
+        open={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        caseId={c.id}
+        caseName={c.name}
+        isLive={isLive || isSimulating}
+      />
     </UserShell>
   )
   function setProofProgress(n: number) {
@@ -1694,13 +1909,21 @@ export function caseRoute(path: string) {
   const { seg, query } = parsePath(path)
   if (seg[0] !== "case" || !seg[1]) return null
   const id = seg[1]
+
+  if (query.live === "1" || seg[2] === "track") {
+    return <LiveTrackingView id={id} />
+  }
+
   switch (seg[2]) {
     case undefined:
       return <CaseDetail id={id} query={query} />
     case "update":
       return <UpdateLocation id={id} />
     case "rescue":
+    case "route":
       return <RescueProgress id={id} />
+    case "track":
+      return <LiveTrackingView id={id} />
     case "proof":
       return <Proof id={id} />
     case "resolved":

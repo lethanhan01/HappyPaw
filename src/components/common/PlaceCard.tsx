@@ -33,6 +33,7 @@ export interface PlaceCardProps {
   extraMeta?: ReactNode
   className?: string
   layout?: "horizontal" | "vertical"
+  kind?: "shelter" | "clinic"
 }
 
 export function PlaceCard({

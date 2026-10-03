@@ -6,6 +6,7 @@ import {
   HandHeart,
   Lock,
   MapPin,
+  Navigation,
   Siren,
   Star,
   X,
@@ -38,6 +39,13 @@ export interface PinDetailCardProps {
   className?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any
+  onDirections?: (target: {
+    x: number
+    y: number
+    name: string
+    address?: string
+    caseId?: string
+  }) => void
 }
 
 export function PinDetailCard({
@@ -49,6 +57,7 @@ export function PinDetailCard({
   verified,
   className,
   data,
+  onDirections,
 }: PinDetailCardProps) {
   const { go, getCase } = useApp()
 
@@ -179,21 +188,42 @@ export function PinDetailCard({
           {actions ? (
             actions
           ) : (
-            <div className="flex gap-2">
-              <Btn
-                size="sm"
-                variant="secondary"
-                className="flex-1"
-                onClick={() => go(`/case/${c.id}`)}
-                icon={<Eye className="size-4" />}
-              >
-                Chi tiết
-              </Btn>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <Btn
+                  size="sm"
+                  variant="secondary"
+                  className="flex-1 text-xs"
+                  onClick={() => go(`/case/${c.id}`)}
+                  icon={<Eye className="size-4" />}
+                >
+                  Chi tiết
+                </Btn>
+                {onDirections && (
+                  <Btn
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 text-xs font-black text-sky-800 border-sky-300 bg-sky-50/80 hover:bg-sky-100"
+                    onClick={() =>
+                      onDirections({
+                        x: c.x,
+                        y: c.y,
+                        name: `${c.name} (${c.species})`,
+                        address: `${c.street}, Q. ${c.district}`,
+                        caseId: c.id,
+                      })
+                    }
+                    icon={<Navigation className="size-4 text-sky-600" />}
+                  >
+                    Chỉ đường
+                  </Btn>
+                )}
+              </div>
               {c.status === "active" && (
                 <Btn
                   size="sm"
                   variant={urgent ? "danger" : "primary"}
-                  className="flex-[1.4] font-extrabold shadow-[0_3px_0_var(--color-brown)] active:translate-y-1 active:shadow-none"
+                  className="w-full font-extrabold shadow-[0_3px_0_var(--color-brown)] active:translate-y-1 active:shadow-none"
                   onClick={() => go(`/case/${c.id}?help=1`)}
                   icon={
                     urgent ? (
@@ -211,7 +241,7 @@ export function PinDetailCard({
                 </Btn>
               )}
               {taken && c.assignee && (
-                <span className="flex flex-1 items-center justify-center rounded-2xl border border-brown/30 bg-butter/80 px-2 py-1 text-center text-xs font-extrabold">
+                <span className="flex items-center justify-center rounded-2xl border border-brown/30 bg-butter/80 px-2 py-1 text-center text-xs font-extrabold">
                   Đang có người phụ trách
                 </span>
               )}
@@ -387,15 +417,36 @@ export function PinDetailCard({
         {actions ? (
           actions
         ) : (
-          <Btn
-            size="sm"
-            full
-            onClick={() =>
-              go(`/${sel.kind === "shelter" ? "shelters" : "clinics"}/${p.id}`)
-            }
-          >
-            Xem {sel.kind === "shelter" ? "mái ấm" : "phòng khám"}
-          </Btn>
+          <div className="flex gap-2">
+            <Btn
+              size="sm"
+              variant="secondary"
+              className="flex-1 text-xs"
+              onClick={() =>
+                go(`/${sel.kind === "shelter" ? "shelters" : "clinics"}/${p.id}`)
+              }
+            >
+              Xem {sel.kind === "shelter" ? "mái ấm" : "phòng khám"}
+            </Btn>
+            {onDirections && p.x != null && p.y != null && (
+              <Btn
+                size="sm"
+                variant="outline"
+                className="flex-1 text-xs font-black text-sky-800 border-sky-300 bg-sky-50/80 hover:bg-sky-100"
+                onClick={() =>
+                  onDirections({
+                    x: p.x,
+                    y: p.y,
+                    name: p.name,
+                    address: p.address || p.district,
+                  })
+                }
+                icon={<Navigation className="size-4 text-sky-600" />}
+              >
+                Chỉ đường
+              </Btn>
+            )}
+          </div>
         )}
       </div>
     </div>

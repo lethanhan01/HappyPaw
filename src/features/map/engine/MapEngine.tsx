@@ -118,6 +118,7 @@ export interface MapApi {
   zoom: (f: number) => void
   locate: () => void
   focus: (x: number, y: number, k?: number) => void
+  focusLngLat: (lng: number, lat: number, zoom?: number) => void
 }
 
 export interface CityMapProps {
@@ -130,9 +131,23 @@ export interface CityMapProps {
   onSelect?: (s: Sel | null) => void
   radius?: { x: number; y: number; km: number } | null
   route?: { x: number; y: number }[]
+  routeCoords?: [number, number][]
+  routeColor?: string
+  liveRescuer?: {
+    lng: number
+    lat: number
+    heading?: number
+    name?: string
+    vehicleType?: string
+    isLive?: boolean
+    avatar?: string
+  } | null
   trail?: { x: number; y: number; t: string }[]
   predicted?: { x: number; y: number; r: number } | null
   me?: { x: number; y: number } | null
+  userLocation?: [number, number] | null
+  onLocate?: (coords: [number, number]) => void
+  onLocateError?: (err: GeolocationPositionError) => void
   dest?: { x: number; y: number; label?: string } | null
   revealIds?: string[]
   center?: { x: number; y: number; k?: number }
@@ -153,8 +168,12 @@ export default function CityMap(p: CityMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const markersRef = useRef<maplibregl.Marker[]>([])
+  const liveRescuerMarkerRef = useRef<maplibregl.Marker | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
   const [hov, setHov] = useState<string | null>(null)
+  const [internalUserLocation, setInternalUserLocation] = useState<[number, number] | null>(null)
+
+  const activeUserCoords = p.userLocation !== undefined ? p.userLocation : internalUserLocation
 
   const sel = p.selected
   const hoverNow = p.hoverId ?? hov
@@ -197,9 +216,24 @@ export default function CityMap(p: CityMapProps) {
       }
     })
 
+    // ResizeObserver to handle layout transitions, drawer gestures, and orientation changes
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapRef.current) {
+        mapRef.current.resize()
+      }
+    })
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+
     mapRef.current = map
 
     return () => {
+      resizeObserver.disconnect()
+      if (liveRescuerMarkerRef.current) {
+        liveRescuerMarkerRef.current.remove()
+        liveRescuerMarkerRef.current = null
+      }
       map.remove()
       mapRef.current = null
       setMapLoaded(false)
@@ -235,9 +269,12 @@ export default function CityMap(p: CityMapProps) {
             pos.coords.longitude,
             pos.coords.latitude,
           ]
+          setInternalUserLocation(userLngLat)
+          p.onLocate?.(userLngLat)
           mapRef.current?.flyTo({ center: userLngLat, zoom: 15, duration: 1000 })
         },
-        () => {
+        (err) => {
+          p.onLocateError?.(err)
           // Fallback to configured me position
           const fallback = xyToLngLat(
             (p.me || ME_POS).x,
@@ -245,13 +282,13 @@ export default function CityMap(p: CityMapProps) {
           )
           mapRef.current?.flyTo({ center: fallback, zoom: 14.5, duration: 1000 })
         },
-        { enableHighAccuracy: true, timeout: 4000 },
+        { enableHighAccuracy: true, timeout: 10000 },
       )
     } else {
       const fallback = xyToLngLat((p.me || ME_POS).x, (p.me || ME_POS).y)
       mapRef.current.flyTo({ center: fallback, zoom: 14.5, duration: 1000 })
     }
-  }, [p.me])
+  }, [p.me, p.onLocate, p.onLocateError])
 
   useEffect(() => {
     if (p.apiRef) {
@@ -263,6 +300,10 @@ export default function CityMap(p: CityMapProps) {
           const target = xyToLngLat(x, y)
           const zoom = kk ? 12.5 + (kk - 1) * 2.5 : 14.5
           mapRef.current.flyTo({ center: target, zoom, duration: 900 })
+        },
+        focusLngLat: (lng, lat, zoomLevel = 15) => {
+          if (!mapRef.current) return
+          mapRef.current.flyTo({ center: [lng, lat], zoom: zoomLevel, duration: 900 })
         },
       }
     }
@@ -281,7 +322,7 @@ export default function CityMap(p: CityMapProps) {
       lngLat,
       type,
       id,
-      kind,
+      kind: _kind,
       label,
       sub,
       selected,
@@ -313,7 +354,7 @@ export default function CityMap(p: CityMapProps) {
       // Scale up if selected or hovered
       const scale = selected ? 1.25 : hovered ? 1.12 : 1
       el.style.transform = `scale(${scale})`
-      el.style.zIndex = selected ? "100" : hovered ? "80" : "10"
+      el.style.zIndex = selected ? "30" : hovered ? "20" : "10"
 
       const pulseHtml = pulse
         ? `<div class="happypaw-pulse absolute rounded-full pointer-events-none" style="width: 42px; height: 42px; left: -1px; top: ${sh.gy + 10}px; background: ${m.color}; opacity: 0.5;"></div>`
@@ -442,19 +483,29 @@ export default function CityMap(p: CityMapProps) {
     }
 
     // User location (me)
-    if (p.me || ME_POS) {
-      const pos = p.me || ME_POS
-      const userLngLat = xyToLngLat(pos.x, pos.y)
+    const effectiveUserLngLat: [number, number] | null = activeUserCoords
+      ? activeUserCoords
+      : p.me || ME_POS
+        ? xyToLngLat((p.me || ME_POS).x, (p.me || ME_POS).y)
+        : null
+
+    if (effectiveUserLngLat) {
       const el = document.createElement("div")
-      el.className = "relative flex items-center justify-center select-none pointer-events-none"
+      el.className =
+        "relative flex items-center justify-center select-none pointer-events-auto cursor-pointer group z-20"
       el.style.width = "40px"
       el.style.height = "40px"
+      el.setAttribute("title", "Vị trí của bạn")
       el.innerHTML = `
-        <div class="happypaw-pulse absolute size-9 rounded-full bg-sky-2/40"></div>
-        <div class="size-4.5 rounded-full bg-sky-2 border-2.5 border-white shadow-md"></div>
+        <div class="happypaw-pulse absolute size-9 rounded-full bg-sky-500/40 animate-ping"></div>
+        <div class="absolute size-8 rounded-full bg-sky-400/25"></div>
+        <div class="size-4.5 rounded-full bg-sky-600 border-2.5 border-white shadow-lg transition-transform group-hover:scale-125"></div>
+        <div class="pointer-events-none absolute bottom-full mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-paper text-brown border border-brown/20 shadow-md text-[11px] font-black px-2 py-0.5 rounded-lg whitespace-nowrap z-30">
+          Vị trí của bạn
+        </div>
       `
       const meMarker = new maplibregl.Marker({ element: el, anchor: "center" })
-        .setLngLat(userLngLat)
+        .setLngLat(effectiveUserLngLat)
         .addTo(map)
       markersRef.current.push(meMarker)
     }
@@ -519,9 +570,76 @@ export default function CityMap(p: CityMapProps) {
     hoverNow,
     p.revealIds,
     p.me,
+    activeUserCoords,
     p.dropPin,
     p.dest,
     p.trail,
+  ])
+
+  // 4.1 Live Rescuer Marker Effect (Real-time GPS / Simulation)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapLoaded) return
+
+    if (!p.liveRescuer) {
+      if (liveRescuerMarkerRef.current) {
+        liveRescuerMarkerRef.current.remove()
+        liveRescuerMarkerRef.current = null
+      }
+      return
+    }
+
+    const {
+      lng,
+      lat,
+      heading = 0,
+      name = "Cứu hộ viên",
+      vehicleType = "Xe máy",
+    } = p.liveRescuer
+
+    if (!liveRescuerMarkerRef.current) {
+      const el = document.createElement("div")
+      el.className =
+        "relative flex flex-col items-center select-none pointer-events-auto cursor-pointer z-30"
+      el.innerHTML = `
+        <div class="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black tracking-wide uppercase shadow-md flex items-center gap-1 mb-1 border border-white">
+          <span class="size-1.5 rounded-full bg-white animate-pulse"></span>
+          LIVE GPS
+        </div>
+        <div class="relative size-12 flex items-center justify-center">
+          <div class="absolute inset-0 rounded-full bg-emerald-500/40 animate-ping"></div>
+          <div class="absolute inset-1 rounded-full bg-emerald-500/25"></div>
+          <div class="relative size-10 rounded-full bg-emerald-600 border-2 border-white shadow-xl flex items-center justify-center text-white rescuer-compass-needle" style="transform: rotate(${heading}deg); transition: transform 0.25s ease-out;">
+            <svg class="size-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L19 21L12 17L5 21L12 2Z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-0.5 px-2.5 py-0.5 rounded-md bg-paper border border-brown text-[11px] font-extrabold text-brown shadow-sm whitespace-nowrap">
+          ${name} · ${vehicleType}
+        </div>
+      `
+      const m = new maplibregl.Marker({ element: el, anchor: "center" })
+        .setLngLat([lng, lat])
+        .addTo(map)
+      liveRescuerMarkerRef.current = m
+    } else {
+      liveRescuerMarkerRef.current.setLngLat([lng, lat])
+      const needleEl = liveRescuerMarkerRef.current
+        .getElement()
+        .querySelector(".rescuer-compass-needle") as HTMLElement | null
+      if (needleEl) {
+        needleEl.style.transform = `rotate(${heading}deg)`
+      }
+    }
+  }, [
+    mapLoaded,
+    p.liveRescuer?.lng,
+    p.liveRescuer?.lat,
+    p.liveRescuer?.heading,
+    p.liveRescuer?.name,
+    p.liveRescuer?.vehicleType,
+    p.liveRescuer?.isLive,
   ])
 
   // 5. Render GeoJSON Vector Layers (Radius, Risks, Predicted, Trail, Route)
@@ -686,43 +804,115 @@ export default function CityMap(p: CityMapProps) {
       if (map.getSource("pet-trail-source")) map.removeSource("pet-trail-source")
     }
 
-    // 5.5 Route
-    if (p.route && p.route.length > 1) {
-      const routeCoords = p.route.map((pt) => xyToLngLat(pt.x, pt.y))
+    // 5.5 Route (Support both real GPS routeCoords from OSRM and SVG xy routes)
+    const effectiveRouteCoords: [number, number][] | null =
+      p.routeCoords && p.routeCoords.length > 1
+        ? p.routeCoords
+        : p.route && p.route.length > 1
+          ? p.route.map((pt) => xyToLngLat(pt.x, pt.y))
+          : null
+
+    if (effectiveRouteCoords) {
       const routeGeoJSON: GeoJSON.Feature = {
         type: "Feature",
         geometry: {
           type: "LineString",
-          coordinates: routeCoords,
+          coordinates: effectiveRouteCoords,
         },
         properties: {},
       }
       updateSource("route-source", routeGeoJSON)
 
+      const mainColor = p.routeColor || "#2563eb"
+
+      // Outer glow casing
+      if (!map.getLayer("route-casing")) {
+        map.addLayer({
+          id: "route-casing",
+          type: "line",
+          source: "route-source",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#1e3a8a",
+            "line-width": 7.5,
+            "line-opacity": 0.35,
+          },
+        })
+      }
+
+      // Inner main route line
       if (!map.getLayer("route-line")) {
         map.addLayer({
           id: "route-line",
           type: "line",
           source: "route-source",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
           paint: {
-            "line-color": "#3f82a5",
-            "line-width": 4,
-            "line-dasharray": [4, 4],
+            "line-color": mainColor,
+            "line-width": 4.5,
           },
         })
+      } else {
+        map.setPaintProperty("route-line", "line-color", mainColor)
+      }
+
+      // Auto fit bounds to comfortably frame the route
+      try {
+        const lngs = effectiveRouteCoords.map((c) => c[0])
+        const lats = effectiveRouteCoords.map((c) => c[1])
+        const minLng = Math.min(...lngs)
+        const maxLng = Math.max(...lngs)
+        const minLat = Math.min(...lats)
+        const maxLat = Math.max(...lats)
+        if (minLng !== maxLng || minLat !== maxLat) {
+          map.fitBounds(
+            [
+              [minLng, minLat],
+              [maxLng, maxLat],
+            ],
+            {
+              padding: { top: 70, bottom: 180, left: 50, right: 50 },
+              maxZoom: 16,
+              duration: 900,
+            },
+          )
+        }
+      } catch {
+        // Safe fallback if coordinates are invalid
       }
     } else {
       if (map.getLayer("route-line")) map.removeLayer("route-line")
+      if (map.getLayer("route-casing")) map.removeLayer("route-casing")
       if (map.getSource("route-source")) map.removeSource("route-source")
     }
-  }, [mapLoaded, p.radius, p.predicted, p.risks, p.trail, p.route, sel])
+  }, [
+    mapLoaded,
+    p.radius,
+    p.predicted,
+    p.risks,
+    p.trail,
+    p.route,
+    p.routeCoords,
+    p.routeColor,
+    sel,
+  ])
 
   return (
     <div className={cx("relative size-full overflow-hidden bg-map-sand", p.className)}>
       {/* MapLibre WebGL container */}
       <div ref={containerRef} className="size-full map-grab" />
 
-      {p.extras}
+      {p.extras && (
+        <div className="absolute inset-0 pointer-events-none z-[120]">
+          <div className="pointer-events-auto size-full">{p.extras}</div>
+        </div>
+      )}
 
       {/* Floating Map Controls */}
       {p.controls !== false && (

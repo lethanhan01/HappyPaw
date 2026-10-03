@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import {
   SlidersHorizontal,
   Map as MapIcon,
@@ -6,6 +6,7 @@ import {
   Plus,
   Minus,
   LocateFixed,
+  Loader2,
   ChevronRight,
   ArrowLeft,
   X,
@@ -53,6 +54,20 @@ import {
 } from "@ui"
 import { useMedia } from "@/hooks/useMedia"
 import { CaseCard, CaseCardSkeleton, PinDetailCard } from "@/components/common"
+import { NavigationSheet, NavigationContent } from "@/components/common/NavigationSheet"
+import { LiveTrackingModal } from "@/components/common/LiveTrackingModal"
+import {
+  fetchRoute,
+  getGoogleMapsDirectionsUrl,
+  type RouteData,
+  type RoutingProfile,
+} from "@/services/routingService"
+import { useLiveTracking } from "@/hooks/useLiveTracking"
+import {
+  xyToLngLat,
+  HANOI_CENTER,
+  haversineDistance,
+} from "@/utils/geoConverter"
 
 export { approxLoc } from "@/features/map"
 
@@ -85,7 +100,7 @@ export default function Explorer({
 }: {
   variant?: "home" | "map"
 }) {
-  const { cases, go } = useApp()
+  const { cases, go, toast } = useApp()
   const desktop = useMedia("(min-width: 1024px)")
   const [loading, setLoading] = useState(true)
   const [sel, setSel] = useState<Sel | null>(null)
@@ -103,6 +118,180 @@ export default function Explorer({
   const [snap, setSnap] = useState<0 | 1 | 2>(0)
   const [hiddenKinds, setHiddenKinds] = useState<PinType[]>([])
   const api = useRef<MapApi | null>(null)
+
+  // Real GPS User Location State
+  const [userCoords, setUserCoords] = useState<[number, number] | null>(null)
+  const [isLocating, setIsLocating] = useState(false)
+  const [isOutsideHanoi, setIsOutsideHanoi] = useState(false)
+
+  const handleLocate = useCallback(
+    (showFeedback = true) => {
+      if (!("geolocation" in navigator)) {
+        if (showFeedback) {
+          toast("Trình duyệt của bạn không hỗ trợ định vị GPS.", "warn")
+        }
+        return
+      }
+
+      setIsLocating(true)
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords: [number, number] = [
+            pos.coords.longitude,
+            pos.coords.latitude,
+          ]
+          setUserCoords(coords)
+          setIsLocating(false)
+
+          const distFromHanoi = haversineDistance(coords, HANOI_CENTER)
+          if (distFromHanoi > 50) {
+            setIsOutsideHanoi(true)
+            if (showFeedback) {
+              toast(
+                "Vị trí của bạn nằm ngoài Hà Nội. Dữ liệu ca cứu hộ mẫu hiện tập trung tại Hà Nội.",
+                "info",
+              )
+            }
+          } else {
+            setIsOutsideHanoi(false)
+            if (showFeedback) {
+              toast("Đã xác định vị trí của bạn!", "ok")
+            }
+          }
+
+          api.current?.focusLngLat(coords[0], coords[1], 15)
+        },
+        (err) => {
+          setIsLocating(false)
+          if (showFeedback) {
+            if (err.code === 1) {
+              toast(
+                "Bạn đã từ chối quyền truy cập vị trí. Hãy bật lại trong cài đặt trình duyệt.",
+                "warn",
+              )
+            } else if (err.code === 3) {
+              toast("Quá thời gian xác định vị trí. Vui lòng thử lại.", "warn")
+            } else {
+              toast("Không thể xác định vị trí hiện tại của bạn.", "warn")
+            }
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000 },
+      )
+    },
+    [toast],
+  )
+
+  // Auto-locate silently on mount if permission has already been granted
+  useEffect(() => {
+    if ("permissions" in navigator) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((result) => {
+          if (result.state === "granted") {
+            handleLocate(false)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [handleLocate])
+
+  // Realtime Routing & Live Tracking State
+  const [navTarget, setNavTarget] = useState<{
+    x: number
+    y: number
+    name: string
+    address?: string
+    caseId?: string
+  } | null>(null)
+  const [navRouteData, setNavRouteData] = useState<RouteData | null>(null)
+  const [navLoading, setNavLoading] = useState(false)
+  const [navProfile, setNavProfile] = useState<RoutingProfile>("driving")
+  const [showShareModal, setShowShareModal] = useState(false)
+
+  const {
+    isLive,
+    isSimulating,
+    rescuerPos,
+    heading,
+    speedMultiplier,
+    progressPercent,
+    hasArrived,
+    setSpeedMultiplier,
+    startSimulation,
+    stopLiveTracking,
+    startLiveGps,
+  } = useLiveTracking({ caseId: navTarget?.caseId || "HP-1041" })
+
+  useEffect(() => {
+    if (!navTarget) {
+      setNavRouteData(null)
+      stopLiveTracking()
+      return
+    }
+
+    let active = true
+    setNavLoading(true)
+
+    const start = userCoords
+      ? userCoords
+      : xyToLngLat(ME_POS.x, ME_POS.y)
+    const end = xyToLngLat(navTarget.x, navTarget.y)
+
+    fetchRoute(start, end, navProfile)
+      .then((data) => {
+        if (active) {
+          setNavRouteData(data)
+          setNavLoading(false)
+        }
+      })
+      .catch(() => {
+        if (active) setNavLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [navTarget, navProfile, userCoords])
+
+  const handleDirections = (target: {
+    x: number
+    y: number
+    name: string
+    address?: string
+    caseId?: string
+  }) => {
+    setNavTarget(target)
+    setView("map")
+    setSnap(1)
+  }
+
+  const handleToggleSimulation = () => {
+    if (isSimulating) {
+      stopLiveTracking()
+    } else if (navRouteData && navTarget) {
+      startSimulation(
+        navTarget.caseId || "HP-1041",
+        navRouteData.coordinates,
+        navRouteData.distanceKm,
+        navRouteData.durationMinutes,
+      )
+    }
+  }
+
+  const handleOpenGoogleMaps = () => {
+    if (!navTarget) return
+    const start = userCoords ? userCoords : xyToLngLat(ME_POS.x, ME_POS.y)
+    const end = xyToLngLat(navTarget.x, navTarget.y)
+    const url = getGoogleMapsDirectionsUrl(start, end, navProfile)
+    window.open(url, "_blank", "noopener,noreferrer")
+  }
+
+  const handleCloseNavigation = () => {
+    setNavTarget(null)
+    setNavRouteData(null)
+    stopLiveTracking()
+  }
 
   useEffect(() => {
     if (variant === "map") {
@@ -140,6 +329,8 @@ export default function Explorer({
   const select = (s: Sel | null) => {
     setSel(s)
     if (s) {
+      setNavTarget(null)
+      setNavRouteData(null)
       setSnap(1)
       setView("map")
     }
@@ -333,6 +524,8 @@ export default function Explorer({
       onSelect={select}
       radius={{ ...ME_POS, km: f.radius }}
       me={ME_POS}
+      userLocation={userCoords}
+      onLocate={(coords) => setUserCoords(coords)}
       center={center}
       loading={loading}
       controls={desktop}
@@ -344,6 +537,21 @@ export default function Explorer({
           ? selCase.trail?.map((t) => ({ x: t.x, y: t.y, t: t.t }))
           : undefined
       }
+      routeCoords={navRouteData?.coordinates}
+      routeColor="#2563eb"
+      liveRescuer={
+        rescuerPos
+          ? {
+              lng: rescuerPos[0],
+              lat: rescuerPos[1],
+              heading,
+              name: "Cứu hộ viên",
+              vehicleType: navProfile === "walking" ? "Đi bộ" : "Xe máy",
+              isLive: isLive,
+            }
+          : null
+      }
+      extras={null}
       controlsClass="bottom-6"
       focusKey={sel ? sel.id : undefined}
     />
@@ -450,17 +658,46 @@ export default function Explorer({
             </div>
           )}
 
+          {/* Outside Hanoi informative banner */}
+          {isOutsideHanoi && (
+            <div className="absolute top-3 left-3 right-16 sm:left-4 sm:right-auto sm:max-w-md z-10 flex items-center justify-between gap-2 px-3.5 py-2 rounded-2xl bg-amber-100/95 border-2 border-amber-300 text-amber-950 backdrop-blur-md shadow-md animate-[rise_.2s_both]">
+              <span className="text-xs font-bold truncate">
+                Vị trí của bạn ngoài HN · Dữ liệu mẫu tại Hà Nội
+              </span>
+              <Btn
+                size="sm"
+                variant="primary"
+                onClick={() => {
+                  api.current?.focusLngLat(HANOI_CENTER[0], HANOI_CENTER[1], 13.5)
+                }}
+                className="text-[11px] font-black shrink-0 !h-7 !px-2.5"
+              >
+                Về Hà Nội
+              </Btn>
+            </div>
+          )}
+
           {!desktop && (
             <>
               {/* Nút điều khiển bản đồ bên phải */}
               <div className="absolute right-3 top-3 z-10 flex flex-col gap-2">
                 <IconBtn
                   variant="ghost"
-                  onClick={() => api.current?.locate()}
+                  onClick={() => handleLocate(true)}
+                  disabled={isLocating}
                   aria-label="Vị trí hiện tại"
-                  className="size-11 rounded-full border-2 border-brown bg-paper shadow-soft"
+                  className={cx(
+                    "size-11 rounded-full border-2 border-brown bg-paper shadow-soft relative transition-colors",
+                    userCoords && "border-sky-600 bg-sky-50 text-sky-700",
+                  )}
                 >
-                  <LocateFixed className="size-5" />
+                  {isLocating ? (
+                    <Loader2 className="size-5 animate-spin text-coral" />
+                  ) : (
+                    <LocateFixed
+                      className={cx("size-5", userCoords && "text-sky-600")}
+                    />
+                  )}
                 </IconBtn>
                 <IconBtn
                   variant="ghost"
@@ -482,9 +719,46 @@ export default function Explorer({
               <BottomSheet
                 snap={snap}
                 onSnap={setSnap}
-                peek={sel ? 128 : 88}
+                peek={navTarget ? 96 : sel ? 128 : 88}
                 header={
-                  sel && selCase ? (
+                  navTarget ? (
+                    <div className="flex items-center gap-2.5 px-4 pb-2.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="truncate font-display text-[15px] font-extrabold text-brown">
+                            {navTarget.name}
+                          </span>
+                          <Badge
+                            tone="butter"
+                            className="shrink-0 text-[10px] uppercase font-black tracking-wide"
+                          >
+                            {navProfile === "walking" ? "Đi bộ" : "Xe máy"}
+                          </Badge>
+                        </div>
+                        <p className="truncate text-xs font-bold text-brown-soft">
+                          {navLoading ? (
+                            "Đang tính lộ trình..."
+                          ) : navRouteData ? (
+                            `~ ${navRouteData.durationMinutes} phút · ${navRouteData.distanceKm} km`
+                          ) : (
+                            navTarget.address || "Chỉ đường"
+                          )}
+                        </p>
+                      </div>
+                      <IconBtn
+                        label="Đóng chỉ đường"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleCloseNavigation()
+                        }}
+                        className="!size-8 !rounded-full hover:!bg-brown/10 text-brown shrink-0"
+                      >
+                        <X className="size-4" />
+                      </IconBtn>
+                    </div>
+                  ) : sel && selCase ? (
                     <div className="flex items-center gap-2.5 px-4 pb-2.5">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
@@ -564,55 +838,113 @@ export default function Explorer({
                 }
               >
                 <div className="space-y-3 px-4 pb-6">
-                  {sel && (
-                    <PinDetailCard
-                      sel={sel}
-                      onClose={() => {
-                        setSel(null)
-                        setSnap(0)
-                      }}
+                  {navTarget ? (
+                    <NavigationContent
+                      destinationName={navTarget.name}
+                      destinationAddress={navTarget.address}
+                      routeData={navRouteData}
+                      loading={navLoading}
+                      profile={navProfile}
+                      onProfileChange={setNavProfile}
+                      isSimulating={isSimulating}
+                      speedMultiplier={speedMultiplier}
+                      onToggleSimulation={handleToggleSimulation}
+                      onSpeedChange={setSpeedMultiplier}
+                      isLive={isLive}
+                      onStartLiveGps={() =>
+                        startLiveGps(navTarget.caseId || "HP-1041")
+                      }
+                      onShareLiveLink={() => setShowShareModal(true)}
+                      onOpenGoogleMaps={handleOpenGoogleMaps}
+                      onClose={handleCloseNavigation}
+                      progressPercent={progressPercent}
+                      hasArrived={hasArrived}
                     />
+                  ) : (
+                    <>
+                      {sel && (
+                        <PinDetailCard
+                          sel={sel}
+                          onDirections={handleDirections}
+                          onClose={() => {
+                            setSel(null)
+                            setSnap(0)
+                          }}
+                        />
+                      )}
+                      {sel && (
+                        <p className="flex items-center gap-1 pt-1 text-xs font-extrabold uppercase tracking-wide text-brown-soft">
+                          Các case lân cận khác{" "}
+                          <ChevronRight className="size-3" />
+                        </p>
+                      )}
+                      {resultList}
+                    </>
                   )}
-                  {sel && (
-                    <p className="flex items-center gap-1 pt-1 text-xs font-extrabold uppercase tracking-wide text-brown-soft">
-                      Các case lân cận khác <ChevronRight className="size-3" />
-                    </p>
-                  )}
-                  {resultList}
                 </div>
               </BottomSheet>
             </>
           )}
         </section>
 
-        {/* AREA 3: Desktop Right Contextual Case Panel (Docked Sidebar) */}
-        {desktop && view === "map" && sel && (
+        {/* AREA 3: Desktop Right Contextual Case Panel or Navigation Panel (Docked Sidebar) */}
+        {desktop && view === "map" && (sel || navTarget) && (
           <aside className="w-[380px] xl:w-[410px] shrink-0 min-h-0 flex flex-col border-l-2 border-brown/15 bg-paper z-20 shadow-soft animate-[rise_.2s_both]">
-            <div className="flex h-full flex-col min-h-0">
-              <div className="flex items-center justify-between border-b-2 border-line bg-cream/40 px-4 py-3 shrink-0">
-                <Btn
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSel(null)}
-                  icon={<ArrowLeft className="size-4" />}
-                  className="!h-auto !px-2.5 !py-1.5 text-xs font-extrabold text-brown hover:bg-brown/10"
-                >
-                  Đóng chi tiết
-                </Btn>
-                <IconBtn
-                  label="Đóng chi tiết ca"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSel(null)}
-                  className="!size-8 !rounded-full hover:!bg-brown/10"
-                >
-                  <X className="size-4" />
-                </IconBtn>
+            {navTarget ? (
+              <NavigationSheet
+                destinationName={navTarget.name}
+                destinationAddress={navTarget.address}
+                routeData={navRouteData}
+                loading={navLoading}
+                profile={navProfile}
+                onProfileChange={setNavProfile}
+                isSimulating={isSimulating}
+                speedMultiplier={speedMultiplier}
+                onToggleSimulation={handleToggleSimulation}
+                onSpeedChange={setSpeedMultiplier}
+                isLive={isLive}
+                onStartLiveGps={() =>
+                  startLiveGps(navTarget.caseId || "HP-1041")
+                }
+                onShareLiveLink={() => setShowShareModal(true)}
+                onOpenGoogleMaps={handleOpenGoogleMaps}
+                onClose={handleCloseNavigation}
+                progressPercent={progressPercent}
+                hasArrived={hasArrived}
+                mode="panel"
+              />
+            ) : sel ? (
+              <div className="flex h-full flex-col min-h-0">
+                <div className="flex items-center justify-between border-b-2 border-line bg-cream/40 px-4 py-3 shrink-0">
+                  <Btn
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSel(null)}
+                    icon={<ArrowLeft className="size-4" />}
+                    className="!h-auto !px-2.5 !py-1.5 text-xs font-extrabold text-brown hover:bg-brown/10"
+                  >
+                    Đóng chi tiết
+                  </Btn>
+                  <IconBtn
+                    label="Đóng chi tiết ca"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSel(null)}
+                    className="!size-8 !rounded-full hover:!bg-brown/10"
+                  >
+                    <X className="size-4" />
+                  </IconBtn>
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                  <PinDetailCard
+                    sel={sel}
+                    display="panel"
+                    onDirections={handleDirections}
+                    onClose={() => setSel(null)}
+                  />
+                </div>
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                <PinDetailCard sel={sel} display="panel" onClose={() => setSel(null)} />
-              </div>
-            </div>
+            ) : null}
           </aside>
         )}
       </div>
@@ -790,6 +1122,14 @@ export default function Explorer({
           </div>
         </div>
       </Modal>
+
+      <LiveTrackingModal
+        open={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        caseId={navTarget?.caseId || "HP-1041"}
+        caseName={navTarget?.name}
+        isLive={isLive || isSimulating}
+      />
     </UserShell>
   )
 }

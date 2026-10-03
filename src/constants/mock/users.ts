@@ -1,4 +1,4 @@
-import type { User, LeaderRow } from "@/types/user"
+import type { User, LeaderRow, RescuerProfile } from "@/types/user"
 
 export const USERS: User[] = [
   {
@@ -267,3 +267,69 @@ export const LEADERS: LeaderRow[] = [
     avatar: "pink",
   },
 ]
+
+export const MOCK_RESCUERS: RescuerProfile[] = [
+  {
+    id: "r1",
+    name: "Nguyễn Văn Hùng",
+    phone: "0988 123 456",
+    avatar: "sage",
+    role: "Chuyên viên cứu hộ",
+    vehicleType: "Bán tải cứu hộ",
+    vehiclePlate: "29H-882.14",
+    rating: 4.9,
+    rescuesCount: 52,
+    currentStatus: "sẵn sàng",
+  },
+  {
+    id: "r2",
+    name: "Trần Thu Trang",
+    phone: "0912 987 654",
+    avatar: "pink",
+    role: "Tình nguyện viên",
+    vehicleType: "Xe máy",
+    vehiclePlate: "29S1-543.21",
+    rating: 4.8,
+    rescuesCount: 19,
+    currentStatus: "đang làm nhiệm vụ",
+  },
+  {
+    id: "r3",
+    name: "BS. Lê Hoàng Nam",
+    phone: "0977 456 789",
+    avatar: "sky",
+    role: "Bác sĩ thú y lưu động",
+    vehicleType: "Ô tô cứu trợ",
+    vehiclePlate: "29D-678.90",
+    rating: 5.0,
+    rescuesCount: 38,
+    currentStatus: "sẵn sàng",
+  },
+  {
+    id: "r4",
+    name: "Đỗ Minh Đức",
+    phone: "0904 222 333",
+    avatar: "butter",
+    role: "Chuyên viên cứu hộ",
+    vehicleType: "Xe máy",
+    vehiclePlate: "29E2-334.55",
+    rating: 4.7,
+    rescuesCount: 24,
+    currentStatus: "sẵn sàng",
+  },
+  {
+    id: "r5",
+    name: "Phạm Phương Thảo",
+    phone: "0963 111 222",
+    avatar: "peach",
+    role: "Tình nguyện viên",
+    vehicleType: "Xe máy",
+    vehiclePlate: "29F1-889.99",
+    rating: 4.9,
+    rescuesCount: 16,
+    currentStatus: "đang làm nhiệm vụ",
+  },
+]
+
+export const rescuerById = (id?: string) => MOCK_RESCUERS.find((r) => r.id === id)
+

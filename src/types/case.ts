@@ -29,5 +29,6 @@ export interface Case {
   weight?: string
   age?: string
   shelterId?: string
+  rescuerId?: string
   trail?: { x: number; y: number; t: string; note: string }[]
 }

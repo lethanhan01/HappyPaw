@@ -13,6 +13,7 @@ import {
   RescueForm,
 } from "./components/Report"
 import { caseRoute } from "./components/Caseflow"
+import LiveTrackingView from "./components/LiveTrackingView"
 
 export default function UserApp(): ReactNode {
   const { path, auth, go } = useApp()
@@ -49,6 +50,9 @@ export default function UserApp(): ReactNode {
       break
     case "case":
       page = caseRoute(path)
+      break
+    case "track":
+      if (b) page = <LiveTrackingView id={b} />
       break
   }
 
